@@ -1,6 +1,10 @@
 <ul class="menu">
-    <li></li>
-    <li *ngFor="let page of pages"  ngClass="{'active': isPathEqual({{page.url}})}">
-        <a href="{{page.url}}">{{page.title}}</a>
+    <li class="menu-header">
+        <mat-icon  aria-hidden="false"  fontIcon="savings"></mat-icon>
+        <h2>Finance</h2>
+    </li>
+    <li *ngFor="let page of pages"   [ngClass]="{'menu-item': true, 'active': isPathEqual(page.url)}">
+        <a href="{{page.url}}"> 
+            <mat-icon  aria-hidden="false"  fontIcon="{{page.icon}}"></mat-icon> &nbsp; {{page.title}}</a>
     </li>
 </ul>
