@@ -1,0 +1,19 @@
+.float-button{
+    position: fixed;
+    font-size: 30px;
+    bottom: 50px;
+    right: 30px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bolder;
+    background-color: var(--ion-color-primary);
+    transition: all 0.2s ease-in-out;
+}
+
+.float-button:hover{
+    transform: scale(1.1) rotate(180deg);
+}

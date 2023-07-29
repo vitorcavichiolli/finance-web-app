@@ -1,0 +1,104 @@
+/* You can add global styles to this file, and also import other style files */
+h1,h2,h3,h4,h5,h6,p{
+    margin: 0;
+    padding: 0;
+}
+
+
+.color-green{
+    color: var(--ion-color-success);
+}
+
+.green{
+    background-color: var(--ion-color-success);
+}
+
+.color-red{
+    color: var(--ion-color-danger);
+}
+
+.color-primary{
+    color: var(--ion-color-primary);
+}
+
+
+*{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.text-center{
+    text-align: center;
+}
+
+mat-dialog-container {
+    position: fixed !important;
+    max-width: 100% !important;
+    background-color: #05040494;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.288);
+    padding: 16px;
+}
+
+.mat-mdc-dialog-surface{
+    background-color: var(--ion-color-step-200) !important;
+    box-shadow: 0 0 6px 0 black;
+    height: unset !important;
+}
+.modal{
+    padding: 10px;
+    width: 100%;
+
+}
+
+@import url(theme/variables.scss);
+
+.modal-content{
+    width: 100%;
+
+}
+
+.modal-header{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
+.close-modal{
+    font-size: 20px;
+}
+
+.form-group{
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    padding: 5px;
+}
+
+.form-label, .form-input{
+    display: block;
+    width: 100%;
+    margin: 2px;
+}
+
+.form-input{
+    padding: 5px;
+    border-radius: 5px;
+}
+html, body { height: 100%; }
+body { 
+    color: white;
+    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
+
+button{
+    border: none;
+    cursor: pointer;
+}

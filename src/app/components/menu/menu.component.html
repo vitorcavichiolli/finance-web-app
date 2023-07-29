@@ -1,0 +1,6 @@
+<ul class="menu">
+    <li></li>
+    <li *ngFor="let page of pages"  ngClass="{'active': isPathEqual({{page.url}})}">
+        <a href="{{page.url}}">{{page.title}}</a>
+    </li>
+</ul>

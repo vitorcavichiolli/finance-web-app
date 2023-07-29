@@ -1,0 +1,20 @@
+.nav-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.nav-content{
+  background-color: var(--ion-background-color);
+  padding: 20px;
+}
+
+.nav-menu{
+  padding: 10px;
+}
+
+.mat-drawer-container{
+  color: white;
+}

@@ -1,0 +1,47 @@
+<div class="content">
+    <app-lg-card>
+      <div class="card-content">
+        <div class="card-group">
+          <h3 class="card-label color-green">Renda:</h3>
+          <p class="card-value"> R$ 1500,00</p>
+        </div>
+        <div class="card-group">
+          <h3 class="card-label color-red">Gastos:</h3>
+          <p class="card-value"> R$ 1500,00</p>
+        </div>
+        <div class="card-group">
+          <h3 class="card-label">Saldo:</h3>
+          <p class="card-value"> R$ 1500,00</p>
+        </div>
+      </div>
+    </app-lg-card>
+    <div class="list-container">
+      <h3 class="color-primary">Últimos registros</h3>
+      <ul class="list">
+        <li class="list-item">
+          <p class="list-label">mercado</p>
+          <p class="list-value color-red">R$ 100,00</p>
+        </li>
+        <li class="list-item">
+          <p class="list-label">vale</p>
+          <p class="list-value color-green">R$ 1000,00</p>
+        </li>
+        <li class="list-item">
+          <p class="list-label">mercado</p>
+          <p class="list-value color-red">R$ 100,00</p>
+        </li>
+        <li class="list-item">
+          <p class="list-label">vale</p>
+          <p class="list-value color-green">R$ 1000,00</p>
+        </li>
+   
+      </ul>
+    </div>
+    <app-float-button #childButton (click)="openDialog()">
+   
+        <mat-icon class="button-icon" aria-hidden="false"  fontIcon="add-circle"></mat-icon>
+
+  
+    </app-float-button>
+  
+  </div>
