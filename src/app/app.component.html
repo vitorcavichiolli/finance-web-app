@@ -1,12 +1,24 @@
-
+<!-- 
 <mat-sidenav-container class="nav-container">
+  <button>...</button>
   <mat-sidenav mode="side" opened class="nav-menu">
     <app-menu></app-menu>
   </mat-sidenav>
   <mat-sidenav-content class="nav-content">
     <router-outlet></router-outlet>
   </mat-sidenav-content>
-</mat-sidenav-container>
+</mat-sidenav-container> -->
 
 
+<mat-drawer-container class="nav-container" >
+  <mat-drawer mode="side" #drawer class="nav-menu">
+    <app-menu></app-menu>
+  </mat-drawer>
+  <div class="nav-content sidenav-content">
+    <button type="button" class="toggle-nav-button" mat-button (click)="toggleDrawer()">
+      <mat-icon class="button-icon" aria-hidden="false" [fontIcon]="isMenuOpen ? 'chevron_left' : 'chevron_right'"></mat-icon>
+    </button>
+    <router-outlet></router-outlet>
+  </div>
+</mat-drawer-container>
 
