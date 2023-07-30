@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
@@ -25,26 +25,31 @@ export class ModalComponent implements OnInit{
     this.dialogRef.close();
   }
 
+
+
   ngOnInit() {
-    
     const currentDate = new Date();
     let localDateString = this.formatDate(currentDate.toLocaleDateString());
     this.form = this.fb.group({
-      tipo: new FormControl(""),
-      data: new FormControl(localDateString), 
-      descricao: new FormControl(""),
-      pagamento: new FormControl(""),
-      valor: new FormControl(""),
-      categoria: new FormControl(""),
+      tipo: new FormControl("d", Validators.required),
+      data: new FormControl(localDateString, Validators.required),
+      descricao: new FormControl("", Validators.required),
+      pagamento: new FormControl("", Validators.required),
+      valor: new FormControl("", Validators.required),
+      categoria: new FormControl("", Validators.required),
     });
+
     this.form.valueChanges.subscribe(this.onFormChange);
+
 
     this.tipos = tipos;
     this.pagamentos = pagamentos;
     this.categorias = categorias;
-  } 
+  }
 
   onFormChange(fm:any){
+
+
   }
 
   formatDate(date: string): string {
