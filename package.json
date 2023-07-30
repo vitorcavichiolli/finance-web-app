@@ -21,7 +21,16 @@
     "@angular/platform-browser": "^16.1.0",
     "@angular/platform-browser-dynamic": "^16.1.0",
     "@angular/router": "^16.1.0",
+    "core-js": "^3.32.0",
+    "global": "^4.4.0",
+    "idb": "^7.1.1",
+    "pouchdb": "^8.0.1",
+    "pouchdb-adapter-idb": "^8.0.1",
+    "pouchdb-browser": "^8.0.1",
+    "pouchdb-core": "^8.0.1",
+    "pouchdb-find": "^8.0.1",
     "rxjs": "~7.8.0",
+    "sql.js": "^1.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },
@@ -30,6 +39,10 @@
     "@angular/cli": "~16.1.6",
     "@angular/compiler-cli": "^16.1.0",
     "@types/jasmine": "~4.3.0",
+    "@types/pouchdb": "^6.4.0",
+    "@types/pouchdb-core": "^7.0.11",
+    "@types/pouchdb-find": "^7.3.0",
+    "@types/sql.js": "^1.4.4",
     "electron": "^25.3.2",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
@@ -37,6 +50,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "ts-node": "^10.9.1",
     "typescript": "~5.1.3"
   }
 }

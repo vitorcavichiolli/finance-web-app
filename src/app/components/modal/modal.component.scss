@@ -3,6 +3,11 @@
     font-size: 20px;
     background-color: transparent;
     color: var(--ion-color-danger);
+    transition: all 0.2s ease-in-out;
+}
+
+.close-modal:hover{
+    transform: scale(1.1) rotate(180deg);
 }
 
 
@@ -35,6 +40,13 @@
     justify-content: center;
     align-items: center;
     font-size: 15px;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-button:hover{
+    transform: scale(1.1);
+    filter: brightness(1.3);
+    border-radius: 5px;
 }
 
 .form-button>ion-icon{
