@@ -49,7 +49,7 @@
       </div>
       <div class="button-group">
         <button class="form-button green" (click)="salvarMovimentacao()">
-          <mat-icon  aria-hidden="false"  fontIcon="done"></mat-icon>
+          <mat-icon  aria-hidden="false"  fontIcon="{{ isEditMode ? 'published_with_changes' : 'done' }}"></mat-icon>
 
         </button>
       </div>

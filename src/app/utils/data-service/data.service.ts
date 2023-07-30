@@ -38,16 +38,19 @@ export class DataService {
 
   async updateMovimentacao(movimentacao: Movimentacao): Promise<any> {
     const db = await this.dbPromise;
-    const id = movimentacao.id; // Obter o ID da movimentação
-    if (!id) {
+    if (!movimentacao.id) {
       throw new Error('A movimentação precisa ter um ID válido.');
     }
-    return db.put('movimentacoes', movimentacao, id);
+    return db.put('movimentacoes', movimentacao); // Remover a definição explícita da chave
   }
 
   async deleteMovimentacao(id: number): Promise<void> {
-    const db = await this.dbPromise;
-    return db.delete('movimentacoes', id);
+    if (typeof id === 'number') {
+      const db = await this.dbPromise;
+      return db.delete('movimentacoes', id);
+    } else {
+      throw new Error('A movimentação precisa ter um ID válido.');
+    }
   }
 
   async getAllMovimentacoes(): Promise<Movimentacao[]> {

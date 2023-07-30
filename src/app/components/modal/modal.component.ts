@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
@@ -15,11 +15,18 @@ export class ModalComponent implements OnInit{
   tipos: any;
   pagamentos: any;
   categorias: any;
+  isEditMode = false;
+  movimentacao: Movimentacao;
+
   constructor(
       public dialogRef: MatDialogRef<ModalComponent>,
       private fb: FormBuilder,
       private dataService: DataService,
-    ) {}
+      @Inject(MAT_DIALOG_DATA) public data: any // Obtenha os dados passados pelo modal de edição
+      ) {
+        this.isEditMode = data.isEditMode;
+        this.movimentacao = data.movimentacao;
+      }
   onCloseClick(): void {
     // Close the dialog
     this.dialogRef.close();
@@ -36,7 +43,7 @@ export class ModalComponent implements OnInit{
       descricao: new FormControl("", Validators.required),
       pagamento: new FormControl("", Validators.required),
       valor: new FormControl("", Validators.required),
-      categoria: new FormControl("", Validators.required),
+      categoria: new FormControl(""),
     });
 
     this.form.valueChanges.subscribe(this.onFormChange);
@@ -45,6 +52,18 @@ export class ModalComponent implements OnInit{
     this.tipos = tipos;
     this.pagamentos = pagamentos;
     this.categorias = categorias;
+
+    if (this.isEditMode) {
+      // Ajustar o formulário com os dados da movimentação a ser editada
+      this.form.patchValue({
+        tipo: this.movimentacao.tipo,
+        data: this.movimentacao.data,
+        descricao: this.movimentacao.descricao,
+        pagamento: this.movimentacao.pagamento,
+        valor: this.movimentacao.valor,
+        categoria: this.movimentacao.categoria,
+      });
+    }
   }
 
   onFormChange(fm:any){
@@ -69,8 +88,15 @@ export class ModalComponent implements OnInit{
         valor: formValues.valor
       };
 
-      const id = await this.dataService.saveMovimentacao(movimentacao);
-      console.log('Movimentação criada com ID:', id);
+      if (this.isEditMode && this.movimentacao.id) {
+        movimentacao.id = this.movimentacao.id; // Definir o ID da movimentação no objeto atualizado
+        await this.dataService.updateMovimentacao(movimentacao);
+        console.log('Movimentação atualizada com sucesso!');
+      } else {
+        const id = await this.dataService.saveMovimentacao(movimentacao);
+        console.log('Movimentação criada com ID:', id);
+      }
+
       window.location.reload();
     }
   }

@@ -18,6 +18,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
     FloatButtonComponent,
     LgCardComponent,
     ModalComponent,
-    MenuComponent
+    MenuComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +45,6 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
   providers: [
     ModalService,
     Location,
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent]
 })
