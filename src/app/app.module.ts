@@ -26,6 +26,10 @@ import { PieChartComponent } from './components/pie-chart/pie-chart.component';
 import { TableComponent } from './components/table/table.component';
 import { MatSortModule} from '@angular/material/sort';
 import { MatTableModule} from '@angular/material/table';
+import { MatPaginatorModule} from '@angular/material/paginator';
+
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,8 +57,8 @@ import { MatTableModule} from '@angular/material/table';
     MatCheckboxModule,
     MatDividerModule,
     MatSortModule,
-    MatTableModule
-
+    MatTableModule,
+    MatPaginatorModule
   ],
   providers: [
     ModalService,

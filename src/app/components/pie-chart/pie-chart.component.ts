@@ -15,17 +15,20 @@ export class PieChartComponent implements AfterViewInit, OnChanges  {
   tipos:any;
   pagamentos:any;
   usedColors = new Set<string>();
+  myChart: any;
+
   public movimentacoes: Movimentacao[] = [];
   @Input() set data(data: any[]) {
     this.movimentacoes = data;
   }
+
   constructor(
     
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && !changes['data'].firstChange) {
-      this.createBarChart();
+      this.createChart();
     }
   }
 
@@ -39,13 +42,15 @@ export class PieChartComponent implements AfterViewInit, OnChanges  {
 
  
 
-  createBarChart() {
+  createChart() {
+    if (this.myChart) {
+      this.myChart.destroy();
+    }
     const ctx = this.myChartCanvas.nativeElement.getContext('2d');
     let labels: string[] = [];
     let data:number[] = [];
     let backgroundColor:string[]=[];
     let borderColor:string[]=[];
-    console.log(this.movimentacoes);
     let datasets: any =[];
     this.movimentacoes.forEach(el => {
       let label:string = "";
@@ -57,7 +62,6 @@ export class PieChartComponent implements AfterViewInit, OnChanges  {
           const index = labels.indexOf(label);
           const valorNumerico = parseFloat(el.valor.toString().replace(',', '.'));
           data[index] = data[index] + valorNumerico;
-          console.log(data[index]);
         }
         else{
           labels.push(label);
@@ -78,8 +82,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges  {
       borderWidth: 1
     }
     datasets.push(dataset);
-    console.log(datasets);
-    const myChart = new Chart(ctx, {
+    this.myChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: labels,

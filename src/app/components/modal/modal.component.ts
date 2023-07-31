@@ -91,10 +91,8 @@ export class ModalComponent implements OnInit{
       if (this.isEditMode && this.movimentacao.id) {
         movimentacao.id = this.movimentacao.id; // Definir o ID da movimentação no objeto atualizado
         await this.dataService.updateMovimentacao(movimentacao);
-        console.log('Movimentação atualizada com sucesso!');
       } else {
         const id = await this.dataService.saveMovimentacao(movimentacao);
-        console.log('Movimentação criada com ID:', id);
       }
 
       window.location.reload();

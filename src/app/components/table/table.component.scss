@@ -1,19 +1,32 @@
+.table-container{
+    width: 100%;
+}
+
 .mat-mdc-table{
     background-color: var(--color-step-150);
     border-radius: 5px;
     padding: 5px;
+    width: 100%;
 }
 
 .mat-mdc-header-row>th{
     color: var(--color-primary);
     font-weight: bold;
+    text-align: center;
+    word-wrap: break-word !important;
+    white-space: unset !important;
 }
 
 .mat-mdc-row>td{
     text-align: center;
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    width: auto !important;
+    padding: 2px;
 }
 
 .mat-mdc-row>td:not(:last-child) {
     color: white;
     border-right: 1px solid  #74b9ff75;
-  }
+}
+

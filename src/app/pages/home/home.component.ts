@@ -43,7 +43,6 @@ export class HomeComponent implements OnInit {
 
       // Handle dialog close event if needed
       dialogRef.afterClosed().subscribe((result) => {
-        console.log('The dialog was closed');
       });
     }
 
@@ -62,7 +61,6 @@ export class HomeComponent implements OnInit {
       const copiaMovimentacoes = [...this.movimentacoes];
       copiaMovimentacoes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
       this.movimentacoes = copiaMovimentacoes;
-      console.log('Movimentações:', this.movimentacoes);
       
     }
 
@@ -80,12 +78,10 @@ export class HomeComponent implements OnInit {
           if (result === true) {
             // Usuário confirmou a exclusão, chama a função deleteMovimentacao
             this.dataService.deleteMovimentacao(id).then(() => {
-              console.log('Movimentação deletada com ID:', id);
               window.location.reload();
             });
           } else {
             // Usuário cancelou a exclusão
-            console.log('Exclusão cancelada pelo usuário.');
           }
         });
         

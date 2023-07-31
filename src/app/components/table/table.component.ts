@@ -1,5 +1,6 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
@@ -13,6 +14,7 @@ export class TableComponent implements OnChanges {
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = ['data', 'tipo', 'categoria', 'pagamento', 'descricao', 'valor'];
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _data: any[] = [];
 
@@ -30,6 +32,7 @@ export class TableComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && !changes['data'].firstChange) {
       this.updateDataSource();
+      this.dataSource.paginator = this.paginator;
     }
   }
 
@@ -43,12 +46,7 @@ export class TableComponent implements OnChanges {
       this.dataSource.sort = this.sort;
     }
   }
-  /** Announce the change in sort state for assistive technology. */
   announceSortChange(sortState: Sort) {
-    // This example uses English messages. If your application supports
-    // multiple languages, you would internationalize these strings.
-    // Furthermore, you can customize the message to add additional
-    // details about the values being sorted.
     if (sortState.direction) {
       this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
     } else {
@@ -94,5 +92,7 @@ export class TableComponent implements OnChanges {
       return '-';
     }
   }
+
+ 
   
 }

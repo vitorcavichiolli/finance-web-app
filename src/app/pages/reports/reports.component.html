@@ -22,7 +22,68 @@
                    {{!panelOpenState ? 'Clique para expandir' : 'Clique para fechar'}}
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              
+              <section class="cb-filter">
+                <span class="cb-list-section">
+                    <mat-checkbox class="filter"
+                        [checked]="selectAllTipos"
+                        [indeterminate]="someSelected('tipos')"
+                        (change)="setAll($event.checked,'tipos')"
+                        [color]="filtersTipo.cor"
+                        (change)="onCheckboxChange(filtersTipo)"
+                        >
+    
+                        {{filtersTipo.nome}}
+                    </mat-checkbox>
+                </span>
+                <span class="cb-list-section sub-list">
+                    <ul>
+                        <li *ngFor="let filtro of filtersTipo.subFiltros">
+                            <mat-checkbox  [formControl]="filtro.control"
+                                (change)="updateSelectAll('tipos')"
+                                [color]="filtro.cor"
+                                (change)="onCheckboxChange(filtro)"
+                                >
+                                
+                                {{filtro.nome}}
+                            </mat-checkbox>
+                        </li>
+                    </ul>
+                </span>
+              </section>
+
+              <mat-divider></mat-divider>
+
+              <section class="cb-filter">
+                <span class="cb-list-section">
+                    <mat-checkbox class="filter"
+                        [checked]="selectAllPagamentos"
+                        [indeterminate]="someSelected('pagamentos')"
+                        (change)="setAll($event.checked,'pagamentos')"
+                        [color]="filtersPagamento.cor"
+                        (change)="onCheckboxChange(filtersPagamento)"
+                        >
+    
+                        {{filtersPagamento.nome}}
+                    </mat-checkbox>
+                </span>
+                <span class="cb-list-section sub-list">
+                    <ul>
+                        <li *ngFor="let filtro of filtersPagamento.subFiltros">
+                            <mat-checkbox  [formControl]="filtro.control"
+                                (change)="updateSelectAll('pagamentos')"
+                                [color]="filtro.cor"
+                                (change)="onCheckboxChange(filtro)"
+                                >
+                                
+                                {{filtro.nome}}
+                            </mat-checkbox>
+                        </li>
+                    </ul>
+                </span>
+              </section>
+
+              <mat-divider></mat-divider>
+
               <section class="cb-filter">
                 <span class="cb-list-section">
                     <mat-checkbox class="filter"
@@ -30,6 +91,7 @@
                         [indeterminate]="someSelected('categorias')"
                         (change)="setAll($event.checked,'categorias')"
                         [color]="filtersCategoria.cor"
+                        (change)="onCheckboxChange(filtersCategoria)"
                         >
     
                         {{filtersCategoria.nome}}
@@ -41,6 +103,7 @@
                             <mat-checkbox  [formControl]="filtro.control"
                                 (change)="updateSelectAll('categorias')"
                                 [color]="filtro.cor"
+                                (change)="onCheckboxChange(filtro)"
                                 >
                                 
                                 {{filtro.nome}}
@@ -49,40 +112,15 @@
                     </ul>
                 </span>
               </section>
-              <mat-divider></mat-divider>
-    
-              <section class="cb-filter">
-                <span class="cb-list-section">
-                    <mat-checkbox class="filter"
-                        [checked]="selectAllTipos"
-                        [indeterminate]="someSelected('tipos')"
-                        (change)="setAll($event.checked,'tipos')"
-                        [color]="filtersTipo.cor">
-    
-                        {{filtersTipo.nome}}
-                    </mat-checkbox>
-                </span>
-                <span class="cb-list-section sub-list">
-                    <ul>
-                        <li *ngFor="let filtro of filtersTipo.subFiltros">
-                            <mat-checkbox  [formControl]="filtro.control"
-                                (change)="updateSelectAll('tipos')"
-                                [color]="filtro.cor"
-                                >
-                                
-                                {{filtro.nome}}
-                            </mat-checkbox>
-                        </li>
-                    </ul>
-                </span>
-              </section>
+
+              
             </mat-expansion-panel>
           </mat-accordion>
           <section class="component-section">
-            <app-table [data]="movimentacoes"></app-table>
+            <app-table [data]="filteredMovimentacoes"></app-table>
         </section>
           <section  class="component-section">
-            <app-pie-chart [data]="movimentacoes"></app-pie-chart>
+            <app-pie-chart [data]="filteredMovimentacoes"></app-pie-chart>
           </section>
     </form>
 </div>

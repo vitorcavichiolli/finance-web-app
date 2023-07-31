@@ -175,3 +175,34 @@ button{
     background-color: rgba(0, 0, 0, 0.767); 
     box-shadow: 0 0 3px 0px inset var(--color-primary);
 }
+
+.mat-mdc-paginator-container, .mat-mdc-paginator-outer-container{
+    background-color: var(--color-step-150);
+    border-radius: 0 0 5px 5px;
+    color: white;
+}
+.mat-mdc-paginator-container{
+    padding: 10px !important;
+    justify-content: center !important;
+}
+
+.mat-mdc-paginator-container .mat-mdc-select-value{
+    color: white;
+}
+
+.mat-mdc-paginator-range-actions>button{
+    color: var(--color-primary);
+}
+
+.mat-mdc-paginator{
+    width: 80%;
+    margin: 0 auto;
+    background-color: var(--color-step-150);
+    border-radius: 0 0 5px 5px;
+    border-top: 1px solid #000000d1;
+    box-shadow: 0 5px 6px 0px black;
+}
+
+.mat-sort-header-container{
+    justify-content: center !important;
+}
