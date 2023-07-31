@@ -11,12 +11,12 @@
 
 
 <mat-drawer-container class="nav-container" >
-  <mat-drawer mode="side" #drawer class="nav-menu">
+  <mat-drawer mode="side" #drawer class="nav-menu" >
     <app-menu></app-menu>
   </mat-drawer>
   <div class="nav-content sidenav-content">
     <button type="button" class="toggle-nav-button" mat-button (click)="toggleDrawer()">
-      <mat-icon class="button-icon" aria-hidden="false" [fontIcon]="isMenuOpen ? 'chevron_left' : 'chevron_right'"></mat-icon>
+      <mat-icon class="button-icon" aria-hidden="false" [fontIcon]="icon"></mat-icon>
     </button>
     <router-outlet></router-outlet>
   </div>
