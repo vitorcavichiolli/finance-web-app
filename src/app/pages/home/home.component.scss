@@ -39,14 +39,14 @@
     margin-top: 10px;
     max-height: 350px;
     overflow-y: auto;
-    background-color: var(--ion-color-step-200);
+    background-color: var(--color-step-200);
     border-radius: 10px;
 }
 
 .list-item{
     margin: 0;
     padding: 5px;
-    border-bottom: 1px solid var(--ion-color-primary);
+    border-bottom: 1px solid var(--color-primary);
 }
 
 .list-label, .list-value{
@@ -60,14 +60,14 @@
 
 }
 .list-container>::-webkit-scrollbar-thumb {
-    background-color: var(--ion-color-primary); 
+    background-color: var(--color-primary); 
     border-radius: 5px; 
     box-shadow: 0 0 2px 1px inset black
 }
 .list-container>::-webkit-scrollbar-track {
     background-color: rgba(0, 0, 0, 0.767); 
     border-radius: 5px; 
-    box-shadow: 0 0 3px 0px inset var(--ion-color-primary);
+    box-shadow: 0 0 3px 0px inset var(--color-primary);
 }
 .form-button{
     height: 30px;

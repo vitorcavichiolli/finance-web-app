@@ -1,0 +1,19 @@
+.mat-mdc-table{
+    background-color: var(--color-step-150);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.mat-mdc-header-row>th{
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+.mat-mdc-row>td{
+    text-align: center;
+}
+
+.mat-mdc-row>td:not(:last-child) {
+    color: white;
+    border-right: 1px solid  #74b9ff75;
+  }

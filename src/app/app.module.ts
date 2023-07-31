@@ -22,7 +22,10 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatDividerModule} from '@angular/material/divider';
-
+import { PieChartComponent } from './components/pie-chart/pie-chart.component';
+import { TableComponent } from './components/table/table.component';
+import { MatSortModule} from '@angular/material/sort';
+import { MatTableModule} from '@angular/material/table';
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,7 +35,9 @@ import {MatDividerModule} from '@angular/material/divider';
     LgCardComponent,
     ModalComponent,
     MenuComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    PieChartComponent,
+    TableComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +51,10 @@ import {MatDividerModule} from '@angular/material/divider';
     HttpClientModule,
     MatExpansionModule,
     MatCheckboxModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSortModule,
+    MatTableModule
+
   ],
   providers: [
     ModalService,

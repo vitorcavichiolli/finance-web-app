@@ -6,17 +6,12 @@
     right: 0;
 }
 
-.nav-content{
-  background-color: var(--ion-background-color);
-  padding: 20px;
-  height: 100%;
-  overflow: hidden;
-}
+
 
 .nav-menu{
   box-shadow: 0 55px 9px 4px black;
   min-width: 150px;
-  background-color: var(--ion-color-step-100);
+  background-color: var(--color-step-100);
 }
 
 .mat-drawer-container{
@@ -27,9 +22,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 3px solid var(--ion-color-primary);
+  border: 3px solid var(--color-primary);
   background-color: transparent;
-  color: var(--ion-color-primary);
+  color: var(--color-primary);
   padding: 5px;
   margin-left: -26px;
   margin-top: -15px;

@@ -6,27 +6,27 @@ h1,h2,h3,h4,h5,h6,p{
 
 
 .color-green{
-    color: var(--ion-color-success);
+    color: var(--color-success);
 }
 
 .green{
-    background-color: var(--ion-color-success);
+    background-color: var(--color-success);
 }
 
 .red{
-    background-color: var(--ion-color-danger);
+    background-color: var(--color-danger);
 }
 
 .primary{
-    background-color: var(--ion-color-primary);
+    background-color: var(--color-primary);
 }
 
 .color-red{
-    color: var(--ion-color-danger);
+    color: var(--color-danger);
 }
 
 .color-primary{
-    color: var(--ion-color-primary);
+    color: var(--color-primary);
 }
 
 
@@ -55,7 +55,7 @@ mat-dialog-container {
 }
 
 .mat-mdc-dialog-surface{
-    background-color: var(--ion-color-step-200) !important;
+    background-color: var(--color-step-200) !important;
     box-shadow: 0 0 6px 0 black;
     height: unset !important;
     width: auto !important;
@@ -153,4 +153,25 @@ button{
 
 .mat-mdc-checkbox, .mdc-form-field{
     color: white !important;
+}
+
+
+.mat-drawer-content{
+    background-color: var(--background-color);
+    padding: 20px;
+    height: 100%;
+    
+  }
+
+::-webkit-scrollbar {
+    width: 12px; 
+
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--color-primary); 
+    box-shadow: 0 0 2px 1px inset black
+}
+::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.767); 
+    box-shadow: 0 0 3px 0px inset var(--color-primary);
 }
