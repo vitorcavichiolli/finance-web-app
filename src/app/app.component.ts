@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from './utils/data-service/data.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MenuService } from './utils/menu-service/menu.service';
@@ -20,13 +20,15 @@ export class AppComponent implements AfterViewInit  {
   icon = 'chevron_right'; 
   constructor(
     private dataService: DataService,
-    public menuService: MenuService) {}
+    public menuService: MenuService,
+    private cdRef: ChangeDetectorRef
+  ) {}
 
-    
     ngAfterViewInit() {
       this.isMenuOpened = this.menuService.isMenuOpened();
       this.drawer.opened = this.isMenuOpened;
       this.icon = this.isMenuOpened ? 'chevron_left' : 'chevron_right'; // Defina o ícone com base no estado do menu
+      this.cdRef.detectChanges(); // Detecção de alterações após a atualização do ícone
     }
   
     toggleDrawer() {

@@ -16,7 +16,7 @@
         <br/>
         <div class="card-group">
           <p class="card-label ">Vale refeição:</p>
-          <p class="card-value color-green"> R$ {{formatarValor(renda_refeicao)}}</p>
+          <p  [ngClass]="{'card-value': true, 'color-green': renda_refeicao>0}"> R$ {{formatarValor(renda_refeicao)}}</p>
         </div>
         <div class="card-group">
           <p class="card-label ">Dinheiro:</p>

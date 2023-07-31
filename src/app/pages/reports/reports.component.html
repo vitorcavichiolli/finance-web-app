@@ -1,1 +1,81 @@
-<p>reports works!</p>
+<form [formGroup]="form" (keydown.enter)="$event.preventDefault()"> 
+    <div class="form-content">
+        <div class="form-group">
+            <label class="form-label" for="data_ini" class="form-label">Data Inicial:</label>
+            <input class="form-input" formControlName="data_ini" name="data_ini" id="data_ini" type="date" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="data_fim" class="form-label">Data Final:</label>
+            <input class="form-input" formControlName="data_fim" name="data_fim" id="data_fim" type="date" />
+        </div>
+    </div>
+
+    <mat-accordion>
+        <mat-expansion-panel (opened)="panelOpenState = true"
+                             (closed)="panelOpenState = false">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Filtros
+            </mat-panel-title>
+            <mat-panel-description>
+               {{!panelOpenState ? 'Clique para expandir' : 'Clique para fechar'}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          
+          <section class="cb-filter">
+            <span class="cb-list-section">
+                <mat-checkbox class="filter"
+                    [checked]="selectAllCategorias"
+                    [indeterminate]="someSelected('categorias')"
+                    (change)="setAll($event.checked,'categorias')"
+                    [color]="filtersCategoria.cor"
+                    >
+
+                    {{filtersCategoria.nome}}
+                </mat-checkbox>
+            </span>
+            <span class="cb-list-section sub-list">
+                <ul>
+                    <li *ngFor="let filtro of filtersCategoria.subFiltros">
+                        <mat-checkbox  [formControl]="filtro.control"
+                            (change)="updateSelectAll('categorias')"
+                            [color]="filtro.cor"
+                            >
+                            
+                            {{filtro.nome}}
+                        </mat-checkbox>
+                    </li>
+                </ul>
+            </span>
+          </section>
+          <mat-divider></mat-divider>
+
+          <section class="cb-filter">
+            <span class="cb-list-section">
+                <mat-checkbox class="filter"
+                    [checked]="selectAllTipos"
+                    [indeterminate]="someSelected('tipos')"
+                    (change)="setAll($event.checked,'tipos')"
+                    [color]="filtersTipo.cor">
+
+                    {{filtersTipo.nome}}
+                </mat-checkbox>
+            </span>
+            <span class="cb-list-section sub-list">
+                <ul>
+                    <li *ngFor="let filtro of filtersTipo.subFiltros">
+                        <mat-checkbox  [formControl]="filtro.control"
+                            (change)="updateSelectAll('tipos')"
+                            [color]="filtro.cor"
+                            >
+                            
+                            {{filtro.nome}}
+                        </mat-checkbox>
+                    </li>
+                </ul>
+            </span>
+          </section>
+        </mat-expansion-panel>
+      </mat-accordion>
+   
+</form>
