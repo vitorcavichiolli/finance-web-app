@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
@@ -50,13 +50,14 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   constructor(
     private fb: FormBuilder,
     private dataService: DataService,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone) {
     this.form = this.fb.group({
       data_ini: [''],
       data_fim: [''],
     });
     this.onFormChange = this.onFormChange.bind(this);
-
+    
   }
 
   async ngOnInit(): Promise<void> {
@@ -80,13 +81,66 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   onFormChange(fm:any){    
     this.dateFilterOnChange(fm);
+    this.checkBoxFilter();
+  }
+
+  checkBoxFilter(){
+    const filteredByDate: Movimentacao[] = this.filterMovimentacoesByDate();
+
+    const newFilteredMovimentacoes: Movimentacao[] = [];
+    tipos.forEach(t => {
+      const filtro = this.selectedFilters.find((f: any) => f.id == t.id && f.nome == t.nome);
+      if (!this.checkEmptyNullUndefined(filtro)) {
+        newFilteredMovimentacoes.push(...filteredByDate.filter((mov) => mov.tipo != t.id));
+      } else {
+        filteredByDate.forEach(mov => {
+          if (mov.tipo == t.id && !newFilteredMovimentacoes.some((el) => el.id == mov.id)) {
+            newFilteredMovimentacoes.push(mov);
+          }
+        });
+      }
+    });
+  
+    this.filteredMovimentacoes = newFilteredMovimentacoes;
+  
+    this.ngZone.run(() => {
+      this.cdr.detectChanges();
+    });
+  
+    console.log(this.filteredMovimentacoes);
+  }
+
+  checkBoxTiposFilter() {
+    this.dateFilterOnChange(this.form);
+    const newFilteredMovimentacoes: Movimentacao[] = [];
+    
+    tipos.forEach(t => {
+      const filtro = this.selectedFilters.find((f: any) => f.id == t.id && f.nome == t.nome);
+      if (!this.checkEmptyNullUndefined(filtro)) {
+        newFilteredMovimentacoes.push(...this.filteredMovimentacoes.filter((mov) => mov.tipo != t.id));
+      } else {
+        this.movimentacoes.forEach(mov => {
+          if (mov.tipo == t.id && !newFilteredMovimentacoes.some((el) => el.id == mov.id)) {
+            newFilteredMovimentacoes.push(mov);
+          }
+        });
+      }
+    });
+  
+    this.filteredMovimentacoes = newFilteredMovimentacoes;
+  
+    this.ngZone.run(() => {
+      this.cdr.detectChanges();
+    });
+  
+    console.log(this.filteredMovimentacoes);
   }
 
   onCheckboxChange(checkbox: Filters) {
     if (checkbox?.subFiltros) {
         const filtros = checkbox.subFiltros;
         filtros.forEach(el =>{
-          const index = this.findMovimentacao(this.selectedFilters,el);
+          const index = this.findFiltroIndex(this.selectedFilters,el);
           if(el.control.value == true){
             if(index<0){
               this.selectedFilters.push(el);
@@ -100,7 +154,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         });
     }
     else{
-      const index = this.findMovimentacao(this.selectedFilters,checkbox);
+      const index = this.findFiltroIndex(this.selectedFilters,checkbox);
       if(checkbox.control.value == true){
         if(index<0){
           this.selectedFilters.push(checkbox);
@@ -112,9 +166,10 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         }
       }
     }
+    this.checkBoxFilter();
   }
 
-  findMovimentacao(array: Filters[], filter:any): number {
+  findFiltroIndex(array: Filters[], filter:any): number {
     for (let i = 0; i < array.length; i++) {
       const movimentacao = array[i];
       if (movimentacao.id === filter.id && movimentacao.nome === filter.nome) {
@@ -124,41 +179,54 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     return -1; // Retorna -1 se não encontrar nenhum elemento com os valores especificados
   }
 
-  dateFilterOnChange(fm:any){
-    if(this.checkEmptyNullUndefined(fm.data_ini) && this.checkEmptyNullUndefined(fm.data_fim)) {
+ 
+  dateFilterOnChange(fm: any) {
+    const filteredByCheckbox: Movimentacao[] = this.filterMovimentacoesByCheckbox();
+    const hasDateFilter = this.checkEmptyNullUndefined(fm.data_ini) && this.checkEmptyNullUndefined(fm.data_fim);
+  
+    if (hasDateFilter) {
       const dataInicial: Date = new Date(fm.data_ini);
       const dataFinal: Date = new Date(fm.data_fim);
-      if(dataInicial>dataFinal){
-        alert('data inicial não pode ser maior que a data final')
-      }
-      else{
-        this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
+      if (dataInicial > dataFinal) {
+        alert('Data inicial não pode ser maior que a data final.');
+      } else {
+        this.filteredMovimentacoes = filteredByCheckbox.filter((movimentacao: Movimentacao) => {
           const dataMovimentacao: Date = new Date(movimentacao.data);
           return dataMovimentacao >= dataInicial && dataMovimentacao <= dataFinal;
         });
       }
-    } 
-    else if (!this.checkEmptyNullUndefined(fm.data_ini) && !this.checkEmptyNullUndefined(fm.data_fim)) {
-      this.filteredMovimentacoes = this.movimentacoes;
-    } 
-    else {
-      if(this.checkEmptyNullUndefined(fm.data_ini)){
-        const dataInicial: Date = new Date(fm.data_ini);
-        const dataFinal: Date = new Date(fm.data_fim);
-        this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
-          const dataMovimentacao: Date = new Date(movimentacao.data);
-          return dataMovimentacao >= dataInicial;
-        });
-      }
-      else{
-        const dataFinal: Date = new Date(fm.data_fim);
-        this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
-          const dataMovimentacao: Date = new Date(movimentacao.data);
-          return dataMovimentacao <= dataFinal;
-        });
-      }
+    } else {
+      this.filteredMovimentacoes = filteredByCheckbox;
     }
   }
+
+filterMovimentacoesByDate(): Movimentacao[] {
+  const { data_ini, data_fim } = this.form.value;
+  if (this.checkEmptyNullUndefined(data_ini) && this.checkEmptyNullUndefined(data_fim)) {
+    const dataInicial: Date = new Date(data_ini);
+    const dataFinal: Date = new Date(data_fim);
+    return this.movimentacoes.filter((movimentacao: Movimentacao) => {
+      const dataMovimentacao: Date = new Date(movimentacao.data);
+      return dataMovimentacao >= dataInicial && dataMovimentacao <= dataFinal;
+    });
+  } else {
+    return this.movimentacoes;
+  }
+}
+private filterMovimentacoesByCheckbox(): Movimentacao[] {
+  const selectedTipos = this.selectedFilters.filter((filter: any) => filter.nome === 'Tipos:')[0];
+  const selectedPagamentos = this.selectedFilters.filter((filter: any) => filter.nome === 'Pagamentos:')[0];
+  const selectedCategorias = this.selectedFilters.filter((filter:  any) => filter.nome === 'Categorias:')[0];
+
+  const filteredMovimentacoes = this.movimentacoes.filter(movimentacao => {
+    const tipoMatch = !selectedTipos || selectedTipos.subFiltros.some((subFilter: { id: string; }) => subFilter.id === movimentacao.tipo);
+    const pagamentoMatch = !selectedPagamentos || selectedPagamentos.subFiltros.some((subFilter: any) => subFilter.id === movimentacao.pagamento);
+    const categoriaMatch = !selectedCategorias || selectedCategorias.subFiltros.some((subFilter: any) => subFilter.id === movimentacao.categoria);
+    return tipoMatch && pagamentoMatch && categoriaMatch;
+  });
+
+  return filteredMovimentacoes;
+}
 
   checkEmptyNullUndefined(value:any):boolean{
     return !(value == '' || value == null || value == undefined)
