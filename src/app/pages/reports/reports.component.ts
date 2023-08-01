@@ -1,5 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalPlanejamentoComponent } from 'src/app/components/modal-planejamento/modal-planejamento.component';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
 import { Filters } from 'src/app/utils/models/checkboxFilter.model';
@@ -51,7 +53,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private dataService: DataService,
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone) {
+    private ngZone: NgZone, 
+    public dialog: MatDialog,) {
     this.form = this.fb.group({
       data_ini: [''],
       data_fim: [''],
@@ -71,6 +74,20 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   async ngAfterViewInit(): Promise<void> {
     this.cdr.detectChanges();
   }
+
+  openInsertModal() {
+    // Open the Material Dialog
+    const dialogRef = this.dialog.open(ModalPlanejamentoComponent, {
+      data: {
+        isEditMode: false
+      }
+    });
+
+    // Handle dialog close event if needed
+    dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
 
   async listarMovimentacoes(): Promise<void> {
     this.movimentacoes = await this.dataService.getAllMovimentacoes();

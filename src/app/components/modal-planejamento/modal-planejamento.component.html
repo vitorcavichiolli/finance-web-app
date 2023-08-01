@@ -1,0 +1,65 @@
+<div class="modal">
+    <div class="modal-header">
+      <button class="close-modal" (click)="onCloseClick()">
+        <mat-icon  aria-hidden="false"  fontIcon="close"></mat-icon>
+
+      </button>
+    </div>
+    <div class="modal-content">
+      <h3 class="color-primary text-center">Novo Planejamento</h3>
+      <form [formGroup]="form" (keydown.enter)="$event.preventDefault()"> 
+      <div class="form-group">
+        <label class="form-label" for="data_inicial" class="form-label">Data Inicial:</label>
+        <input class="form-input" formControlName="data_inicial" name="data_inicial" id="data_inicial" type="date" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="data_final" class="form-label">Data Final:</label>
+        <input class="form-input" formControlName="data_final" name="data_final" id="data_final" type="date" />
+      </div>
+      <div class="itens" formArrayName="itens">
+        <div class="item-planejamento" *ngFor="let item of itensFormArray.controls; let i = index">
+          <div [formGroupName]="i">
+            <div class="form-group">
+              <label class="form-label" for="categoria" class="form-label">Categoria:</label>
+      
+              <mat-select class="form-input" formControlName="categoria" name="categoria" id="categoria">
+                <mat-option  *ngFor="let categoria of categorias" value="{{categoria.id}}">
+                  {{categoria.nome}}
+                </mat-option>
+              </mat-select>
+            </div>
+    
+           <div class="form-group">
+            
+            <div class="label-container form-label">
+              <label id="name-label" class="">Porcentagem:</label>
+              &nbsp;
+              <label class="">{{slider.value}} %</label>
+            </div>
+            <mat-slider
+              class="slider"
+              [max]="maxPorcentagem"
+              [min]="0"
+              [discrete]="false"
+              [showTickMarks]="false">
+              <input matSliderThumb formControlName="porcentagem" #slider>
+            </mat-slider>
+           </div>
+    
+            <button class="button-item-planejamento red" (click)="removeItem(i)">Remover</button>
+          </div>
+        </div>
+      </div>
+    
+      <button class="button-item-planejamento primary" (click)="addItem()">Novo item</button>
+      
+     
+      <div class="button-group">
+        <button class="form-button green" (click)="savePlanning()">
+          <mat-icon  aria-hidden="false"  fontIcon="{{ isEditMode ? 'published_with_changes' : 'done' }}"></mat-icon>
+
+        </button>
+      </div>
+      </form>
+    </div>
+  </div>

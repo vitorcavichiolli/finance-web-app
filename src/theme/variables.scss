@@ -89,6 +89,20 @@
     --mdc-checkbox-unselected-hover-state-layer-color: black;
     --mdc-checkbox-unselected-pressed-state-layer-color: black;
     
+    .mat-mdc-slider.mat-primary {
+      --mdc-slider-handle-color: #74b9ff;
+      --mdc-slider-focus-handle-color: #74b9ff;
+      --mdc-slider-hover-handle-color: #74b9ff;
+      --mdc-slider-active-track-color: #74b9ff;
+      --mdc-slider-inactive-track-color: #74b9ff;
+      --mdc-slider-with-tick-marks-active-container-color: #fff;
+      --mdc-slider-with-tick-marks-inactive-container-color: #74b9ff;
+      --mat-mdc-slider-ripple-color: #74b9ff;
+      --mat-mdc-slider-hover-ripple-color: rgba(103, 58, 183, 0.05);
+      --mat-mdc-slider-focus-ripple-color: rgba(51, 48, 201, 0.2);
+  }
+
+
     --color-primary: #74b9ff;
     --color-primary-rgb: 175, 204, 255;
     --color-primary-contrast: #000000;

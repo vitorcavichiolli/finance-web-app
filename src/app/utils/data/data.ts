@@ -26,4 +26,5 @@ export const categorias = [
     {id: 12, nome:'Roupa/Sapato'},
     {id: 13, nome:'Itens para casa'},
     {id: 14, nome:'Necessidades básicas'},
+    {id: 15, nome:'Fatura cartão de crédito'},
 ]

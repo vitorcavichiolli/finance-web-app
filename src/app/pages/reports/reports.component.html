@@ -123,4 +123,7 @@
             <app-pie-chart [data]="filteredMovimentacoes"></app-pie-chart>
           </section>
     </form>
+    <app-float-button #childButton (click)="openInsertModal()">
+        <mat-icon class="button-icon" aria-hidden="false"  fontIcon="add-circle"></mat-icon>
+    </app-float-button>
 </div>

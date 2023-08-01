@@ -27,6 +27,9 @@ import { TableComponent } from './components/table/table.component';
 import { MatSortModule} from '@angular/material/sort';
 import { MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule} from '@angular/material/paginator';
+import { PlanningComponent } from './pages/planning/planning.component';
+import { ModalPlanejamentoComponent } from './components/modal-planejamento/modal-planejamento.component';
+import {MatSliderModule} from '@angular/material/slider';
 
 
 
@@ -41,7 +44,9 @@ import { MatPaginatorModule} from '@angular/material/paginator';
     MenuComponent,
     ConfirmationDialogComponent,
     PieChartComponent,
-    TableComponent
+    TableComponent,
+    PlanningComponent,
+    ModalPlanejamentoComponent
   ],
   imports: [
     BrowserModule,
@@ -58,7 +63,8 @@ import { MatPaginatorModule} from '@angular/material/paginator';
     MatDividerModule,
     MatSortModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSliderModule
   ],
   providers: [
     ModalService,
