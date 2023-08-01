@@ -65,6 +65,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.carregarFiltros();
     this.filteredMovimentacoes = this.movimentacoes;
     this.form.valueChanges.subscribe(this.onFormChange);
+    localStorage.setItem("movimentacoes", JSON.stringify(this.movimentacoes));
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -81,92 +82,166 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   onFormChange(fm:any){    
     this.dateFilterOnChange(fm);
-    this.checkBoxFilter();
   }
 
-  checkBoxFilter(){
-    const filteredByDate: Movimentacao[] = this.filterMovimentacoesByDate();
-
-    const newFilteredMovimentacoes: Movimentacao[] = [];
-    tipos.forEach(t => {
-      const filtro = this.selectedFilters.find((f: any) => f.id == t.id && f.nome == t.nome);
-      if (!this.checkEmptyNullUndefined(filtro)) {
-        newFilteredMovimentacoes.push(...filteredByDate.filter((mov) => mov.tipo != t.id));
-      } else {
-        filteredByDate.forEach(mov => {
-          if (mov.tipo == t.id && !newFilteredMovimentacoes.some((el) => el.id == mov.id)) {
-            newFilteredMovimentacoes.push(mov);
-          }
-        });
-      }
-    });
-  
-    this.filteredMovimentacoes = newFilteredMovimentacoes;
-  
-    this.ngZone.run(() => {
-      this.cdr.detectChanges();
-    });
-  
-    console.log(this.filteredMovimentacoes);
-  }
-
-  checkBoxTiposFilter() {
-    this.dateFilterOnChange(this.form);
-    const newFilteredMovimentacoes: Movimentacao[] = [];
+  // checkBoxFilter() {
     
-    tipos.forEach(t => {
-      const filtro = this.selectedFilters.find((f: any) => f.id == t.id && f.nome == t.nome);
-      if (!this.checkEmptyNullUndefined(filtro)) {
-        newFilteredMovimentacoes.push(...this.filteredMovimentacoes.filter((mov) => mov.tipo != t.id));
-      } else {
-        this.movimentacoes.forEach(mov => {
-          if (mov.tipo == t.id && !newFilteredMovimentacoes.some((el) => el.id == mov.id)) {
-            newFilteredMovimentacoes.push(mov);
-          }
-        });
-      }
-    });
-  
-    this.filteredMovimentacoes = newFilteredMovimentacoes;
-  
-    this.ngZone.run(() => {
-      this.cdr.detectChanges();
-    });
-  
-    console.log(this.filteredMovimentacoes);
-  }
 
-  onCheckboxChange(checkbox: Filters) {
-    if (checkbox?.subFiltros) {
-        const filtros = checkbox.subFiltros;
-        filtros.forEach(el =>{
-          const index = this.findFiltroIndex(this.selectedFilters,el);
-          if(el.control.value == true){
-            if(index<0){
-              this.selectedFilters.push(el);
-            }
-          }
-          else{
-            if(index>-1){
-              this.selectedFilters.splice(index,1);
-            }
-          }
-        });
-    }
-    else{
-      const index = this.findFiltroIndex(this.selectedFilters,checkbox);
-      if(checkbox.control.value == true){
-        if(index<0){
-          this.selectedFilters.push(checkbox);
-        }
+  //   this.ngZone.run(() => {
+  //     this.cdr.detectChanges();
+  //   });
+  
+  // }
+
+  dateFilterOnChange(fm:any){
+    console.log(fm);
+    if(this.checkEmptyNullUndefined(fm.data_ini) && this.checkEmptyNullUndefined(fm.data_fim)) {
+      const dataInicial: Date = new Date(fm.data_ini);
+      const dataFinal: Date = new Date(fm.data_fim);
+      if(dataInicial>dataFinal){
+        alert('data inicial não pode ser maior que a data final')
       }
       else{
-        if(index>-1){
-          this.selectedFilters.splice(index,1);
-        }
+        this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
+          const dataMovimentacao: Date = new Date(movimentacao.data);
+          return dataMovimentacao >= dataInicial && dataMovimentacao <= dataFinal;
+        });
+      }
+    } 
+    else if (!this.checkEmptyNullUndefined(fm.data_ini) && !this.checkEmptyNullUndefined(fm.data_fim)) {
+      this.filteredMovimentacoes = this.movimentacoes;
+    } 
+    else {
+      if(this.checkEmptyNullUndefined(fm.data_ini)){
+        const dataInicial: Date = new Date(fm.data_ini);
+        const dataFinal: Date = new Date(fm.data_fim);
+        this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
+          const dataMovimentacao: Date = new Date(movimentacao.data);
+          return dataMovimentacao >= dataInicial;
+        });
+      }
+      else{
+        const dataFinal: Date = new Date(fm.data_fim);
+        this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
+          const dataMovimentacao: Date = new Date(movimentacao.data);
+          return dataMovimentacao <= dataFinal;
+        });
       }
     }
-    this.checkBoxFilter();
+    this.filteredMovimentacoes = this.applyFilterByTipo(this.filteredMovimentacoes);
+    this.filteredMovimentacoes = this.applyFilterByPagamento(this.filteredMovimentacoes);
+    this.filteredMovimentacoes = this.applyFilterByCategoria(this.filteredMovimentacoes);
+    
+  }
+
+
+
+  applyFilterByTipo(filteredMovimentacoes: Movimentacao[]): Movimentacao[] {
+    const selectedTipos = this.selectedFilters.find((filter: Filters) => filter.nome === 'Tipos:');
+    if (selectedTipos && selectedTipos.subFiltros) {
+      const activeTipoIds = selectedTipos.subFiltros
+        .filter((subFilter: Filters) => subFilter.control.value)
+        .map((subFilter: Filters) => subFilter.id);
+  
+      if (activeTipoIds.length > 0) {
+        filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) =>
+          activeTipoIds.includes(movimentacao.tipo)
+        );
+      } else {
+        // If all the sub-filters of the 'Tipos:' main filter are deselected,
+        // return an empty array
+        filteredMovimentacoes = [];
+      }
+    }
+  
+    return filteredMovimentacoes;
+  }
+  
+  applyFilterByPagamento(filteredMovimentacoes: Movimentacao[]): Movimentacao[] {
+    const selected = this.selectedFilters.find((filter: Filters) => filter.nome === 'Pagamentos:');
+    if (selected && selected.subFiltros) {
+      const activeIds = selected.subFiltros
+        .filter((subFilter: Filters) => subFilter.control.value)
+        .map((subFilter: Filters) => subFilter.id);
+  
+      if (activeIds.length > 0) {
+        filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) =>
+        activeIds.includes(movimentacao.pagamento)
+        );
+      } else {
+        // If all the sub-filters of the 'Tipos:' main filter are deselected,
+        // return an empty array
+        filteredMovimentacoes = [];
+      }
+    }
+  
+    return filteredMovimentacoes;
+  }
+  
+  applyFilterByCategoria(filteredMovimentacoes: Movimentacao[]): Movimentacao[] {
+    const selected = this.selectedFilters.find((filter: Filters) => filter.nome === 'Categorias:');
+    if (selected && selected.subFiltros) {
+      const activeIds = selected.subFiltros
+        .filter((subFilter: Filters) => subFilter.control.value)
+        .map((subFilter: Filters) => subFilter.id);
+  
+      if (activeIds.length > 0) {
+        filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) =>
+        activeIds.includes(movimentacao.categoria)
+        );
+      } else {
+        // If all the sub-filters of the 'Tipos:' main filter are deselected,
+        // return an empty array
+        filteredMovimentacoes = [];
+      }
+    }
+  
+    return filteredMovimentacoes;
+  }
+  
+  
+
+  // onCheckboxChange(checkbox: Filters) {
+  //   if (checkbox?.subFiltros) {
+  //       const filtros = checkbox.subFiltros;
+  //       filtros.forEach(el =>{
+  //         const index = this.findFiltroIndex(this.selectedFilters,el);
+  //         if(el.control.value == true){
+  //           if(index<0){
+  //             this.selectedFilters.push(el);
+  //           }
+  //         }
+  //         else{
+  //           if(index>-1){
+  //             this.selectedFilters.splice(index,1);
+  //           }
+  //         }
+  //       });
+  //   }
+  //   else{
+  //     const index = this.findFiltroIndex(this.selectedFilters,checkbox);
+  //     if(checkbox.control.value == true){
+  //       if(index<0){
+  //         this.selectedFilters.push(checkbox);
+  //       }
+  //     }
+  //     else{
+  //       if(index>-1){
+  //         this.selectedFilters.splice(index,1);
+  //       }
+  //     }
+  //   }
+  //   this.dateFilterOnChange(this.form.value);
+  // }
+
+  onCheckboxChange(checkbox: Filters) {
+    this.selectedFilters =[];
+    this.selectedFilters.push(this.filtersTipo);
+    this.selectedFilters.push(this.filtersCategoria);
+    this.selectedFilters.push(this.filtersPagamento);
+
+    console.log(this.selectedFilters);
+    this.dateFilterOnChange(this.form.value);
   }
 
   findFiltroIndex(array: Filters[], filter:any): number {
@@ -180,53 +255,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
  
-  dateFilterOnChange(fm: any) {
-    const filteredByCheckbox: Movimentacao[] = this.filterMovimentacoesByCheckbox();
-    const hasDateFilter = this.checkEmptyNullUndefined(fm.data_ini) && this.checkEmptyNullUndefined(fm.data_fim);
-  
-    if (hasDateFilter) {
-      const dataInicial: Date = new Date(fm.data_ini);
-      const dataFinal: Date = new Date(fm.data_fim);
-      if (dataInicial > dataFinal) {
-        alert('Data inicial não pode ser maior que a data final.');
-      } else {
-        this.filteredMovimentacoes = filteredByCheckbox.filter((movimentacao: Movimentacao) => {
-          const dataMovimentacao: Date = new Date(movimentacao.data);
-          return dataMovimentacao >= dataInicial && dataMovimentacao <= dataFinal;
-        });
-      }
-    } else {
-      this.filteredMovimentacoes = filteredByCheckbox;
-    }
-  }
+ 
 
-filterMovimentacoesByDate(): Movimentacao[] {
-  const { data_ini, data_fim } = this.form.value;
-  if (this.checkEmptyNullUndefined(data_ini) && this.checkEmptyNullUndefined(data_fim)) {
-    const dataInicial: Date = new Date(data_ini);
-    const dataFinal: Date = new Date(data_fim);
-    return this.movimentacoes.filter((movimentacao: Movimentacao) => {
-      const dataMovimentacao: Date = new Date(movimentacao.data);
-      return dataMovimentacao >= dataInicial && dataMovimentacao <= dataFinal;
-    });
-  } else {
-    return this.movimentacoes;
-  }
-}
-private filterMovimentacoesByCheckbox(): Movimentacao[] {
-  const selectedTipos = this.selectedFilters.filter((filter: any) => filter.nome === 'Tipos:')[0];
-  const selectedPagamentos = this.selectedFilters.filter((filter: any) => filter.nome === 'Pagamentos:')[0];
-  const selectedCategorias = this.selectedFilters.filter((filter:  any) => filter.nome === 'Categorias:')[0];
 
-  const filteredMovimentacoes = this.movimentacoes.filter(movimentacao => {
-    const tipoMatch = !selectedTipos || selectedTipos.subFiltros.some((subFilter: { id: string; }) => subFilter.id === movimentacao.tipo);
-    const pagamentoMatch = !selectedPagamentos || selectedPagamentos.subFiltros.some((subFilter: any) => subFilter.id === movimentacao.pagamento);
-    const categoriaMatch = !selectedCategorias || selectedCategorias.subFiltros.some((subFilter: any) => subFilter.id === movimentacao.categoria);
-    return tipoMatch && pagamentoMatch && categoriaMatch;
-  });
-
-  return filteredMovimentacoes;
-}
 
   checkEmptyNullUndefined(value:any):boolean{
     return !(value == '' || value == null || value == undefined)
