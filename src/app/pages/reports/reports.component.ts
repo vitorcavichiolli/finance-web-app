@@ -203,9 +203,12 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         .map((subFilter: Filters) => subFilter.id);
   
       if (activeIds.length > 0) {
-        filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) =>
-        activeIds.includes(movimentacao.categoria)
-        );
+        // filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) =>
+        // activeIds.includes(movimentacao.categoria) || movimentacao.categoria.toString == ''
+        // );
+        filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) => {
+          return activeIds.includes(movimentacao.categoria.toString()) || movimentacao.categoria.toString() === '';
+        });
       } else {
         // If all the sub-filters of the 'Tipos:' main filter are deselected,
         // return an empty array

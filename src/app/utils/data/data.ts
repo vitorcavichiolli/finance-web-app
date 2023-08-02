@@ -29,3 +29,8 @@ export const categorias = [
     {id: 15, nome:'Fatura cartão de crédito'},
     {id: 16, nome:'Economia'},
 ].sort((a, b) => a.nome.localeCompare(b.nome));
+
+export const contas = [
+    { id: "s", nome: "Santander"},
+    { id: "b", nome: "Bradesco"},
+].sort((a, b) => a.nome.localeCompare(b.nome));

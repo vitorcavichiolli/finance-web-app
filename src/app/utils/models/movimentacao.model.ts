@@ -6,4 +6,5 @@ export interface Movimentacao {
     pagamento: string;
     descricao: string;
     valor: number;
+    conta: string;
   }

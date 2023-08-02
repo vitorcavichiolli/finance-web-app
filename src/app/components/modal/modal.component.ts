@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DataService } from 'src/app/utils/data-service/data.service';
-import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
+import { categorias, contas, pagamentos, tipos } from 'src/app/utils/data/data';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 
 @Component({
@@ -15,6 +15,7 @@ export class ModalComponent implements OnInit{
   tipos: any;
   pagamentos: any;
   categorias: any;
+  contas: any;
   isEditMode = false;
   movimentacao: Movimentacao;
 
@@ -44,6 +45,7 @@ export class ModalComponent implements OnInit{
       pagamento: new FormControl("", Validators.required),
       valor: new FormControl("", Validators.required),
       categoria: new FormControl(""),
+      conta: new FormControl(""),
     });
 
     this.form.valueChanges.subscribe(this.onFormChange);
@@ -52,7 +54,7 @@ export class ModalComponent implements OnInit{
     this.tipos = tipos;
     this.pagamentos = pagamentos;
     this.categorias = categorias;
-
+    this.contas = contas;
     if (this.isEditMode) {
       // Ajustar o formulário com os dados da movimentação a ser editada
       this.form.patchValue({
@@ -62,6 +64,7 @@ export class ModalComponent implements OnInit{
         pagamento: this.movimentacao.pagamento,
         valor: this.movimentacao.valor,
         categoria: this.movimentacao.categoria,
+        conta: this.movimentacao.conta,
       });
     }
   }
@@ -85,7 +88,8 @@ export class ModalComponent implements OnInit{
         data: formValues.data,
         pagamento: formValues.pagamento,
         descricao: formValues.descricao,
-        valor: formValues.valor
+        valor: formValues.valor,
+        conta: formValues.conta
       };
 
       if (this.isEditMode && this.movimentacao.id) {

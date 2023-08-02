@@ -27,10 +27,6 @@
         </mat-select>
       </div>
       <div class="form-group">
-        <label class="form-label" for="data" class="form-label">Data:</label>
-        <input class="form-input" formControlName="data" name="data" id="data" type="date" />
-      </div>
-      <div class="form-group">
         <label class="form-label" for="pagamento" class="form-label">Forma de pagamento:</label>
 
         <mat-select class="form-input" formControlName="pagamento" name="pagamento" id="pagamento">
@@ -39,6 +35,20 @@
           </mat-option>
         </mat-select>
       </div>
+      <div class="form-group">
+        <label class="form-label" for="conta" class="form-label">Conta:</label>
+
+        <mat-select class="form-input" formControlName="conta" name="conta" id="conta">
+          <mat-option  *ngFor="let conta of contas" value="{{conta.id}}">
+            {{conta.nome}}
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="data" class="form-label">Data:</label>
+        <input class="form-input" formControlName="data" name="data" id="data" type="date" />
+      </div>
+      
       <div class="form-group">
         <label class="form-label" for="descricao" class="form-label">Descrição:</label>
         <input class="form-input" formControlName="descricao" name="descricao" id="descricao" type="text"/>
