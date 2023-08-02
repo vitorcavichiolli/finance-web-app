@@ -1,7 +1,7 @@
 export const tipos = [
     { id: "d", nome: "Despesa"},
     { id: "r", nome: "Receita"},
-];
+].sort((a, b) => a.nome.localeCompare(b.nome));
 
 export const pagamentos = [
     { id: "c", nome: "Crédito"},
@@ -9,7 +9,7 @@ export const pagamentos = [
     { id: "p", nome: "Pix"},
     { id: "a", nome: "Alimentação"},
     { id: "r", nome: "Refeição"},
-];
+].sort((a, b) => a.nome.localeCompare(b.nome));
 
 export const categorias = [
     {id: 1, nome:'Alimentação'},
@@ -27,4 +27,5 @@ export const categorias = [
     {id: 13, nome:'Itens para casa'},
     {id: 14, nome:'Necessidades básicas'},
     {id: 15, nome:'Fatura cartão de crédito'},
-]
+    {id: 16, nome:'Economia'},
+].sort((a, b) => a.nome.localeCompare(b.nome));

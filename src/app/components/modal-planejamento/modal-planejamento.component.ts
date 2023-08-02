@@ -76,12 +76,18 @@ export class ModalPlanejamentoComponent {
       const slidersToUpdateCount = slidersToUpdate.length;
   
       if (slidersToUpdateCount > 0) {
-        const adjustment = diff / slidersToUpdateCount;
-        slidersToUpdate.forEach(slider => {
+        // Encontre o item com a maior porcentagem
+        const itemComMaiorPorcentagem = slidersToUpdate.reduce((maior, slider) => {
           const porcentagem = slider.get('porcentagem')?.value || 0;
-          const newPorcentagem = Math.max(porcentagem - adjustment, 0);
-          slider.get('porcentagem')?.setValue(newPorcentagem, { emitEvent: false });
-        });
+          return porcentagem > maior.porcentagem ? { slider, porcentagem } : maior;
+        }, { slider: slidersToUpdate[0], porcentagem: slidersToUpdate[0].get('porcentagem')?.value || 0 });
+  
+        const maiorPorcentagem = itemComMaiorPorcentagem.porcentagem;
+        const adjustment = diff;
+  
+        // Ajuste apenas o item com a maior porcentagem
+        const newPorcentagem = Math.max(maiorPorcentagem - adjustment, 0);
+        itemComMaiorPorcentagem.slider.get('porcentagem')?.setValue(newPorcentagem, { emitEvent: false });
       }
     }
   }
@@ -137,11 +143,12 @@ export class ModalPlanejamentoComponent {
         );
 
         console.log('Planejamento salvo com sucesso! ID:', planejamentoId);
+        window.location.reload();
       } catch (error) {
         console.error('Erro ao salvar o planejamento:', error);
       }
     } else {
-      console.error('Formulário inválido. Verifique os campos obrigatórios.');
+      alert('Formulário inválido. Verifique os campos obrigatórios.');
     }
   }
 }
