@@ -1,0 +1,38 @@
+<div class="modal-container">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button (click)="closeModal()" class="color-red close-modal">
+                <mat-icon  aria-hidden="false"  fontIcon="close"></mat-icon>
+            </button>
+        </div>
+        <div class="modal-body">
+            <section class="modal-section">
+                <div class="modal-group">
+                    <p class="modal-label">Data Inicial:</p>
+                    <p class="modal-value">{{data?.planejamento?.data_inicial | date:'dd/MM/yyyy'}}</p>
+                </div>
+                <div class="modal-group">
+                    <p class="modal-label">Data Final:</p>
+                    <p class="modal-value">{{data?.planejamento?.data_final | date:'dd/MM/yyyy'}}</p>
+                </div>
+                <div class="modal-group">
+                    <p class="modal-label">Renda Líquida:</p>
+                    <p class="modal-value">R$: {{ formataValor(data?.planejamento?.renda ?? '') }}</p>
+                </div>
+            </section>
+            <section class="modal-section">
+                <div class="modal-item" *ngFor="let item of data?.itens">
+                    <div class="modal-group">
+                        <p class="modal-label">Categoria:</p>
+                        <p class="modal-value">{{item.categoria}}</p>
+                    </div>
+                    <div class="modal-group">
+                        <p class="modal-label">Porcentagem:</p>
+                        <p class="modal-value">{{item.porcentagem}}</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+

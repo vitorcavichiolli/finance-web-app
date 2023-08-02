@@ -160,7 +160,7 @@ button{
     background-color: var(--background-color);
     padding: 20px;
     height: 100%;
-    
+    position: unset!important;
   }
 
 ::-webkit-scrollbar {
@@ -207,3 +207,28 @@ button{
     justify-content: center !important;
 }
 
+.--open{
+    display: flex;
+}
+
+.--close{
+    display: none;
+}
+
+.center{
+    justify-content: center;
+    align-items: center;
+}
+
+.--open>.modal-container{
+    animation: drop 0.3s forwards ease-in-out;
+}
+
+@keyframes drop {
+    from{
+        margin-top: -2000px;
+    }
+    to{
+        margin-top: calc((50% - 600px)/2);
+    }
+}

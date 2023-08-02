@@ -15,4 +15,9 @@
             </li>
         </ul>
     </section>
+    <app-modal-exibicao-planejamento 
+        [data]="selectedPlanejamento"
+        [ngClass]="{'center':true,'--open': modalService.getShowModal(), '--close': !modalService.getShowModal()}"
+        >
+    </app-modal-exibicao-planejamento>
 </div>

@@ -1,0 +1,27 @@
+.modal-container{
+    width: 80%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content{
+    background-color: var(--color-step-150);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 6px 0 black;
+    height: 600px;
+}
+
+.close-modal{
+    font-size: 20px;
+    background-color: transparent;
+    color: var(--color-danger);
+    transition: all 0.2s ease-in-out;
+}
+
+.close-modal:hover{
+    transform: scale(1.1) rotate(360deg);
+}
+
