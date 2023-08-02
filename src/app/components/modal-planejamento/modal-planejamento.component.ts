@@ -71,30 +71,25 @@ export class ModalPlanejamentoComponent {
     const totalPorcentagem = sliders.reduce((total, slider) => total + (slider.get('porcentagem')?.value || 0), 0);
     const diff = totalPorcentagem - this.maxPorcentagem;
   
-    if (diff !== 0) {
-      const slidersToUpdate = sliders.filter(slider => slider.get('porcentagem')?.value !== null);
-      const slidersToUpdateCount = slidersToUpdate.length;
+    if (diff > 0) {
+      // Ajustar a porcentagem dos sliders proporcionalmente para que a soma total seja igual ou menor a 100%
+      const totalNonNullPorcentagens = sliders.reduce((total, slider) => {
+        const porcentagem = slider.get('porcentagem')?.value || 0;
+        return porcentagem > 0 ? total + porcentagem : total;
+      }, 0);
   
-      if (slidersToUpdateCount > 0) {
-        // Encontre o item com a maior porcentagem
-        const itemComMaiorPorcentagem = slidersToUpdate.reduce((maior, slider) => {
-          const porcentagem = slider.get('porcentagem')?.value || 0;
-          return porcentagem > maior.porcentagem ? { slider, porcentagem } : maior;
-        }, { slider: slidersToUpdate[0], porcentagem: slidersToUpdate[0].get('porcentagem')?.value || 0 });
-  
-        const maiorPorcentagem = itemComMaiorPorcentagem.porcentagem;
-        const adjustment = diff;
-  
-        // Ajuste apenas o item com a maior porcentagem
-        const newPorcentagem = Math.max(maiorPorcentagem - adjustment, 0);
-        itemComMaiorPorcentagem.slider.get('porcentagem')?.setValue(newPorcentagem, { emitEvent: false });
-      }
+      sliders.forEach(slider => {
+        const porcentagem = slider.get('porcentagem')?.value || 0;
+        const proportionalAdjustment = (porcentagem / totalNonNullPorcentagens) * diff;
+        const newPorcentagem = Math.max(porcentagem - proportionalAdjustment, 0);
+        slider.get('porcentagem')?.setValue(newPorcentagem, { emitEvent: false });
+      });
     }
   }
   
   
   
-
+  
 
 
   addItemFormGroup(): void  {
