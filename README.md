@@ -9,7 +9,7 @@ Projeto para ajudar a manter as economias sob controle e projetar planos futuros
 Clone o projeto
 
 ```bash
-  git clone https://link-para-o-projeto
+  git clone https://github.com/vitorcavichiolli/finance-web-app.git
 ```
 
 Entre no diretório do projeto
