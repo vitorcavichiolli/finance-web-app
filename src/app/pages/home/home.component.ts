@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
+import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
+import { contas } from 'src/app/utils/data/data';
 import { ModalService } from 'src/app/utils/modal-service/modal.service';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 
@@ -21,17 +23,24 @@ export class HomeComponent implements OnInit {
   renda_refeicao: number = 0;
   gastos_refeicao: number = 0;
   total_dinheiro: number = 0;
+  rendas_contas: number[] = [];
+  gastos_contas: number[] = [];
+  totais_contas: number[] = [];
+  contas: any;
   constructor(
     public modalService: ModalService, 
     public dialog: MatDialog,
-    private dataService:DataService
+    private dataService:DataService,
+    private commonService: CommonService
   ){}
 
     async ngOnInit() {
-     await this.listarMovimentacoes();
-     await this.calcGastos(this.movimentacoes);
-     await this.calcRenda(this.movimentacoes);
-     this.calcSaldo();
+      this.contas = contas;
+      await this.listarMovimentacoes();
+      await this.calcGastos(this.movimentacoes);
+      await this.calcRenda(this.movimentacoes);
+      await this.calcPorConta(this.movimentacoes);
+      this.calcSaldo();
     }
     openInsertModal() {
       // Open the Material Dialog
@@ -45,6 +54,7 @@ export class HomeComponent implements OnInit {
       dialogRef.afterClosed().subscribe((result) => {
       });
     }
+
 
     openEditModal(movimentacao: Movimentacao): void {
       const dialogRef = this.dialog.open(ModalComponent, {
@@ -106,6 +116,28 @@ export class HomeComponent implements OnInit {
       });
     }
 
+    async calcPorConta(movimentacoes: Movimentacao[]){
+      this.contas.forEach((conta:any) =>{
+        let gastos = 0;
+        let renda = 0;
+        let total = 0;
+        movimentacoes.forEach(mov => {
+          if (mov.conta === conta.id) {
+            if((mov.tipo === 'r') && (mov.pagamento === 'c' || mov.pagamento === 'd' || mov.pagamento === 'p')){
+              renda += parseFloat(mov.valor.toString().replace(',', '.'));
+            }
+            else if((mov.tipo === 'd') && (mov.pagamento === 'c' || mov.pagamento === 'd' || mov.pagamento === 'p')){
+              gastos += parseFloat(mov.valor.toString().replace(',', '.'));
+            }
+          }
+      });
+      total = renda - gastos;
+      this.rendas_contas.push(renda);
+      this.gastos_contas.push(gastos);
+      this.totais_contas.push(total);
+    });
+  }
+
     async calcRenda(movimentacoes: Movimentacao[]){
       movimentacoes.forEach(element => {
         if(element.tipo === 'r'){
@@ -126,8 +158,8 @@ export class HomeComponent implements OnInit {
       this.renda_refeicao = this.renda_refeicao - this.gastos_refeicao;
     }
 
-    formatarValor(valor: number | string): string {
-      valor = typeof valor === 'string' ? parseFloat(valor.replace(',', '.')) : valor;
-      return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    formatarValor(valor: number | string): string{
+      return this.commonService.formatarValor(valor);
     }
+    
 }

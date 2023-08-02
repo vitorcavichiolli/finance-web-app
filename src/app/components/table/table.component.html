@@ -1,19 +1,19 @@
 <div class="table-container"><table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"
   class="mat-elevation-z8">
 
-<ng-container matColumnDef="data" sticky>
+<ng-container matColumnDef="data" >
 <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordernar por data">
  Data
 </th>
 <td mat-cell *matCellDef="let element"> {{element.data | date:'dd/MM/yyyy'}} </td>
 </ng-container>
 
-<ng-container matColumnDef="tipo" >
+<!-- <ng-container matColumnDef="tipo" >
 <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordernar por tipo">
  Tipo
 </th>
 <td mat-cell *matCellDef="let element"> {{getTipo(element.tipo)}} </td>
-</ng-container>
+</ng-container> -->
 
 <ng-container matColumnDef="categoria" >
 <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordernar por categoria">
@@ -36,7 +36,7 @@
 <td mat-cell *matCellDef="let element"> {{element.descricao}} </td>
 </ng-container>
 
-<ng-container matColumnDef="valor" stickyEnd>
+<ng-container matColumnDef="valor" >
 <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordernar por valor">
  Valor
 </th>

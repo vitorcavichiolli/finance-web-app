@@ -16,6 +16,10 @@
         <label class="form-label" for="data_final" class="form-label">Data Final:</label>
         <input class="form-input" formControlName="data_final" name="data_final" id="data_final" type="date" />
       </div>
+      <div class="form-group">
+        <label class="form-label" for="renda" class="form-label">Renda Líquida:</label>
+        <input class="form-input" formControlName="renda" name="renda" id="data_frendainal" type="text" />
+      </div>
       <div class="itens" formArrayName="itens">
         <div class="item-planejamento" *ngFor="let item of itensFormArray.controls; let i = index">
           <div [formGroupName]="i">
@@ -41,8 +45,19 @@
               [max]="maxPorcentagem"
               [min]="0"
               [discrete]="false"
-              [showTickMarks]="false">
-              <input matSliderThumb formControlName="porcentagem" #slider>
+              [showTickMarks]="false"
+
+
+              >
+              <input 
+                matSliderThumb 
+                formControlName="porcentagem" 
+                #slider 
+                #tooltip="matTooltip" 
+                matTooltipPosition="after" 
+                [matTooltip]="'R$ '+ formatarValor(valorSelecionado)"
+                (input)="sliderChange(slider.value)"
+                >
             </mat-slider>
            </div>
     

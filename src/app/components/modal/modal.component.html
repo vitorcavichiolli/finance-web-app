@@ -9,8 +9,7 @@
       <h3 class="color-primary text-center">Novo Registro</h3>
       <form [formGroup]="form" (keydown.enter)="$event.preventDefault()"> 
       <div class="form-group">
-        <label class="form-label" for="tipo" class="form-label">Tipo:</label>
-
+        <label [ngClass]="{'form-label': true, 'required': isTipoFieldRequired()}" for="tipo" class="form-label">Tipo:</label>
         <mat-select class="form-input" formControlName="tipo" name="tipo" id="tipo">
           <mat-option  *ngFor="let tipo of tipos" value="{{tipo.id}}">
             {{tipo.nome}}

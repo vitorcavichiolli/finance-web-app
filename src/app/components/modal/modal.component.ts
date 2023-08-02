@@ -1,9 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, contas, pagamentos, tipos } from 'src/app/utils/data/data';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-modal',
@@ -23,6 +24,7 @@ export class ModalComponent implements OnInit{
       public dialogRef: MatDialogRef<ModalComponent>,
       private fb: FormBuilder,
       private dataService: DataService,
+      public dialog: MatDialog,
       @Inject(MAT_DIALOG_DATA) public data: any // Obtenha os dados passados pelo modal de edição
       ) {
         this.isEditMode = data.isEditMode;
@@ -33,7 +35,10 @@ export class ModalComponent implements OnInit{
     this.dialogRef.close();
   }
 
-
+  isTipoFieldRequired(): boolean {
+    const tipoControl = this.form.get('tipo');
+    return tipoControl?.errors?.['required'];
+  }
 
   ngOnInit() {
     const currentDate = new Date();
@@ -100,6 +105,16 @@ export class ModalComponent implements OnInit{
       }
 
       window.location.reload();
+    }
+    else{
+      const dialogRef = this.dialog.open(AlertDialogComponent, {
+        data: {
+          message: 'Formulário invalido, preencha os campos obrigatórios',
+        }
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+      });
     }
   }
 }

@@ -1,9 +1,11 @@
 import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { AlertDialogComponent } from 'src/app/components/alert-dialog/alert-dialog.component';
 import { ModalPlanejamentoComponent } from 'src/app/components/modal-planejamento/modal-planejamento.component';
+import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
-import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
+import { categorias, contas, pagamentos, tipos } from 'src/app/utils/data/data';
 import { Filters } from 'src/app/utils/models/checkboxFilter.model';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 
@@ -17,10 +19,13 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   panelOpenState = false;
   categorias: any;
   tipos:any;
+  contas:any;
   pagamentos:any;
   selectAllCategorias: boolean = true;
   selectAllTipos: boolean = true;
   selectAllPagamentos: boolean = true;
+  selectAllContas: boolean = true;
+
   movimentacoes: Movimentacao[] = [];
   filteredMovimentacoes: Movimentacao[] = [];
   selectedFilters:any = [];
@@ -41,6 +46,14 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     control: new FormControl(true)
   }
 
+  filtersConta: Filters = {
+    id:"",
+    nome: "",
+    selecionado: true,
+    cor: "primary",
+    control: new FormControl(true)
+  }
+
   filtersPagamento: Filters = {
     id:"",
     nome: "",
@@ -54,7 +67,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     private dataService: DataService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone, 
-    public dialog: MatDialog,) {
+    public dialog: MatDialog,
+    private commonService: CommonService) {
     this.form = this.fb.group({
       data_ini: [''],
       data_fim: [''],
@@ -101,14 +115,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.dateFilterOnChange(fm);
   }
 
-  // checkBoxFilter() {
-    
-
-  //   this.ngZone.run(() => {
-  //     this.cdr.detectChanges();
-  //   });
-  
-  // }
+  checkEmptyNullUndefined(value:any):boolean{
+    return this.commonService.checkEmptyNullUndefined(value);
+  }
 
   dateFilterOnChange(fm:any){
     console.log(fm);
@@ -116,7 +125,18 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       const dataInicial: Date = new Date(fm.data_ini);
       const dataFinal: Date = new Date(fm.data_fim);
       if(dataInicial>dataFinal){
-        alert('data inicial não pode ser maior que a data final')
+        const dialogRef = this.dialog.open(AlertDialogComponent, {
+          data: {
+            message: 'A data incial não pode ser maior que a data final',
+          }
+        });
+
+        dialogRef.afterClosed().subscribe((result: boolean) => {
+          this.form.patchValue({
+            data_ini: null,
+            data_fim: null
+          })
+        });
       }
       else{
         this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
@@ -148,7 +168,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.filteredMovimentacoes = this.applyFilterByTipo(this.filteredMovimentacoes);
     this.filteredMovimentacoes = this.applyFilterByPagamento(this.filteredMovimentacoes);
     this.filteredMovimentacoes = this.applyFilterByCategoria(this.filteredMovimentacoes);
-    
+    this.filteredMovimentacoes = this.applyFilterByConta(this.filteredMovimentacoes);
+
   }
 
 
@@ -164,6 +185,27 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) =>
           activeTipoIds.includes(movimentacao.tipo)
         );
+      } else {
+        // If all the sub-filters of the 'Tipos:' main filter are deselected,
+        // return an empty array
+        filteredMovimentacoes = [];
+      }
+    }
+  
+    return filteredMovimentacoes;
+  }
+
+  applyFilterByConta(filteredMovimentacoes: Movimentacao[]): Movimentacao[] {
+    const selected = this.selectedFilters.find((filter: Filters) => filter.nome === 'Contas:');
+    if (selected && selected.subFiltros) {
+      const activeIds = selected.subFiltros
+        .filter((subFilter: Filters) => subFilter.control.value)
+        .map((subFilter: Filters) => subFilter.id);
+  
+      if (activeIds.length > 0) {
+        filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) => {
+          return activeIds.includes(movimentacao.conta) || movimentacao.conta === '' || movimentacao.conta === undefined || movimentacao.conta === null;
+        });
       } else {
         // If all the sub-filters of the 'Tipos:' main filter are deselected,
         // return an empty array
@@ -259,6 +301,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.selectedFilters.push(this.filtersTipo);
     this.selectedFilters.push(this.filtersCategoria);
     this.selectedFilters.push(this.filtersPagamento);
+    this.selectedFilters.push(this.filtersConta);
 
     console.log(this.selectedFilters);
     this.dateFilterOnChange(this.form.value);
@@ -279,14 +322,13 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
 
 
-  checkEmptyNullUndefined(value:any):boolean{
-    return !(value == '' || value == null || value == undefined)
-  }
-
+  
   private carregarFiltros(){
     this.filtrosCategoria();
     this.filtrosTipos();
     this.filtrosPagamentos();
+    this.filtrosContas();
+
   }
 
   private filtrosCategoria(){
@@ -331,6 +373,31 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.filtersTipo = {
       id: "none",
       nome: "Tipos:",
+      selecionado: true,
+      subFiltros: subFiltros,
+      cor: "warn",
+      control: new FormControl(true)
+    }
+  }
+
+  private filtrosContas(){
+    this.contas = contas;
+    let subFiltros: any = [];
+    this.contas.forEach((element: { id: { toString: () => any; }; nome: any; }) => {
+      let item: Filters = {
+        id: element.id.toString(),
+        nome: element.nome,
+        selecionado: true,
+        cor: "",
+        control: new FormControl(true)
+      };
+      subFiltros.push(item);
+      this.selectedFilters.push(item);
+
+    });
+    this.filtersConta = {
+      id: "none",
+      nome: "Contas:",
       selecionado: true,
       subFiltros: subFiltros,
       cor: "warn",
@@ -386,6 +453,16 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         el.control.setValue(selected);
       });
     }
+    else if(campo ==="contas"){
+      this.selectAllContas = selected;
+      if (this.filtersConta.subFiltros == null) {
+        return;
+      }
+      this.filtersConta.subFiltros.forEach((el) => {
+        el.selecionado = selected;
+        el.control.setValue(selected);
+      });
+    }
     else if(campo ==="pagamentos"){
       this.selectAllPagamentos = selected;
       if (this.filtersPagamento.subFiltros == null) {
@@ -412,6 +489,12 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       }
       return this.filtersTipo.subFiltros.filter(t => t.control.value).length > 0 && !this.selectAllTipos;
     }
+    else if(campo === "contas"){
+      if (this.filtersConta.subFiltros == null) {
+        return false;
+      }
+      return this.filtersConta.subFiltros.filter(t => t.control.value).length > 0 && !this.selectAllContas;
+    }
     else if(campo === "pagamentos"){
       if (this.filtersPagamento.subFiltros == null) {
         return false;
@@ -429,6 +512,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     }
     else if(campo === "tipos"){
       this.selectAllTipos = this.filtersTipo.subFiltros != null && this.filtersTipo.subFiltros.every(el => el.control.value);
+    }
+    else if(campo === "contas"){
+      this.selectAllContas = this.filtersConta.subFiltros != null && this.filtersConta.subFiltros.every(el => el.control.value);
     }
     else if(campo === "pagamentos"){
       this.selectAllPagamentos = this.filtersPagamento.subFiltros != null && this.filtersPagamento.subFiltros.every(el => el.control.value);

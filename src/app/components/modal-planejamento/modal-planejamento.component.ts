@@ -1,11 +1,13 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 import { ItemPlanejamento, Planejamento } from 'src/app/utils/models/planejamentos.model';
 import { PlanningDataService } from 'src/app/utils/planning-data-service/planning-data.service';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+import { CommonService } from 'src/app/utils/common-service/common.service';
 
 
 interface PlanejamentoWithItens extends Planejamento {
@@ -27,12 +29,15 @@ export class ModalPlanejamentoComponent {
   planejamento: Planejamento;
   maxPorcentagem: number = 100;
   itensFormArray!: FormArray;
-
+  valorSelecionado: number = 0;
+  porcentagemSelecionada: number = 0;
   constructor(
     public dialogRef: MatDialogRef<ModalPlanejamentoComponent>,
     private fb: FormBuilder,
     private dataService: DataService,
     private planningDataService: PlanningDataService,
+    public dialog: MatDialog,   
+    private commonService: CommonService,
     @Inject(MAT_DIALOG_DATA) public data: any // Obtenha os dados passados pelo modal de edição
   ) {
     this.isEditMode = data.isEditMode;
@@ -50,6 +55,7 @@ export class ModalPlanejamentoComponent {
     this.form = this.fb.group({
       data_inicial: [null, Validators.required],
       data_final: [null, Validators.required],
+      renda: [null, Validators.required],
       itens: this.fb.array([]) // You can add the items here or through a function
     });
 
@@ -66,6 +72,7 @@ export class ModalPlanejamentoComponent {
       this.form.patchValue({
         data_inicial: this.planejamento.data_inicial,
         data_final: this.planejamento.data_final,
+        renda: this.planejamento.renda
       });
 
       // Populate the itensFormArray with existing data
@@ -95,14 +102,14 @@ export class ModalPlanejamentoComponent {
     const sliders = this.itensFormArray.controls;
     const totalPorcentagem = sliders.reduce((total, slider) => total + (slider.get('porcentagem')?.value || 0), 0);
     const diff = totalPorcentagem - this.maxPorcentagem;
-  
+
     if (diff > 0) {
       // Adjust the percentage of sliders proportionally so that the total sum is equal to or less than 100%
       const totalNonNullPorcentagens = sliders.reduce((total, slider) => {
         const porcentagem = slider.get('porcentagem')?.value || 0;
         return porcentagem > 0 ? total + porcentagem : total;
       }, 0);
-  
+
       sliders.forEach(slider => {
         const porcentagem = slider.get('porcentagem')?.value || 0;
         const proportionalAdjustment = (porcentagem / totalNonNullPorcentagens) * diff;
@@ -110,6 +117,14 @@ export class ModalPlanejamentoComponent {
         slider.get('porcentagem')?.setValue(newPorcentagem, { emitEvent: false });
       });
     }
+
+    
+  }
+
+  sliderChange(value:string){
+    this.porcentagemSelecionada = parseFloat(value);
+    const renda = this.form.get('renda')?.value;
+    this.valorSelecionado = (renda * this.porcentagemSelecionada) / 100;
   }
 
   addItemFormGroup(categoria: number, porcentagem: number): void  {
@@ -145,50 +160,78 @@ export class ModalPlanejamentoComponent {
   }
 
   async savePlanning(): Promise<void> {
-    if (this.form.valid) {
-      const planejamentoData: Planejamento = {
-        data_inicial: this.form.value.data_inicial,
-        data_final: this.form.value.data_final,
-      };
-  
-      const itensData: ItemPlanejamento[] = this.form.value.itens;
-  
-      if (this.isEditMode && this.planejamento.id) {
-        // Planejamento is being edited, update the existing record
-        const updatedPlanejamento: PlanejamentoWithItens = {
-          ...planejamentoData,
-          id: this.planejamento.id,
-          itens: itensData,
+    if(this.form.value.data_inicial > this.form.value.data_final){
+      const dialogRef = this.dialog.open(AlertDialogComponent, {
+        data: {
+          message: 'A data incial não pode ser maior que a data final',
+        }
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        this.form.patchValue({
+          data_inicial: null,
+          data_final: null
+        })
+      });
+    }
+    else{
+      if (this.form.valid) {
+        const planejamentoData: Planejamento = {
+          data_inicial: this.form.value.data_inicial,
+          data_final: this.form.value.data_final,
+          renda: this.form.value.renda
         };
-  
-        try {
-          await this.planningDataService.updatePlanejamentoWithItems(
-            updatedPlanejamento,
-            itensData
-          );
-  
-          console.log('Planejamento atualizado com sucesso! ID:', this.planejamento.id);
-          window.location.reload();
-        } catch (error) {
-          console.error('Erro ao atualizar o planejamento:', error);
+    
+        const itensData: ItemPlanejamento[] = this.form.value.itens;
+    
+        if (this.isEditMode && this.planejamento.id) {
+          // Planejamento is being edited, update the existing record
+          const updatedPlanejamento: PlanejamentoWithItens = {
+            ...planejamentoData,
+            id: this.planejamento.id,
+            itens: itensData,
+          };
+    
+          try {
+            await this.planningDataService.updatePlanejamentoWithItems(
+              updatedPlanejamento,
+              itensData
+            );
+    
+            console.log('Planejamento atualizado com sucesso! ID:', this.planejamento.id);
+            window.location.reload();
+          } catch (error) {
+            console.error('Erro ao atualizar o planejamento:', error);
+          }
+        } else {
+          // Planejamento is being added as a new record
+          try {
+            const planejamentoId = await this.planningDataService.addPlanejamentoWithItems(
+              planejamentoData,
+              itensData
+            );
+    
+            console.log('Planejamento salvo com sucesso! ID:', planejamentoId);
+            window.location.reload();
+          } catch (error) {
+            console.error('Erro ao salvar o planejamento:', error);
+          }
         }
       } else {
-        // Planejamento is being added as a new record
-        try {
-          const planejamentoId = await this.planningDataService.addPlanejamentoWithItems(
-            planejamentoData,
-            itensData
-          );
-  
-          console.log('Planejamento salvo com sucesso! ID:', planejamentoId);
-          window.location.reload();
-        } catch (error) {
-          console.error('Erro ao salvar o planejamento:', error);
-        }
+        const dialogRef = this.dialog.open(AlertDialogComponent, {
+          data: {
+            message: 'Formulário invalido, preencha os campos obrigatórios',
+          }
+        });
+
+        dialogRef.afterClosed().subscribe((result: boolean) => {
+        });
       }
-    } else {
-      alert('Formulário inválido. Verifique os campos obrigatórios.');
     }
+  }
+
+  formatarValor(valor: number | string): string{
+    return this.commonService.formatarValor(valor);
   }
   
 }

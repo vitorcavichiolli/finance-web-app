@@ -26,6 +26,14 @@
           &nbsp; = &nbsp;
           <p [ngClass]="{'card-value': true, 'color-red': total_dinheiro<0, 'color-green': total_dinheiro>0}"> R$ {{formatarValor(total_dinheiro)}}</p>
         </div>
+        <div class="card-group" *ngFor="let conta of contas;let i = index">
+          <p class="card-label card-label-sm ">{{conta.nome}}:</p>
+          <p class="card-value card-value-sm color-green"> R$ {{formatarValor(rendas_contas[i])}}</p>
+          &nbsp; - &nbsp;
+          <p class="card-value card-value-sm color-red"> R$ {{formatarValor(gastos_contas[i])}}</p>
+          &nbsp; = &nbsp;
+          <p [ngClass]="{'card-value': true, 'card-value-sm': true, 'color-red': totais_contas[i]<0, 'color-green': totais_contas[i]>0}"> R$ {{formatarValor(totais_contas[i])}}</p>
+        </div>
        
       </div>
     </app-lg-card>

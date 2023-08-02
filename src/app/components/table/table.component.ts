@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { CommonService } from 'src/app/utils/common-service/common.service';
 import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
 
 @Component({
@@ -12,7 +13,7 @@ import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
 })
 export class TableComponent implements OnChanges {
   dataSource = new MatTableDataSource<any>();
-  displayedColumns: string[] = ['data', 'tipo', 'categoria', 'pagamento', 'descricao', 'valor'];
+  displayedColumns: string[] = ['data', 'categoria', 'pagamento', 'descricao', 'valor'];
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -27,7 +28,10 @@ export class TableComponent implements OnChanges {
     return this._data;
   }
 
-  constructor(private _liveAnnouncer: LiveAnnouncer){}
+  constructor(
+    private _liveAnnouncer: LiveAnnouncer,
+    private commonService: CommonService
+    ){}
   
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && !changes['data'].firstChange) {
@@ -54,11 +58,11 @@ export class TableComponent implements OnChanges {
     }
   }
 
-  formatarValor(valor: number | string): string {
-    valor = typeof valor === 'string' ? parseFloat(valor.replace(',', '.')) : valor;
-    return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
 
+  formatarValor(valor: number | string): string{
+    return this.commonService.formatarValor(valor);
+  }
+  
   converterValorParaNumero(valor: string | number): number {
     if (typeof valor === 'string') {
       return parseFloat(valor.replace(',', '.'));

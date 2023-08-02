@@ -30,6 +30,8 @@ import { MatPaginatorModule} from '@angular/material/paginator';
 import { PlanningComponent } from './pages/planning/planning.component';
 import { ModalPlanejamentoComponent } from './components/modal-planejamento/modal-planejamento.component';
 import {MatSliderModule} from '@angular/material/slider';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 
 
 
@@ -46,7 +48,8 @@ import {MatSliderModule} from '@angular/material/slider';
     PieChartComponent,
     TableComponent,
     PlanningComponent,
-    ModalPlanejamentoComponent
+    ModalPlanejamentoComponent,
+    AlertDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +67,8 @@ import {MatSliderModule} from '@angular/material/slider';
     MatSortModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSliderModule
+    MatSliderModule,
+    MatTooltipModule
   ],
   providers: [
     ModalService,

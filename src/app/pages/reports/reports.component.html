@@ -53,6 +53,39 @@
 
               <mat-divider></mat-divider>
 
+
+              <section class="cb-filter">
+                <span class="cb-list-section">
+                    <mat-checkbox class="filter"
+                        [checked]="selectAllContas"
+                        [indeterminate]="someSelected('contas')"
+                        (change)="setAll($event.checked,'contas')"
+                        [color]="filtersConta.cor"
+                        (change)="onCheckboxChange(filtersConta)"
+                        >
+    
+                        {{filtersConta.nome}}
+                    </mat-checkbox>
+                </span>
+                <span class="cb-list-section sub-list">
+                    <ul>
+                        <li *ngFor="let filtro of filtersConta.subFiltros">
+                            <mat-checkbox  [formControl]="filtro.control"
+                                (change)="updateSelectAll('contas')"
+                                [color]="filtro.cor"
+                                (change)="onCheckboxChange(filtro)"
+                                >
+                                
+                                {{filtro.nome}}
+                            </mat-checkbox>
+                        </li>
+                    </ul>
+                </span>
+              </section>
+
+              <mat-divider></mat-divider>
+
+              
               <section class="cb-filter">
                 <span class="cb-list-section">
                     <mat-checkbox class="filter"
@@ -83,6 +116,8 @@
               </section>
 
               <mat-divider></mat-divider>
+
+             
 
               <section class="cb-filter">
                 <span class="cb-list-section">

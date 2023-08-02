@@ -16,12 +16,12 @@
     padding-left: 30px;
     display: flex;
     flex-flow: row wrap;
-    justify-content: space-between;
+    justify-content: left;
     align-items: center;
 }
 
 .cb-list-section>ul>li{
-    width: 50%;
+    width: 33%;
 }
 
 .mat-expansion-panel{
