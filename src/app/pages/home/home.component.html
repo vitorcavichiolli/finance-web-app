@@ -40,7 +40,7 @@
     <div class="list-container">
       <h3 class="color-primary">Últimos registros</h3>
       <ul class="list">
-        <li class="list-item" *ngFor="let mov of movimentacoes">
+        <li class="list-item" *ngFor="let mov of ultimasMovimentacoes">
           <p class="list-label">{{mov.descricao}}</p>
           <p [ngClass]="{'list-value': true, 'color-red': mov.tipo === 'd', 'color-green': mov.tipo === 'r'}">
             R$ {{ formatarValor(mov.valor) }}
@@ -60,11 +60,8 @@
    
       </ul>
     </div>
-    <app-float-button #childButton (click)="openInsertModal()">
-   
-        <mat-icon class="button-icon" aria-hidden="false"  fontIcon="add-circle"></mat-icon>
-
-  
+    <app-float-button #childButton (click)="openInsertModal()" class="primary"> 
+        <mat-icon class="button-icon" aria-hidden="false"  fontIcon="add-circle"></mat-icon>  
     </app-float-button>
   
   </div>

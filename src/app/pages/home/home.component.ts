@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit {
   gastos_contas: number[] = [];
   totais_contas: number[] = [];
   contas: any;
+  ultimasMovimentacoes: Movimentacao[] = [];
   constructor(
     public modalService: ModalService, 
     public dialog: MatDialog,
@@ -69,9 +70,18 @@ export class HomeComponent implements OnInit {
     async listarMovimentacoes(): Promise<void> {
       this.movimentacoes = await this.dataService.getAllMovimentacoes();
       const copiaMovimentacoes = [...this.movimentacoes];
-      copiaMovimentacoes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+      copiaMovimentacoes.sort((a, b) => {
+        const dateComparison = new Date(b.data).getTime() - new Date(a.data).getTime();
+        if (dateComparison === 0) {
+          if(b.id && a.id)
+          return b.id - a.id;
+          return dateComparison;
+        } else {
+          return dateComparison;
+        }
+      });
       this.movimentacoes = copiaMovimentacoes;
-      
+      this.ultimasMovimentacoes =  copiaMovimentacoes.slice(0, 50);
     }
 
     async deleteMovimentacao(id: number | undefined): Promise<void> {
@@ -86,18 +96,15 @@ export class HomeComponent implements OnInit {
     
         dialogRef.afterClosed().subscribe((result: boolean) => {
           if (result === true) {
-            // Usuário confirmou a exclusão, chama a função deleteMovimentacao
             this.dataService.deleteMovimentacao(id).then(() => {
               window.location.reload();
             });
           } else {
-            // Usuário cancelou a exclusão
           }
         });
         
       } else {
         console.error('ID inválido. A movimentação precisa ter um ID válido para ser excluída.');
-        // Exibir uma mensagem de erro ou lidar com a situação de ID inválido.
       }
     }
 

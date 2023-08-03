@@ -25,8 +25,26 @@
                     <p class="modal-value">R$ {{ formataValor(data?.planejamento?.renda ?? '') }}</p>
                 </div>
                 <div class="modal-group center flex ">
+                    <p class="modal-label value-sm">Renda Não Planejada:</p>
+                    <p class="modal-value value-sm">R$ {{ formataValor(((data?.planejamento?.renda ?? 1) - valorTotalPlanejado)) }}</p>
+                </div>
+                <div class="modal-group center flex ">
                     <p class="modal-label color-primary value-sm">Gastos Planejados:</p>
-                    <p class="modal-value value-sm">R$ {{ formataValor(valorTotalGastos) }}</p>
+                    <p class="modal-value value-sm">R$ {{ formataValor(valorTotalPlanejado) }}</p>
+                    &nbsp;
+                    &nbsp;
+                    <p class="modal-label color-primary value-sm">Valor Utilizado:</p>
+                    <p class="modal-value value-sm"
+                        [ngClass]="{'color-red': valorTotalUtilizado > valorTotalPlanejado, 'color-green': valorTotalUtilizado<=valorTotalPlanejado}">
+                        R$ {{ formataValor(valorTotalUtilizado) }}
+                    </p>
+                    &nbsp;
+                    &nbsp;
+                    <p class="modal-label color-primary value-sm">Valor Restante:</p>
+                    <p class="modal-value value-sm"
+                        [ngClass]="{'color-red': valorTotalUtilizado > valorTotalPlanejado, 'color-green': valorTotalUtilizado<=valorTotalPlanejado}">
+                        R$ {{ formataValor(valorTotalPlanejado - valorTotalUtilizado) }}
+                    </p>
                 </div>
             </section>
             <section *ngIf="!isPlanningOver()" class="center flex">
@@ -45,16 +63,16 @@
                         <p class="modal-value bold color-green">R$ {{formataValor(getValorItem(item.porcentagem))}}</p>
                     </div>
                     <div class="modal-group flex center">
-                        <p class="modal-label">Utilizado:</p>
-                        <p class="modal-value bold" >
+                        <p class="modal-label value-sm">Utilizado:</p>
+                        <p class="modal-value bold value-sm" >
                             <span [ngClass]="{'color-red': valoresUtilizadosPorCategoria[item.categoria] >= getValorItem(item.porcentagem),'color-green': valoresUtilizadosPorCategoria[item.categoria] < getValorItem(item.porcentagem) }">
                                 R$ {{ formataValor(valoresUtilizadosPorCategoria[item.categoria]) }}
                             </span> | <span class="color-warning">{{porcentagemUtilizadosPorCategoria[item.categoria]}}%</span> 
                         </p>
                     </div>
                     <div class="modal-group flex center">
-                        <p class="modal-label">Restante:</p>
-                        <p class="modal-value bold" >
+                        <p class="modal-label value-sm">Restante:</p>
+                        <p class="modal-value bold value-sm" >
                             <span [ngClass]="{'color-red': valoresRestantePorCategoria[item.categoria] <= 0,'color-green': valoresRestantePorCategoria[item.categoria] > 0 }">
                                 R$ {{ formataValor(valoresRestantePorCategoria[item.categoria]) }}
                             </span> 

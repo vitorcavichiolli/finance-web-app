@@ -5,6 +5,11 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CommonService } from 'src/app/utils/common-service/common.service';
 import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { DataService } from 'src/app/utils/data-service/data.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
+import { ModalComponent } from '../modal/modal.component';
 
 @Component({
   selector: 'app-table',
@@ -13,7 +18,7 @@ import { categorias, pagamentos, tipos } from 'src/app/utils/data/data';
 })
 export class TableComponent implements OnChanges {
   dataSource = new MatTableDataSource<any>();
-  displayedColumns: string[] = ['data', 'categoria', 'pagamento', 'descricao', 'valor'];
+  displayedColumns: string[] = ['data', 'categoria', 'pagamento', 'descricao', 'valor','actions'];
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -30,7 +35,9 @@ export class TableComponent implements OnChanges {
 
   constructor(
     private _liveAnnouncer: LiveAnnouncer,
-    private commonService: CommonService
+    private commonService: CommonService,
+    public dialog: MatDialog,
+    private dataService:DataService,
     ){}
   
   ngOnChanges(changes: SimpleChanges): void {
@@ -82,6 +89,41 @@ export class TableComponent implements OnChanges {
     return this.commonService.getPagamento(id);
   }
 
- 
+  async deleteMovimentacao(id: number | undefined): Promise<void> {
+    if (typeof id === 'number') {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          message: 'Tem certeza que deseja excluir esta movimentação?',
+          confirmText: 'Confirmar',
+          cancelText: 'Cancelar'
+        }
+      });
+  
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+        if (result === true) {
+          // Usuário confirmou a exclusão, chama a função deleteMovimentacao
+          this.dataService.deleteMovimentacao(id).then(() => {
+            window.location.reload();
+          });
+        } else {
+          // Usuário cancelou a exclusão
+        }
+      });
+      
+    } else {
+      console.error('ID inválido. A movimentação precisa ter um ID válido para ser excluída.');
+      // Exibir uma mensagem de erro ou lidar com a situação de ID inválido.
+    }
+  }
+
+  openEditModal(movimentacao: Movimentacao): void {
+    const dialogRef = this.dialog.open(ModalComponent, {
+      // Outras configurações do dialog
+      data: {
+        movimentacao,
+        isEditMode: true
+      }
+    });
+  }
   
 }

@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertDialogComponent } from 'src/app/components/alert-dialog/alert-dialog.component';
 import { ModalPlanejamentoComponent } from 'src/app/components/modal-planejamento/modal-planejamento.component';
+import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, contas, pagamentos, tipos } from 'src/app/utils/data/data';
@@ -89,15 +90,24 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  openInsertModal() {
-    // Open the Material Dialog
+  openInsertModalPlanejamento() {
     const dialogRef = this.dialog.open(ModalPlanejamentoComponent, {
       data: {
         isEditMode: false
       }
     });
 
-    // Handle dialog close event if needed
+    dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
+  openInsertModalMovimentacao() {
+    const dialogRef = this.dialog.open(ModalComponent, {
+      data: {
+        isEditMode: false
+      }
+    });
+
     dialogRef.afterClosed().subscribe((result) => {
     });
   }
@@ -120,7 +130,6 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
   dateFilterOnChange(fm:any){
-    console.log(fm);
     if(this.checkEmptyNullUndefined(fm.data_ini) && this.checkEmptyNullUndefined(fm.data_fim)) {
       const dataInicial: Date = new Date(fm.data_ini);
       const dataFinal: Date = new Date(fm.data_fim);
@@ -186,8 +195,6 @@ export class ReportsComponent implements OnInit, AfterViewInit {
           activeTipoIds.includes(movimentacao.tipo)
         );
       } else {
-        // If all the sub-filters of the 'Tipos:' main filter are deselected,
-        // return an empty array
         filteredMovimentacoes = [];
       }
     }
@@ -207,8 +214,6 @@ export class ReportsComponent implements OnInit, AfterViewInit {
           return activeIds.includes(movimentacao.conta) || movimentacao.conta === '' || movimentacao.conta === undefined || movimentacao.conta === null;
         });
       } else {
-        // If all the sub-filters of the 'Tipos:' main filter are deselected,
-        // return an empty array
         filteredMovimentacoes = [];
       }
     }
@@ -228,8 +233,6 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         activeIds.includes(movimentacao.pagamento)
         );
       } else {
-        // If all the sub-filters of the 'Tipos:' main filter are deselected,
-        // return an empty array
         filteredMovimentacoes = [];
       }
     }
@@ -245,15 +248,10 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         .map((subFilter: Filters) => subFilter.id);
   
       if (activeIds.length > 0) {
-        // filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) =>
-        // activeIds.includes(movimentacao.categoria) || movimentacao.categoria.toString == ''
-        // );
         filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) => {
           return activeIds.includes(movimentacao.categoria.toString()) || movimentacao.categoria.toString() === '';
         });
       } else {
-        // If all the sub-filters of the 'Tipos:' main filter are deselected,
-        // return an empty array
         filteredMovimentacoes = [];
       }
     }
@@ -261,40 +259,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     return filteredMovimentacoes;
   }
   
-  
 
-  // onCheckboxChange(checkbox: Filters) {
-  //   if (checkbox?.subFiltros) {
-  //       const filtros = checkbox.subFiltros;
-  //       filtros.forEach(el =>{
-  //         const index = this.findFiltroIndex(this.selectedFilters,el);
-  //         if(el.control.value == true){
-  //           if(index<0){
-  //             this.selectedFilters.push(el);
-  //           }
-  //         }
-  //         else{
-  //           if(index>-1){
-  //             this.selectedFilters.splice(index,1);
-  //           }
-  //         }
-  //       });
-  //   }
-  //   else{
-  //     const index = this.findFiltroIndex(this.selectedFilters,checkbox);
-  //     if(checkbox.control.value == true){
-  //       if(index<0){
-  //         this.selectedFilters.push(checkbox);
-  //       }
-  //     }
-  //     else{
-  //       if(index>-1){
-  //         this.selectedFilters.splice(index,1);
-  //       }
-  //     }
-  //   }
-  //   this.dateFilterOnChange(this.form.value);
-  // }
 
   onCheckboxChange(checkbox: Filters) {
     this.selectedFilters =[];
@@ -303,7 +268,6 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.selectedFilters.push(this.filtersPagamento);
     this.selectedFilters.push(this.filtersConta);
 
-    console.log(this.selectedFilters);
     this.dateFilterOnChange(this.form.value);
   }
 

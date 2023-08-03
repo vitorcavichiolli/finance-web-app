@@ -16,7 +16,8 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
   valoresUtilizadosPorCategoria: { [categoria: number]: number } = {};
   porcentagemUtilizadosPorCategoria: { [categoria: number]: number } = {};
   valoresRestantePorCategoria: { [categoria: number]: number } = {};
-  valorTotalGastos:number = 0;
+  valorTotalPlanejado:number = 0;
+  valorTotalUtilizado: number = 0
   constructor(
     public modalService: ModalService,
     private commonService: CommonService,
@@ -30,14 +31,18 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
   async ngOnChanges() {
     if (this.data?.itens) {
       let total =0;
+      let totalUtilizado = 0;
       for (const item of this.data.itens) {
         await this.valorUtilizadoPorItem(item.categoria)
-        if(this.valorTotalGastos ===0){
+        if(this.valorTotalPlanejado ===0){
           total += this.getValorItem(item.porcentagem);
         } 
+        if(this.valorTotalPlanejado ===0){
+          totalUtilizado += this.valoresUtilizadosPorCategoria[item.categoria];
+        } 
       }
-      this.valorTotalGastos = total;
-      
+      this.valorTotalPlanejado = total;
+      this.valorTotalUtilizado = totalUtilizado;
     }
 
    
@@ -88,7 +93,6 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
   }
   
   async valorUtilizadoPorItem(categoria: number): Promise<void> {
-    console.log('entrou');
     const dataInicial = this.data?.planejamento?.data_inicial;
     const dataFinal = this.data?.planejamento?.data_final;
     let valor: number = 0;
@@ -96,7 +100,6 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
       const movimentacoes = await this.dataService.getMovimentacaoByCategoriaAndDate(categoria, dataInicial, dataFinal);
       movimentacoes.forEach((element) => {
         valor += parseFloat(element.valor.toString());
-        console.log(valor);
       });
     }
     const porc_item:number = this.data?.itens.find(el => el.categoria === categoria).porcentagem;

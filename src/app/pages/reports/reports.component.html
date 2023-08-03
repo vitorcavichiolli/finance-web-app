@@ -158,7 +158,11 @@
             <app-pie-chart [data]="filteredMovimentacoes"></app-pie-chart>
           </section>
     </form>
-    <app-float-button #childButton (click)="openInsertModal()">
+    <app-float-button #childButton (click)="openInsertModalMovimentacao()" class="primary">
         <mat-icon class="button-icon" aria-hidden="false"  fontIcon="add-circle"></mat-icon>
+    </app-float-button>
+
+    <app-float-button #childButton (click)="openInsertModalPlanejamento()" class="right-100px warning" >
+        <mat-icon class="button-icon" aria-hidden="false"  fontIcon="trending_up"></mat-icon>
     </app-float-button>
 </div>

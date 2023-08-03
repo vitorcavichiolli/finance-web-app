@@ -8,13 +8,6 @@
 <td mat-cell *matCellDef="let element"> {{element.data | date:'dd/MM/yyyy'}} </td>
 </ng-container>
 
-<!-- <ng-container matColumnDef="tipo" >
-<th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordernar por tipo">
- Tipo
-</th>
-<td mat-cell *matCellDef="let element"> {{getTipo(element.tipo)}} </td>
-</ng-container> -->
-
 <ng-container matColumnDef="categoria" >
 <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordernar por categoria">
  Categoria
@@ -40,8 +33,29 @@
 <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordernar por valor">
  Valor
 </th>
-<td mat-cell *matCellDef="let element" [ngClass]="{'color-red': element.tipo == 'd', 'color-green': element.tipo == 'r'}">  R$ {{formatarValor(element.valor)}} </td>
+<td mat-cell *matCellDef="let element">  
+  <div [ngClass]="{'color-red': element.tipo == 'd', 'color-green': element.tipo == 'r'}">
+    R$ {{formatarValor(element.valor)}}
+  </div>
+ </td>
 </ng-container>
+
+<ng-container matColumnDef="actions" >
+  <th mat-header-cell *matHeaderCellDef >
+  </th>
+  <td mat-cell *matCellDef="let element"> 
+    <div class="button-group ">
+      <button class="form-button primary" (click)="openEditModal(element)">
+        <mat-icon  aria-hidden="false"  fontIcon="edit"></mat-icon>
+      </button>
+      &nbsp;
+      <button class="form-button red" (click)="deleteMovimentacao(element.id)">
+        <mat-icon  aria-hidden="false"  fontIcon="delete"></mat-icon>
+      </button>
+    </div>
+  </td>
+</ng-container>
+ 
 
 
 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

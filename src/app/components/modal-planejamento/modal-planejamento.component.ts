@@ -197,8 +197,6 @@ export class ModalPlanejamentoComponent {
               updatedPlanejamento,
               itensData
             );
-    
-            console.log('Planejamento atualizado com sucesso! ID:', this.planejamento.id);
             window.location.reload();
           } catch (error) {
             console.error('Erro ao atualizar o planejamento:', error);
@@ -210,8 +208,6 @@ export class ModalPlanejamentoComponent {
               planejamentoData,
               itensData
             );
-    
-            console.log('Planejamento salvo com sucesso! ID:', planejamentoId);
             window.location.reload();
           } catch (error) {
             console.error('Erro ao salvar o planejamento:', error);

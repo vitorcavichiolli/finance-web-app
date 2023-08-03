@@ -47,7 +47,6 @@ export class PlanningComponent implements OnInit{
     try {
       // Chame o método getPlanejamentoWithItems() do serviço para obter o planejamento e seus itens
       this.selectedPlanejamento = await this.planejamentoService.getPlanejamentoWithItems(planejamentoId);
-      console.log(this.selectedPlanejamento);
       this.modalService.openModal();
     } catch (error) {
       console.error('Error fetching planejamento with items:', error);
