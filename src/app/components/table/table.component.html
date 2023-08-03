@@ -59,20 +59,25 @@
 <ng-container matColumnDef="disclaimer">
   <td mat-footer-cell *matFooterCellDef colspan="6">
     <div class="table-footer">
-      <p>Total Receita: </p>
-      <p class="color-green">R$ {{formatarValor(totalReceita)}}</p>
-      &nbsp;
-      &nbsp;
-      <p>Total Gastos: </p>
-      <p class="color-red">R$ {{formatarValor(totalGastos)}}</p>
-      &nbsp;
-      &nbsp;
-      <p>Total: </p>
-      <p
-        [ngClass]="{'color-green': total > 0, 'color-red': total<0, 'color-warning': total==0}"
-      >
-        R$ {{formatarValor(total)}}
-      </p>
+      <div class="footer-group">
+        <p>Total Receita: </p>
+        <p class="color-green">R$ {{formatarValor(totalReceita)}}</p>
+        &nbsp;
+        &nbsp;
+        <p>Total Gastos: </p>
+        <p class="color-red">R$ {{formatarValor(totalGastos)}}</p>
+        &nbsp;
+        &nbsp;
+        <p>Total: </p>
+        <p
+          [ngClass]="{'color-green': total > 0, 'color-red': total<0, 'color-warning': total==0}"
+        >
+          R$ {{formatarValor(total)}}
+        </p>
+      </div>
+      <div class="footer-group">
+        <p class="value-sm">Valores referentes apenas a transações que envolvem dinheiro</p>
+      </div>
     </div>
   </td>
 </ng-container>

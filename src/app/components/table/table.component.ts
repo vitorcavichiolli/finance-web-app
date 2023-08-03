@@ -87,10 +87,10 @@ export class TableComponent implements OnChanges {
     let totalGastos: number=0;
     let totalReceita:number = 0;
     data.forEach((element:any )=> {
-      if(element.tipo === 'd'){
+      if((element.tipo === 'd') && (element.pagamento === 'p' || element.pagamento === 'c' || element.pagamento === 'd')){
         totalGastos += parseFloat(element.valor);
       }
-      else if( element.tipo ==='r'){
+      else if((element.tipo === 'r') && (element.pagamento === 'p' || element.pagamento === 'c' || element.pagamento === 'd')){
         totalReceita += parseFloat(element.valor);
       }
     });
