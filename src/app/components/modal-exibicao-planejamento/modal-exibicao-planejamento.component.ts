@@ -16,7 +16,7 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
   valoresUtilizadosPorCategoria: { [categoria: number]: number } = {};
   porcentagemUtilizadosPorCategoria: { [categoria: number]: number } = {};
   valoresRestantePorCategoria: { [categoria: number]: number } = {};
-
+  valorTotalGastos:number = 0;
   constructor(
     public modalService: ModalService,
     private commonService: CommonService,
@@ -29,10 +29,18 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
 
   async ngOnChanges() {
     if (this.data?.itens) {
+      let total =0;
       for (const item of this.data.itens) {
-        this.valorUtilizadoPorItem(item.categoria)
+        await this.valorUtilizadoPorItem(item.categoria)
+        if(this.valorTotalGastos ===0){
+          total += this.getValorItem(item.porcentagem);
+        } 
       }
+      this.valorTotalGastos = total;
+      
     }
+
+   
   }
   
   closeModal(){
@@ -92,7 +100,7 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
       });
     }
     const porc_item:number = this.data?.itens.find(el => el.categoria === categoria).porcentagem;
-    const valor_item = this.getValorItem(porc_item)
+    const valor_item = this.getValorItem(porc_item);
     let porc:number = Math.floor((valor * 100) / valor_item);
     this.porcentagemUtilizadosPorCategoria[categoria] = porc;
     this.valoresUtilizadosPorCategoria[categoria] = valor;

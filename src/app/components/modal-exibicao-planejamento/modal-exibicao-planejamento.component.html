@@ -17,13 +17,20 @@
                     <p class="modal-label color-primary">Data Final:</p>
                     <p class="modal-value">{{data?.planejamento?.data_final | date:'dd/MM/yyyy'}}</p>
                 </div>
-                <div class="modal-group center flex width50">
+                
+            </section>
+            <section class="modal-section">
+                <div class="modal-group center flex ">
                     <p class="modal-label color-primary">Renda Líquida:</p>
                     <p class="modal-value">R$ {{ formataValor(data?.planejamento?.renda ?? '') }}</p>
                 </div>
+                <div class="modal-group center flex ">
+                    <p class="modal-label color-primary value-sm">Gastos Planejados:</p>
+                    <p class="modal-value value-sm">R$ {{ formataValor(valorTotalGastos) }}</p>
+                </div>
             </section>
             <section *ngIf="!isPlanningOver()" class="center flex">
-                <p class="modal-value">Dias restantes no planejamento: <span class="bold">{{diasRestantes}}</span></p>
+                <p class="modal-value value-sm">Dias restantes no planejamento: <span class="bold">{{diasRestantes}}</span></p>
             </section>
             <section class="modal-section section-itens">
                 <div class="modal-item" *ngFor="let item of data?.itens">
