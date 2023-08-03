@@ -5,16 +5,19 @@
             <li class="planning-list-item" *ngFor="let p of planejamentos" (click)="onPlanejamentoSelect(p.id ? p.id : -1)">
                 <p>{{p.data_inicial | date:'dd/MM/yyyy'}} até {{p.data_final | date:'dd/MM/yyyy'}}</p>
                 <div class="button-group">
-                    <button class="form-button primary" (click)="openEditModal(p)">
+                    <button class="form-button primary" (click)="openEditModal(p);$event.stopPropagation()">
                         <mat-icon  aria-hidden="false"  fontIcon="edit"></mat-icon>
                     </button>
-                    <button class="form-button red" (click)="deletePlanejamento(p.id)">
+                    <button class="form-button red" (click)="deletePlanejamento(p.id);$event.stopPropagation()">
                         <mat-icon  aria-hidden="false"  fontIcon="delete"></mat-icon>
                     </button>
                 </div>
             </li>
         </ul>
     </section>
+    <app-float-button #childButton (click)="openInsertModal()">
+        <mat-icon class="button-icon" aria-hidden="false"  fontIcon="add-circle"></mat-icon>
+    </app-float-button>
     <app-modal-exibicao-planejamento 
         [data]="selectedPlanejamento"
         [ngClass]="{'center':true,'--open': modalService.getShowModal(), '--close': !modalService.getShowModal()}"

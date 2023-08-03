@@ -12,12 +12,20 @@
 }
 
 .planning-list-item{
+    margin: 5px;
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-around;
     align-items: center;
     padding: 15px 10px;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.planning-list-item:hover{
+    border-radius: 5px;
+    background-color: var(--color-step-250);
+    transform: scale(1.03);
 }
 
 

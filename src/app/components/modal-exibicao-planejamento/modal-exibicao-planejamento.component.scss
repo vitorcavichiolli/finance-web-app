@@ -11,9 +11,21 @@
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 6px 0 black;
-    height: 600px;
 }
 
+.modal-header{
+    margin-bottom: 10px;
+}
+
+.modal-body{
+    margin-top: 10px;
+}
+
+.modal-title{
+    color: var(--color-primary);
+    width: 100%;
+    text-align: center;
+}
 .close-modal{
     font-size: 20px;
     background-color: transparent;
@@ -25,3 +37,45 @@
     transform: scale(1.1) rotate(360deg);
 }
 
+.modal-section{
+    padding: 20px;
+}
+
+.modal-group{
+
+    padding: 10px;
+}
+
+.modal-label{
+    white-space: nowrap;
+    margin-right: 5px;
+}
+
+.flex{
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.width50{
+    width: 50%;
+}
+.section-itens{
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid var(--color-primary);
+    border-radius: 5px;
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+.modal-item{
+    background-color: var(--color-step-100);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 5px;
+    box-shadow: 0 0 6px 0 black;
+}
+
+.bold{
+    font-weight: bold;
+}

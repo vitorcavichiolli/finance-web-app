@@ -5,30 +5,53 @@
                 <mat-icon  aria-hidden="false"  fontIcon="close"></mat-icon>
             </button>
         </div>
+        <mat-divider></mat-divider>
         <div class="modal-body">
-            <section class="modal-section">
-                <div class="modal-group">
-                    <p class="modal-label">Data Inicial:</p>
+            <h2 class="modal-title">Planejamento</h2>
+            <section class="modal-section flex center">
+                <div class="modal-group center flex width50">
+                    <p class="modal-label color-primary">Data Inicial:</p>
                     <p class="modal-value">{{data?.planejamento?.data_inicial | date:'dd/MM/yyyy'}}</p>
                 </div>
-                <div class="modal-group">
-                    <p class="modal-label">Data Final:</p>
+                <div class="modal-group center flex width50">
+                    <p class="modal-label color-primary">Data Final:</p>
                     <p class="modal-value">{{data?.planejamento?.data_final | date:'dd/MM/yyyy'}}</p>
                 </div>
-                <div class="modal-group">
-                    <p class="modal-label">Renda Líquida:</p>
-                    <p class="modal-value">R$: {{ formataValor(data?.planejamento?.renda ?? '') }}</p>
+                <div class="modal-group center flex width50">
+                    <p class="modal-label color-primary">Renda Líquida:</p>
+                    <p class="modal-value">R$ {{ formataValor(data?.planejamento?.renda ?? '') }}</p>
                 </div>
             </section>
-            <section class="modal-section">
+            <section *ngIf="!isPlanningOver()" class="center flex">
+                <p class="modal-value">Dias restantes no planejamento: <span class="bold">{{diasRestantes}}</span></p>
+            </section>
+            <section class="modal-section section-itens">
                 <div class="modal-item" *ngFor="let item of data?.itens">
-                    <div class="modal-group">
-                        <p class="modal-label">Categoria:</p>
-                        <p class="modal-value">{{item.categoria}}</p>
+                    <div class="modal-group flex center">
+                        <p class="modal-value color-primary bold">{{getCategoria(item.categoria)}}</p>
                     </div>
-                    <div class="modal-group">
-                        <p class="modal-label">Porcentagem:</p>
-                        <p class="modal-value">{{item.porcentagem}}</p>
+                    <div class="modal-group flex center">
+                        <p class="modal-value bold">{{item.porcentagem}}%</p>
+                    </div>
+                    <div class="modal-group flex center">
+                        <p class="modal-label">Valor Planejado:</p>
+                        <p class="modal-value bold color-green">R$ {{formataValor(getValorItem(item.porcentagem))}}</p>
+                    </div>
+                    <div class="modal-group flex center">
+                        <p class="modal-label">Utilizado:</p>
+                        <p class="modal-value bold" >
+                            <span [ngClass]="{'color-red': valoresUtilizadosPorCategoria[item.categoria] >= getValorItem(item.porcentagem),'color-green': valoresUtilizadosPorCategoria[item.categoria] < getValorItem(item.porcentagem) }">
+                                R$ {{ formataValor(valoresUtilizadosPorCategoria[item.categoria]) }}
+                            </span> | <span class="color-warning">{{porcentagemUtilizadosPorCategoria[item.categoria]}}%</span> 
+                        </p>
+                    </div>
+                    <div class="modal-group flex center">
+                        <p class="modal-label">Restante:</p>
+                        <p class="modal-value bold" >
+                            <span [ngClass]="{'color-red': valoresRestantePorCategoria[item.categoria] <= 0,'color-green': valoresRestantePorCategoria[item.categoria] > 0 }">
+                                R$ {{ formataValor(valoresRestantePorCategoria[item.categoria]) }}
+                            </span> 
+                        </p>
                     </div>
                 </div>
             </section>

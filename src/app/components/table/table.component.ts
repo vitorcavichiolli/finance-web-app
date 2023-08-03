@@ -71,30 +71,15 @@ export class TableComponent implements OnChanges {
   }
 
   getTipo(id:string):string{
-    const retornoEncontrado = tipos.find((el) => el.id === id);
-    if (retornoEncontrado) {
-      return retornoEncontrado.nome;
-    } else {
-      return '-';
-    }
+    return this.commonService.getTipo(id);
   }
 
   getCategoria(id: string): string {
-    const retornoEncontrado = categorias.find((el) => el.id === parseInt(id));
-    if (retornoEncontrado) {
-      return retornoEncontrado.nome;
-    } else {
-      return '-';
-    }
+    return this.commonService.getCategoria(id);
   }
   
   getPagamento(id:string):string{
-    const retornoEncontrado = pagamentos.find((el) => el.id === id);
-    if (retornoEncontrado) {
-      return retornoEncontrado.nome;
-    } else {
-      return '-';
-    }
+    return this.commonService.getPagamento(id);
   }
 
  

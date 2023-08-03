@@ -81,5 +81,16 @@ export class PlanningComponent implements OnInit{
     }
   }
 
-  
+  openInsertModal() {
+    // Open the Material Dialog
+    const dialogRef = this.dialog.open(ModalPlanejamentoComponent, {
+      data: {
+        isEditMode: false
+      }
+    });
+
+    // Handle dialog close event if needed
+    dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
 }

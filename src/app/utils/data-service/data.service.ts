@@ -36,6 +36,8 @@ export class DataService {
     return db.get('movimentacoes', id);
   }
 
+  
+
   async updateMovimentacao(movimentacao: Movimentacao): Promise<any> {
     const db = await this.dbPromise;
     if (!movimentacao.id) {
@@ -56,5 +58,25 @@ export class DataService {
   async getAllMovimentacoes(): Promise<Movimentacao[]> {
     const db = await this.dbPromise;
     return db.getAll('movimentacoes');
+  }
+
+  async getMovimentacaoByCategoriaAndDate(categoria: number, data_ini: Date, data_fim: Date): Promise<Movimentacao[]> {
+    const db = await this.dbPromise;
+    const store = db.transaction('movimentacoes').objectStore('movimentacoes');
+    const categoriaIndex = store.index('categoria');
+    const dataIndex = store.index('data');
+  
+    const categoriaRange = IDBKeyRange.only(categoria);
+    const dataRange = IDBKeyRange.bound(data_ini, data_fim);
+  
+    const categoriasMatched = await categoriaIndex.getAll(categoriaRange);
+    const dataMatched = await dataIndex.getAll(dataRange);
+  
+    // Get the common elements between the two arrays (movimentacoes that have both the categoria and date in range)
+    const matchedMovimentacoes = categoriasMatched.filter((movimentacao) =>
+      dataMatched.some((m) => m.id === movimentacao.id)
+    );
+  
+    return matchedMovimentacoes;
   }
 }
