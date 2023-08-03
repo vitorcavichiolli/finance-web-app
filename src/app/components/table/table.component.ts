@@ -21,7 +21,9 @@ export class TableComponent implements OnChanges {
   displayedColumns: string[] = ['data', 'categoria', 'pagamento', 'descricao', 'valor','actions'];
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
+  totalGastos:number = 0;
+  totalReceita: number = 0;
+  total: number = 0;
   private _data: any[] = [];
 
   @Input() set data(data: any[]) {
@@ -45,6 +47,8 @@ export class TableComponent implements OnChanges {
       this.updateDataSource();
       this.dataSource.paginator = this.paginator;
     }
+    this.getValorTotal(this.data);
+
   }
 
   private updateDataSource(): void {
@@ -75,6 +79,25 @@ export class TableComponent implements OnChanges {
       return parseFloat(valor.replace(',', '.'));
     }
     return valor as number;
+  }
+
+  getValorTotal(data:any){
+    console.log(data);
+    let total:number = 0;
+    let totalGastos: number=0;
+    let totalReceita:number = 0;
+    data.forEach((element:any )=> {
+      if(element.tipo === 'd'){
+        totalGastos += parseFloat(element.valor);
+      }
+      else if( element.tipo ==='r'){
+        totalReceita += parseFloat(element.valor);
+      }
+    });
+    total = totalReceita - totalGastos;
+    this.total = total;
+    this.totalGastos = totalGastos;
+    this.totalReceita = totalReceita;
   }
 
   getTipo(id:string):string{
