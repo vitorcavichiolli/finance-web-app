@@ -34,13 +34,12 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
       let totalUtilizado = 0;
       for (const item of this.data.itens) {
         await this.valorUtilizadoPorItem(item.categoria)
-        if(this.valorTotalPlanejado ===0){
-          total += this.getValorItem(item.porcentagem);
-        } 
-        if(this.valorTotalPlanejado ===0){
-          totalUtilizado += this.valoresUtilizadosPorCategoria[item.categoria];
-        } 
+       
+        total += this.getValorItem(item.porcentagem);
+        totalUtilizado += this.valoresUtilizadosPorCategoria[item.categoria];
+
       }
+      console.log(total);
       this.valorTotalPlanejado = total;
       this.valorTotalUtilizado = totalUtilizado;
     }
