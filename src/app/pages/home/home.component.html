@@ -48,20 +48,25 @@
       <h3 class="color-primary">Últimos registros</h3>
       <ul class="list">
         <li class="list-item" *ngFor="let mov of ultimasMovimentacoes">
-          <p class="list-label">{{mov.descricao}}</p>
-          <p [ngClass]="{'list-value': true, 'color-red': mov.tipo === 'd', 'color-green': mov.tipo === 'r'}">
-            R$ {{ formatarValor(mov.valor) }}
-          </p>
-          <p class="list-label">{{mov.data | date:'dd/MM/yyyy'}}</p>
-          <div class="button-group ">
-            <button class="form-button primary" (click)="openEditModal(mov)">
-              <mat-icon  aria-hidden="false"  fontIcon="edit"></mat-icon>
-            </button>
-            &nbsp;
-            <button class="form-button red" (click)="deleteMovimentacao(mov.id)">
-              <mat-icon  aria-hidden="false"  fontIcon="delete"></mat-icon>
-            </button>
+          <div class="list-group">
+            <p class="list-label">{{mov.descricao}}</p>
+            <p [ngClass]="{'list-value': true, 'color-red': mov.tipo === 'd', 'color-green': mov.tipo === 'r'}">
+              R$ {{ formatarValor(mov.valor) }}
+            </p>
+            <p class="list-label">{{mov.data | date:'dd/MM/yyyy'}}</p>
           </div>
+          <div class="list-group list-group-sm">
+            <div class="button-group ">
+              <button class="form-button primary" (click)="openEditModal(mov)">
+                <mat-icon  aria-hidden="false"  fontIcon="edit"></mat-icon>
+              </button>
+              &nbsp;
+              <button class="form-button red" (click)="deleteMovimentacao(mov.id)">
+                <mat-icon  aria-hidden="false"  fontIcon="delete"></mat-icon>
+              </button>
+            </div>
+          </div>
+          
         </li>
         
    

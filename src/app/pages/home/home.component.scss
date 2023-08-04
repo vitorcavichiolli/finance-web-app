@@ -46,6 +46,18 @@
     margin: 0;
     padding: 5px;
     border-bottom: 1px solid var(--color-primary);
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.list-group{
+    width: 80%;
+}
+
+.list-group-sm{
+    width: 20%;
 }
 
 .list-label, .list-value{
