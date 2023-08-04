@@ -77,7 +77,7 @@ export class BackService  {
       if (itensComprometidos.length > 0) {
         const planejamentoComprometido = {
           planejamento: plan.planejamento,
-          itens: itensComprometidos  
+          itens:  plan.itens  
         };
         planejamentosComprometidos.push(planejamentoComprometido);
       }
