@@ -1,0 +1,19 @@
+<div class="notificacao-container warning" *ngFor="let notificacao of notificacoes">
+    <div class="notificacao-content">
+        <section class="notificacao-title">
+            <p>{{notificacoes.length}} planejamento(s) comprometido(s)</p>
+        </section>
+        <mat-divider></mat-divider>
+        <section class="notificacao-body">
+            <ul class="notificacao-list">
+                <li (click)="onNotificationSelect(notificacao)" class="notificacao-item warning">
+                    <p>{{ notificacao.planejamento.data_inicial |  date:'dd/MM/yyyy'}}</p>
+                    &nbsp;
+                    &nbsp;
+                    <p>{{ notificacao.planejamento.data_final |  date:'dd/MM/yyyy' }}</p>    
+                </li>
+            </ul>
+        </section>
+        
+    </div>
+</div>

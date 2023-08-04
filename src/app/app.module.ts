@@ -33,6 +33,7 @@ import {MatSliderModule} from '@angular/material/slider';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ModalExibicaoPlanejamentoComponent } from './components/modal-exibicao-planejamento/modal-exibicao-planejamento.component';
+import { NotificationComponent } from './components/notification/notification.component';
 
 
 
@@ -51,7 +52,8 @@ import { ModalExibicaoPlanejamentoComponent } from './components/modal-exibicao-
     PlanningComponent,
     ModalPlanejamentoComponent,
     AlertDialogComponent,
-    ModalExibicaoPlanejamentoComponent
+    ModalExibicaoPlanejamentoComponent,
+    NotificationComponent
   ],
   imports: [
     BrowserModule,

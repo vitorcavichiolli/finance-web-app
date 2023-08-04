@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
+import { BackService } from 'src/app/utils/back-service/back.service';
 import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { contas } from 'src/app/utils/data/data';
 import { ModalService } from 'src/app/utils/modal-service/modal.service';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
+import { ItemPlanejamento, Planejamento } from 'src/app/utils/models/planejamentos.model';
 
 @Component({
   selector: 'app-home',
@@ -28,11 +30,15 @@ export class HomeComponent implements OnInit {
   totais_contas: number[] = [];
   contas: any;
   ultimasMovimentacoes: Movimentacao[] = [];
+  notificacoes:{ planejamento: Planejamento, itens: ItemPlanejamento[] }[] =[];
+  selectedPlanejamento: { planejamento: Planejamento, itens: any[] } | null = null;
+
   constructor(
     public modalService: ModalService, 
     public dialog: MatDialog,
     private dataService:DataService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private backService: BackService
   ){}
 
     async ngOnInit() {
@@ -42,7 +48,21 @@ export class HomeComponent implements OnInit {
       await this.calcRenda(this.movimentacoes);
       await this.calcPorConta(this.movimentacoes);
       this.calcSaldo();
+      this.backService.notificacoesAtualizadas.subscribe(() => {
+        this.notificacoes = this.backService.getPlanejamentosComprometidos();
+      });
+    
     }
+
+   
+  onNotificationSelect(notification: {
+    planejamento: Planejamento;
+    itens: ItemPlanejamento[];
+  }): void {
+    this.selectedPlanejamento = notification;
+    this.modalService.openModal();
+  }
+
     openInsertModal() {
       // Open the Material Dialog
       const dialogRef = this.dialog.open(ModalComponent, {
@@ -169,4 +189,13 @@ export class HomeComponent implements OnInit {
       return this.commonService.formatarValor(valor);
     }
     
+    async onPlanejamentoSelect(planejamento: { planejamento: Planejamento, itens: any[] }): Promise<void> {
+      try {
+        // Chame o método getPlanejamentoWithItems() do serviço para obter o planejamento e seus itens
+        this.selectedPlanejamento = planejamento;
+        this.modalService.openModal();
+      } catch (error) {
+        console.error('Error fetching planejamento with items:', error);
+      }
+    }
 }

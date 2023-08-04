@@ -1,0 +1,38 @@
+.notificacao-container{
+    border-radius: 5px;
+    padding: 20px;
+    margin: 20px auto;
+    box-shadow: 0 0 6px 0 black;
+}
+
+.notificacao-title{
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.notificacao-body{
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.notificacao-list{
+    list-style: none;
+    padding: 10px;
+}
+
+.notificacao-item{
+    filter: contrast(0.7);
+    color: black;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    font-weight: bold;
+    font-size: 13px;
+    box-shadow: 0 0 6px black;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}

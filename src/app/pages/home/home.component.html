@@ -1,4 +1,6 @@
 <div class="content">
+  
+  <section>
     <app-lg-card>
       <div class="card-content">
         <div class="card-group">
@@ -37,6 +39,11 @@
        
       </div>
     </app-lg-card>
+  </section>
+  <section>
+    <app-notification *ngIf="notificacoes.length>0" [data]="notificacoes" (notificationSelected)="onNotificationSelect($event)"></app-notification>
+  </section>
+  <section>
     <div class="list-container">
       <h3 class="color-primary">Últimos registros</h3>
       <ul class="list">
@@ -63,5 +70,12 @@
     <app-float-button #childButton (click)="openInsertModal()" class="primary"> 
         <mat-icon class="button-icon" aria-hidden="false"  fontIcon="add-circle"></mat-icon>  
     </app-float-button>
-  
-  </div>
+  </section>
+
+ 
+</div>
+<app-modal-exibicao-planejamento 
+[data]="selectedPlanejamento"
+[ngClass]="{'center':true,'--open': modalService.getShowModal(), '--close': !modalService.getShowModal()}"
+>
+</app-modal-exibicao-planejamento>
