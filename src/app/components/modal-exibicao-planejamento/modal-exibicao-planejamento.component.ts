@@ -46,6 +46,8 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
 
    
   }
+
+  
   
   closeModal(){
     this.modalService.closeModal();

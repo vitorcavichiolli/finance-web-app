@@ -106,7 +106,6 @@ export class PlanningDataService {
     const itemPlanejamentoStore = tx.objectStore(ITEM_PLANEJAMENTO_STORE);
 
     try {
-      // Delete the associated items first
       const itemIndex = itemPlanejamentoStore.index('by_planejamento');
       let itemCursor = await itemIndex.openCursor(IDBKeyRange.only(planejamentoId));
       while (itemCursor) {
@@ -114,10 +113,8 @@ export class PlanningDataService {
         itemCursor = await itemCursor.continue();
       }
 
-      // Delete the planejamento
       await planejamentoStore.delete(planejamentoId);
 
-      // Complete the transaction
       await tx.done;
     } catch (error) {
       console.error('Error deleting planejamento:', error);
@@ -128,23 +125,28 @@ export class PlanningDataService {
   async getAllPlanejamentos(): Promise<Planejamento[]> {
     const db = await this.dbPromise;
     return await db.getAll(PLANEJAMENTO_STORE);
-
-    // // Busca os itens associados a cada planejamento
-    // const planejamentosComItensPromises = planejamentos.map(async (planejamento) => {
-    //   const itens = await this.getItensByPlanejamentoId(planejamento.id!);
-    //   return { planejamento, itens };
-    // });
-
-    // // Aguarda a resolução de todas as promises
-    // const planejamentosComItens = await Promise.all(planejamentosComItensPromises);
-
-    // // Retorna apenas os planejamentos (sem os itens) como resultado final
-    // return planejamentosComItens.map(({ planejamento }) => planejamento);
   }
 
-  // Método auxiliar para buscar os itens de um planejamento pelo seu ID
   async getItensByPlanejamentoId(planejamentoId: number): Promise<ItemPlanejamento[]> {
     const db = await this.dbPromise;
     return db.getAllFromIndex(ITEM_PLANEJAMENTO_STORE, 'by_planejamento', planejamentoId);
+  }
+
+  async getPlanejamentosByDataFinal(dataFinal: Date): Promise<{ planejamento: Planejamento, itens: ItemPlanejamento[] }[]> {
+    const db = await this.dbPromise;
+    const planejamentoTransaction = db.transaction(PLANEJAMENTO_STORE, 'readonly');
+    const planejamentoStore = planejamentoTransaction.objectStore(PLANEJAMENTO_STORE);
+    const dateIndex = planejamentoStore.index('by_date');
+
+    const planejamentos = await dateIndex.getAll(IDBKeyRange.lowerBound(dataFinal));
+
+    const result: { planejamento: Planejamento, itens: ItemPlanejamento[] }[] = [];
+
+    for (const planejamento of planejamentos) {
+      const itens = await db.getAllFromIndex(ITEM_PLANEJAMENTO_STORE, 'by_planejamento', planejamento.id);
+      result.push({ planejamento, itens });
+    }
+
+    return result;
   }
 }
