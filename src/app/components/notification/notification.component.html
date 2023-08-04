@@ -9,6 +9,7 @@
                 <li *ngFor="let notificacao of notificacoes" (click)="onNotificationSelect(notificacao)" class="notificacao-item warning">
                     <p>{{ notificacao.planejamento.data_inicial |  date:'dd/MM/yyyy'}}</p>
                     &nbsp;
+                    até
                     &nbsp;
                     <p>{{ notificacao.planejamento.data_final |  date:'dd/MM/yyyy' }}</p>    
                 </li>
