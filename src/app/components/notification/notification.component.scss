@@ -20,6 +20,7 @@
 .notificacao-list{
     list-style: none;
     padding: 10px;
+    overflow-x: hidden;
 }
 
 .notificacao-item{
@@ -35,4 +36,16 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.notificacao-item:not(:last-child){
+    margin-bottom: 7px;
+}
+
+.notificacao-item:hover{
+    transform: scale(1.01);
+    filter: contrast(1);
+    background-color: rgb(240, 176, 0);
+    color: white;
 }
