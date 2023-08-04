@@ -62,7 +62,8 @@ export class BackService  {
 
   private async verificarPlanejamentos(): Promise<{ planejamento: Planejamento, itens: ItemPlanejamento[] }[]> {
     const planejamentosComprometidos: { planejamento: Planejamento, itens: ItemPlanejamento[] }[] = [];
-  
+    const dataAtual = new Date();
+
     this.planejamentos.forEach(plan => {
       const itensComprometidos: ItemPlanejamento[] = [];
   
@@ -79,7 +80,11 @@ export class BackService  {
           planejamento: plan.planejamento,
           itens:  plan.itens  
         };
-        planejamentosComprometidos.push(planejamentoComprometido);
+
+        if(dataAtual <= new Date(planejamentoComprometido.planejamento.data_final)){
+          planejamentosComprometidos.push(planejamentoComprometido);
+        }
+
       }
     });
   
