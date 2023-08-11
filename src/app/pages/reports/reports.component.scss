@@ -20,8 +20,22 @@
     align-items: center;
 }
 
-.cb-list-section>ul>li{
-    width: 33%;
+
+@media only screen and (max-width: 400px) {
+    .cb-list-section>ul>li{
+        min-width: 50%;
+    }
+
+    .form-content{
+        padding: 0;
+        display: flex;
+        flex-flow: row wrap;
+    }
+    
+    .mat-expansion-panel{
+        margin: 0;
+    }
+    
 }
 
 .mat-expansion-panel{
@@ -39,4 +53,5 @@
 .component-section{
     margin: 20px;
 }
+
 
