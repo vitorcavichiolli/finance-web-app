@@ -20,7 +20,6 @@ export class NotificationComponent implements OnInit{
 
   ngOnInit(): void {
     this.notificacoes = this.data;
-    console.log(this.notificacoes);
   }
 
   getCategoria(id: string): string {

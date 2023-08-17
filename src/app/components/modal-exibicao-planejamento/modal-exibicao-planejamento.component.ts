@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { API_LISTAGEM_MOVIMENTACOES_BY_CATEGORA_DATA } from 'src/app/utils/api/api';
 import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { ModalService } from 'src/app/utils/modal-service/modal.service';
+import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 import { Planejamento } from 'src/app/utils/models/planejamentos.model';
 
 @Component({
@@ -21,7 +23,7 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
   constructor(
     public modalService: ModalService,
     private commonService: CommonService,
-    private dataService: DataService
+     
   ){}
 
   async ngOnInit(): Promise<void> {
@@ -39,7 +41,6 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
         totalUtilizado += this.valoresUtilizadosPorCategoria[item.categoria];
 
       }
-      console.log(total);
       this.valorTotalPlanejado = total;
       this.valorTotalUtilizado = totalUtilizado;
     }
@@ -98,7 +99,12 @@ export class ModalExibicaoPlanejamentoComponent implements OnInit {
     const dataFinal = this.data?.planejamento?.data_final;
     let valor: number = 0;
     if (dataInicial && dataFinal) {
-      const movimentacoes = await this.dataService.getMovimentacaoByCategoriaAndDate(categoria, dataInicial, dataFinal);
+      const params = {dataMovimentacao: dataInicial, categoria: categoria}
+      let movimentacoes:Movimentacao[] = [];
+      const result = await this.commonService.getApi<Movimentacao[]>(API_LISTAGEM_MOVIMENTACOES_BY_CATEGORA_DATA, params).toPromise();
+      if (result !== undefined) {
+        movimentacoes = result;
+      }    
       movimentacoes.forEach((element) => {
         valor += parseFloat(element.valor.toString());
       });

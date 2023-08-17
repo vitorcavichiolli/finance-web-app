@@ -82,7 +82,6 @@ export class TableComponent implements OnChanges {
   }
 
   getValorTotal(data:any){
-    console.log(data);
     let total:number = 0;
     let totalGastos: number=0;
     let totalReceita:number = 0;

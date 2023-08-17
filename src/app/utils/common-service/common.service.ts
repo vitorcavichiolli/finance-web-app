@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { categorias, pagamentos, tipos } from '../data/data';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommonService {
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   formatarValor(valor: number | string): string {
     if(this.checkEmptyNullUndefined(valor)){
@@ -48,6 +50,60 @@ export class CommonService {
     } else {
       return '-';
     }
+  }
+
+  public getApi<T>(url: string, queryParams?: any): Observable<T> {
+    let headers = new HttpHeaders({
+      'accept': '*/*' // Defina os headers necessários aqui
+    });
+    let params = new HttpParams();
+    if (queryParams) {
+      Object.keys(queryParams).forEach((key) => {
+        params = params.append(key, queryParams[key]);
+      });
+    }
+
+    return this.http.get<T>(url, { headers, params });
+  }
+
+  public postApi<T>(url: string, body: any): Observable<T> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'accept': 'text/plain' // Você pode ajustar o cabeçalho de aceitação conforme necessário
+    });
+
+    return this.http.post<T>(url, body, { headers });
+  }
+
+  public putApi<T>(url: string, body: any): Observable<T> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'accept': 'text/plain' ,
+    });
+
+    return this.http.post<T>(url, body, { headers });
+  }
+
+  public deleteApi<T>(url: string, body: any): Observable<T> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'accept': 'text/plain',
+    });
+  
+    return this.http.post<T>(url, body, { headers });
+  }
+
+  formatarData(data: string | undefined | Date): string {
+    if (!data) {
+      return '';
+    }
+
+    const dataObj = new Date(data);
+    const year = dataObj.getFullYear();
+    const month = String(dataObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dataObj.getDate()).padStart(2, '0');
+
+    return `${day}/${month}/${year}`;
   }
 
 }

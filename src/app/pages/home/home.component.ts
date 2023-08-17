@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
+import { API_DELETE_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACOES } from 'src/app/utils/api/api';
 import { BackService } from 'src/app/utils/back-service/back.service';
 import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
@@ -88,21 +89,29 @@ export class HomeComponent implements OnInit {
     }
 
     async listarMovimentacoes(): Promise<void> {
-      this.movimentacoes = await this.dataService.getAllMovimentacoes();
-      const copiaMovimentacoes = [...this.movimentacoes];
-      copiaMovimentacoes.sort((a, b) => {
-        const dateComparison = new Date(b.data).getTime() - new Date(a.data).getTime();
-        if (dateComparison === 0) {
-          if(b.id && a.id)
-          return b.id - a.id;
-          return dateComparison;
-        } else {
-          return dateComparison;
-        }
-      });
-      this.movimentacoes = copiaMovimentacoes;
-      this.ultimasMovimentacoes =  copiaMovimentacoes.slice(0, 50);
+      try {
+        const result = await this.commonService.getApi<Movimentacao[]>(API_LISTAGEM_MOVIMENTACOES).toPromise();
+        if (result !== undefined) {
+          this.movimentacoes = result;
+        }        
+        const copiaMovimentacoes = [...this.movimentacoes];
+        copiaMovimentacoes.sort((a, b) => {
+          const dateComparison = new Date(b.data).getTime() - new Date(a.data).getTime();
+          if (dateComparison === 0) {
+            if(b.id && a.id)
+            return b.id - a.id;
+            return dateComparison;
+          } else {
+            return dateComparison;
+          }
+        });
+        this.movimentacoes = copiaMovimentacoes;
+        this.ultimasMovimentacoes =  copiaMovimentacoes.slice(0, 50);
+      } catch (error) {
+        console.error('Erro ao listar movimentações:', error);
+      }
     }
+    
 
     async deleteMovimentacao(id: number | undefined): Promise<void> {
       if (typeof id === 'number') {
@@ -116,9 +125,15 @@ export class HomeComponent implements OnInit {
     
         dialogRef.afterClosed().subscribe((result: boolean) => {
           if (result === true) {
-            this.dataService.deleteMovimentacao(id).then(() => {
-              window.location.reload();
-            });
+            const body = parseInt(id.toString());
+            this.commonService.deleteApi<any>(API_DELETE_MOVIMENTACAO, body).subscribe(
+              response => {
+                window.location.reload();
+              },
+              error => {
+                console.error('Error deleting item', error);
+              }
+            );
           } else {
           }
         });

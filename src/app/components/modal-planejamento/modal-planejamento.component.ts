@@ -8,6 +8,8 @@ import { ItemPlanejamento, Planejamento } from 'src/app/utils/models/planejament
 import { PlanningDataService } from 'src/app/utils/planning-data-service/planning-data.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { CommonService } from 'src/app/utils/common-service/common.service';
+import { API_INSERT_PLANEJAMENTO, API_LISTAGEM_PLANEJAMENTOS_ITENS, API_UPDATE_PLANEJAMENTO } from 'src/app/utils/api/api';
+import { formatDate } from '@angular/common';
 
 
 interface PlanejamentoWithItens extends Planejamento {
@@ -34,8 +36,6 @@ export class ModalPlanejamentoComponent {
   constructor(
     public dialogRef: MatDialogRef<ModalPlanejamentoComponent>,
     private fb: FormBuilder,
-    private dataService: DataService,
-    private planningDataService: PlanningDataService,
     public dialog: MatDialog,   
     private commonService: CommonService,
     @Inject(MAT_DIALOG_DATA) public data: any // Obtenha os dados passados pelo modal de edição
@@ -69,15 +69,22 @@ export class ModalPlanejamentoComponent {
 
     if (this.isEditMode && this.planejamento) {
       // Adjust the form with the data of the Planejamento being edited
+      const dataInicial = new Date(this.planejamento.data_inicial);
+      const dataFinal = new Date(this.planejamento.data_final);
       this.form.patchValue({
-        data_inicial: this.planejamento.data_inicial,
-        data_final: this.planejamento.data_final,
+        data_inicial: formatDate(dataInicial, 'yyyy-MM-dd', 'en'),
+        data_final: formatDate(dataFinal, 'yyyy-MM-dd', 'en'),
         renda: this.planejamento.renda
       });
 
       // Populate the itensFormArray with existing data
       if(this.planejamento.id){
-        let itens = this.getPlanejamentoItens(this.planejamento.id);
+        let itens:ItemPlanejamento[] = [];
+        const params = {id:this.planejamento.id}
+        const result = await this.commonService.getApi<ItemPlanejamento[]>(API_LISTAGEM_PLANEJAMENTOS_ITENS,params).toPromise();
+          if (result !== undefined) {
+            itens = result;
+        }        
         (await itens).forEach(element => {
           this.addItemFormGroup(element.categoria, element.porcentagem);
         });
@@ -92,7 +99,9 @@ export class ModalPlanejamentoComponent {
   async getPlanejamentoItens(planejamentoId: number) {
     try {
       // Chame o método getPlanejamentoWithItems() do serviço para obter o planejamento e seus itens
-      return await this.planningDataService.getItensByPlanejamentoId(planejamentoId);
+      const params = {id:planejamentoId}
+      const result = await this.commonService.getApi<ItemPlanejamento[]>(API_LISTAGEM_PLANEJAMENTOS_ITENS,params).toPromise();
+      return result;
     } catch (error) {
       console.error('Error fetching planejamento with items:', error);
       return [];
@@ -176,38 +185,37 @@ export class ModalPlanejamentoComponent {
     }
     else{
       if (this.form.valid) {
+        const valorComVirgula = this.form.value.renda; // Valor com vírgula
+        const valorConvertido = parseFloat(valorComVirgula.replace(',', '.')); 
         const planejamentoData: Planejamento = {
           data_inicial: this.form.value.data_inicial,
           data_final: this.form.value.data_final,
-          renda: this.form.value.renda
+          renda: valorConvertido
         };
     
         const itensData: ItemPlanejamento[] = this.form.value.itens;
     
+        const requestBody = {
+          planejamento: {
+            id: 0,
+            data_inicial: planejamentoData.data_inicial,
+            data_final:  planejamentoData.data_final,
+            renda: planejamentoData.renda 
+          },
+          itens: itensData
+        };
+        
         if (this.isEditMode && this.planejamento.id) {
-          // Planejamento is being edited, update the existing record
-          const updatedPlanejamento: PlanejamentoWithItens = {
-            ...planejamentoData,
-            id: this.planejamento.id,
-            itens: itensData,
-          };
-    
+          requestBody.planejamento.id = this.planejamento.id;
           try {
-            await this.planningDataService.updatePlanejamentoWithItems(
-              updatedPlanejamento,
-              itensData
-            );
+            const response = await this.commonService.putApi(API_UPDATE_PLANEJAMENTO, requestBody).toPromise();
             window.location.reload();
           } catch (error) {
             console.error('Erro ao atualizar o planejamento:', error);
           }
         } else {
-          // Planejamento is being added as a new record
           try {
-            const planejamentoId = await this.planningDataService.addPlanejamentoWithItems(
-              planejamentoData,
-              itensData
-            );
+            const response = await this.commonService.postApi(API_INSERT_PLANEJAMENTO, requestBody).toPromise();
             window.location.reload();
           } catch (error) {
             console.error('Erro ao salvar o planejamento:', error);

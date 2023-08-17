@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ModalPlanejamentoComponent } from 'src/app/components/modal-planejamento/modal-planejamento.component';
+import { API_DELETE_PLANEJAMENTO, API_LISTAGEM_PLANEJAMENTOS, API_LISTAGEM_PLANEJAMENTOS_WITH_ITENS } from 'src/app/utils/api/api';
+import { CommonService } from 'src/app/utils/common-service/common.service';
 import { ModalService } from 'src/app/utils/modal-service/modal.service';
 import { ItemPlanejamento, Planejamento } from 'src/app/utils/models/planejamentos.model';
 import { PlanningDataService } from 'src/app/utils/planning-data-service/planning-data.service';
@@ -15,9 +17,9 @@ export class PlanningComponent implements OnInit{
   planejamentos: Planejamento[] = [];
   selectedPlanejamento: { planejamento: Planejamento, itens: any[] } | null = null;
   constructor(
-    private planejamentoService: PlanningDataService,
     public dialog: MatDialog,
-    public modalService: ModalService
+    public modalService: ModalService,
+    private commonService: CommonService
     ) {}
   async ngOnInit(): Promise<void> {
     // Chame o método getAllPlanejamentos() do serviço para obter todos os planejamentos
@@ -26,8 +28,10 @@ export class PlanningComponent implements OnInit{
 
   async getAllPlanejamentos(): Promise<void> {
     try {
-      this.planejamentos = await this.planejamentoService.getAllPlanejamentos();
-
+      const result = await this.commonService.getApi<Planejamento[]>(API_LISTAGEM_PLANEJAMENTOS).toPromise();
+      if (result !== undefined) {
+        this.planejamentos = result;
+      }
     } catch (error) {
       console.error('Error fetching planejamentos:', error);
     }
@@ -46,7 +50,11 @@ export class PlanningComponent implements OnInit{
   async onPlanejamentoSelect(planejamentoId: number): Promise<void> {
     try {
       // Chame o método getPlanejamentoWithItems() do serviço para obter o planejamento e seus itens
-      this.selectedPlanejamento = await this.planejamentoService.getPlanejamentoWithItems(planejamentoId);
+      const params = {id: planejamentoId}
+      const result = await this.commonService.getApi<{ planejamento: Planejamento, itens: any[] }>(API_LISTAGEM_PLANEJAMENTOS_WITH_ITENS,params).toPromise();
+      if (result !== undefined) {
+        this.selectedPlanejamento = result;
+      }
       this.modalService.openModal();
     } catch (error) {
       console.error('Error fetching planejamento with items:', error);
@@ -65,10 +73,15 @@ export class PlanningComponent implements OnInit{
   
       dialogRef.afterClosed().subscribe((result: boolean) => {
         if (result === true) {
-          // Usuário confirmou a exclusão, chama a função deleteMovimentacao
-          this.planejamentoService.deletePlanejamento(id).then(() => {
-            window.location.reload();
-          });
+          const body = parseInt(id.toString());
+          this.commonService.deleteApi<any>(API_DELETE_PLANEJAMENTO, body).subscribe(
+            response => {
+              window.location.reload();
+            },
+            error => {
+              console.error('Error deleting item', error);
+            }
+          );
         } else {
           // Usuário cancelou a exclusão
         }

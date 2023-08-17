@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AlertDialogComponent } from 'src/app/components/alert-dialog/alert-dialog.component';
 import { ModalPlanejamentoComponent } from 'src/app/components/modal-planejamento/modal-planejamento.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
+import { API_LISTAGEM_MOVIMENTACOES } from 'src/app/utils/api/api';
 import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, contas, pagamentos, tipos } from 'src/app/utils/data/data';
@@ -65,7 +66,6 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private fb: FormBuilder,
-    private dataService: DataService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone, 
     public dialog: MatDialog,
@@ -114,7 +114,10 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
 
   async listarMovimentacoes(): Promise<void> {
-    this.movimentacoes = await this.dataService.getAllMovimentacoes();
+    const result = await this.commonService.getApi<Movimentacao[]>(API_LISTAGEM_MOVIMENTACOES).toPromise();
+    if (result !== undefined) {
+      this.movimentacoes = result;
+    }    
     const copiaMovimentacoes = [...this.movimentacoes];
     copiaMovimentacoes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
     this.movimentacoes = copiaMovimentacoes;
@@ -133,6 +136,10 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     if(this.checkEmptyNullUndefined(fm.data_ini) && this.checkEmptyNullUndefined(fm.data_fim)) {
       const dataInicial: Date = new Date(fm.data_ini);
       const dataFinal: Date = new Date(fm.data_fim);
+      dataInicial.setUTCDate(dataInicial.getUTCDate() + 1);
+      dataFinal.setUTCDate(dataFinal.getUTCDate() + 1);
+      dataInicial.setHours(0, 0, 0, 0);
+      dataFinal.setHours(0, 0, 0, 0);
       if(dataInicial>dataFinal){
         const dialogRef = this.dialog.open(AlertDialogComponent, {
           data: {
@@ -160,7 +167,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     else {
       if(this.checkEmptyNullUndefined(fm.data_ini)){
         const dataInicial: Date = new Date(fm.data_ini);
-        const dataFinal: Date = new Date(fm.data_fim);
+        dataInicial.setUTCDate(dataInicial.getUTCDate() + 1);
+        dataInicial.setHours(0, 0, 0, 0);
         this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
           const dataMovimentacao: Date = new Date(movimentacao.data);
           return dataMovimentacao >= dataInicial;
@@ -168,6 +176,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       }
       else{
         const dataFinal: Date = new Date(fm.data_fim);
+        dataFinal.setUTCDate(dataFinal.getUTCDate() + 1);
+        dataFinal.setHours(0, 0, 0, 0);
         this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
           const dataMovimentacao: Date = new Date(movimentacao.data);
           return dataMovimentacao <= dataFinal;

@@ -5,6 +5,9 @@ import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, contas, pagamentos, tipos } from 'src/app/utils/data/data';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+import { CommonService } from 'src/app/utils/common-service/common.service';
+import { API_INSERT_MOVIMENTACAO, API_UPDATE_MOVIMENTACAO } from 'src/app/utils/api/api';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-modal',
@@ -23,8 +26,9 @@ export class ModalComponent implements OnInit{
   constructor(
       public dialogRef: MatDialogRef<ModalComponent>,
       private fb: FormBuilder,
-      private dataService: DataService,
+      
       public dialog: MatDialog,
+      private commonService: CommonService,
       @Inject(MAT_DIALOG_DATA) public data: any // Obtenha os dados passados pelo modal de edição
       ) {
         this.isEditMode = data.isEditMode;
@@ -61,10 +65,12 @@ export class ModalComponent implements OnInit{
     this.categorias = categorias;
     this.contas = contas;
     if (this.isEditMode) {
+      const data = new Date(this.movimentacao.data);
+
       // Ajustar o formulário com os dados da movimentação a ser editada
       this.form.patchValue({
         tipo: this.movimentacao.tipo,
-        data: this.movimentacao.data,
+        data: formatDate(data, 'yyyy-MM-dd', 'en'),
         descricao: this.movimentacao.descricao,
         pagamento: this.movimentacao.pagamento,
         valor: this.movimentacao.valor,
@@ -85,23 +91,34 @@ export class ModalComponent implements OnInit{
   }
 
   async salvarMovimentacao(): Promise<void> {
+    
     if(this.form.valid){
       const formValues = this.form.value;
+
+      const valorComVirgula = formValues.valor; // Valor com vírgula
+      const valorConvertido = parseFloat(valorComVirgula.replace(',', '.')); 
+
       const movimentacao: Movimentacao = {
         tipo: formValues.tipo,
         categoria: formValues.categoria,
         data: formValues.data,
         pagamento: formValues.pagamento,
         descricao: formValues.descricao,
-        valor: formValues.valor,
+        valor: valorConvertido,
         conta: formValues.conta
       };
 
       if (this.isEditMode && this.movimentacao.id) {
         movimentacao.id = this.movimentacao.id; // Definir o ID da movimentação no objeto atualizado
-        await this.dataService.updateMovimentacao(movimentacao);
-      } else {
-        const id = await this.dataService.saveMovimentacao(movimentacao);
+        const response = await this.commonService.putApi(API_UPDATE_MOVIMENTACAO, movimentacao).toPromise();
+      } 
+      else {
+        try {
+          const response = await this.commonService.postApi(API_INSERT_MOVIMENTACAO, movimentacao).toPromise();
+          // Lógica de tratamento da resposta, se necessário
+        } catch (error) {
+          console.error('Erro ao inserir movimentação:', error);
+        }
       }
 
       window.location.reload();

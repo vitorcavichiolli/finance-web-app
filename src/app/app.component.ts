@@ -20,7 +20,6 @@ export class AppComponent implements AfterViewInit, OnInit  {
   isMenuOpened = false; // Inicialmente, o menu estará fechado
   icon = 'chevron_right'; 
   constructor(
-    private dataService: DataService,
     public menuService: MenuService,
     private cdRef: ChangeDetectorRef,
     private backService: BackService

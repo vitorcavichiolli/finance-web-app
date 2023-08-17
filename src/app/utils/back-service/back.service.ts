@@ -6,6 +6,7 @@ import { CommonService } from '../common-service/common.service';
 import { Movimentacao } from '../models/movimentacao.model';
 import { ItemPlanejamento, Planejamento } from '../models/planejamentos.model';
 import { EventEmitter } from '@angular/core';
+import { API_LISTAGEM_MOVIMENTACOES, API_LISTAGEM_PLANEJAMENTOS_BY_DATAFINAL } from '../api/api';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +19,6 @@ export class BackService  {
   @Output() notificacoesAtualizadas: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(
-    private dataService: DataService,
-    private planningService: PlanningDataService,
     private commonService: CommonService
   ) { }
 
@@ -40,12 +39,14 @@ export class BackService  {
 
   private async performBackgroundTask(): Promise<void> {
     this.planejamentosComprometidos = await this.verificarPlanejamentos();
-    console.log(this.planejamentosComprometidos)
     this.notificacoesAtualizadas.emit();
   }
   
   private async listarMovimentacoes(): Promise<void> {
-    this.movimentacoes = await this.dataService.getAllMovimentacoes();
+    const result = await this.commonService.getApi<Movimentacao[]>(API_LISTAGEM_MOVIMENTACOES).toPromise();
+    if (result !== undefined) {
+      this.movimentacoes = result;
+    }    
     const copiaMovimentacoes = [...this.movimentacoes];
     this.movimentacoes = copiaMovimentacoes;
   }
@@ -54,7 +55,17 @@ export class BackService  {
     const dataAtual = new Date();
     
     try {
-      this.planejamentos = await this.planningService.getPlanejamentosByDataFinal(dataAtual);
+      const year = dataAtual.getFullYear();
+      const month = String(dataAtual.getMonth() + 1).padStart(2, '0');
+      const day = String(dataAtual.getDate()).padStart(2, '0');
+
+      const formattedDate = `${year}-${month}-${day}`;
+
+      const params = { dataFinal: formattedDate };
+      const result = await this.commonService.getApi<{ planejamento: Planejamento, itens: ItemPlanejamento[] }[]>(API_LISTAGEM_PLANEJAMENTOS_BY_DATAFINAL,params).toPromise();
+        if (result !== undefined) {
+          this.planejamentos = result;
+      }
     } catch (error) {
       console.error('Erro ao obter planejamentos:', error);
     }
