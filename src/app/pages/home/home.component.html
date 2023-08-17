@@ -21,7 +21,7 @@
           <p  [ngClass]="{'card-value': true, 'color-green': renda_refeicao>0}"> R$ {{formatarValor(renda_refeicao)}}</p>
         </div>
         <div class="card-group">
-          <p class="card-label ">Dinheiro:</p>
+          <p class="card-label ">Valores em dinheiro até a data atual:</p>
           <p class="card-value color-green"> R$ {{formatarValor(renda_dinheiro)}}</p>
           &nbsp; - &nbsp;
           <p class="card-value color-red"> R$ {{formatarValor(gastos_dinheiro)}}</p>
@@ -29,7 +29,7 @@
           <p [ngClass]="{'card-value': true, 'color-red': total_dinheiro<0, 'color-green': total_dinheiro>0}"> R$ {{formatarValor(total_dinheiro)}}</p>
         </div>
         <div class="card-group" >
-          <p class="card-label card-label-sm ">Valores lançados do mês atual:</p>
+          <p class="card-label card-label-sm ">Valores em dinheiro lançados do mês atual:</p>
           <p class="card-value card-value-sm color-green"> R$ {{formatarValor(renda_dinheiro_mes)}}</p>
           &nbsp; - &nbsp;
           <p class="card-value card-value-sm color-red"> R$ {{formatarValor(gastos_dinheiro_mes)}}</p>
