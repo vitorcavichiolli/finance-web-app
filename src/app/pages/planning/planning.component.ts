@@ -4,6 +4,7 @@ import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dia
 import { ModalPlanejamentoComponent } from 'src/app/components/modal-planejamento/modal-planejamento.component';
 import { API_DELETE_PLANEJAMENTO, API_LISTAGEM_PLANEJAMENTOS, API_LISTAGEM_PLANEJAMENTOS_WITH_ITENS } from 'src/app/utils/api/api';
 import { CommonService } from 'src/app/utils/common-service/common.service';
+import { LoadingService } from 'src/app/utils/loading-service/loading.service';
 import { ModalService } from 'src/app/utils/modal-service/modal.service';
 import { ItemPlanejamento, Planejamento } from 'src/app/utils/models/planejamentos.model';
 import { PlanningDataService } from 'src/app/utils/planning-data-service/planning-data.service';
@@ -19,7 +20,9 @@ export class PlanningComponent implements OnInit{
   constructor(
     public dialog: MatDialog,
     public modalService: ModalService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    public loadingService: LoadingService
+
     ) {}
   async ngOnInit(): Promise<void> {
     // Chame o método getAllPlanejamentos() do serviço para obter todos os planejamentos
@@ -27,12 +30,17 @@ export class PlanningComponent implements OnInit{
   }
 
   async getAllPlanejamentos(): Promise<void> {
+    this.loadingService.openLoading();
+
     try {
       const result = await this.commonService.getApi<Planejamento[]>(API_LISTAGEM_PLANEJAMENTOS).toPromise();
       if (result !== undefined) {
         this.planejamentos = result;
       }
+      this.loadingService.closeLoading();
+
     } catch (error) {
+      this.loadingService.closeLoading();
       console.error('Error fetching planejamentos:', error);
     }
   }
@@ -73,6 +81,8 @@ export class PlanningComponent implements OnInit{
   
       dialogRef.afterClosed().subscribe((result: boolean) => {
         if (result === true) {
+          this.loadingService.openLoading();
+
           const body = parseInt(id.toString());
           this.commonService.deleteApi<any>(API_DELETE_PLANEJAMENTO, body).subscribe(
             response => {

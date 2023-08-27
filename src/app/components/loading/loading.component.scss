@@ -1,0 +1,87 @@
+.loading-container{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    height: 100%;
+}
+
+
+
+.loading-content{
+    position: relative;
+    height: 100%;
+
+}
+
+.loading-animation{
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    border: 4px solid;
+    border-color: white transparent;
+    animation: rotate 1.5s forwards  infinite;
+    position: absolute;
+    top: calc((100% - 150px) / 2);
+    left: calc((100% - 150px) / 2);
+
+}
+
+.loading-text{
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    top: calc((100% - 150px) / 2);
+    left: calc((100% - 150px) / 2);
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    font-weight: bolder;
+}
+
+.loading-text>span, .loading-text>p{
+    display: inline-block;
+    font-family: 'Quattrocento Sans', sans-serif;
+}
+
+.loading-text-words {
+   
+    @for $i from 0 through 9 {
+        &:nth-child(#{$i + 1}) {
+            animation: color-text 1.5s (#{calc($i / 10)})+s infinite  forwards;
+        }
+    }
+}
+
+@keyframes rotate {
+    from{ 
+        transform: rotate(0);
+        border-color: white transparent;
+    }
+    20%{
+        border-color: #dff9fb transparent;
+    }
+    40%{
+        border-color: #c7ecee transparent;
+    }
+    60%{
+        border-color: #7ed6df transparent;
+    }
+    80%{
+        border-color: #54a0ff transparent;
+    }
+    to{ 
+        transform: rotate(360deg);
+        border-color: var(--color-primary) transparent;
+
+    }
+}
+
+@keyframes color-text {
+	0% {color: white}
+	100% {color: var(--color-primary)}
+}

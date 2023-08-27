@@ -92,3 +92,7 @@
 [ngClass]="{'center':true,'--open': modalService.getShowModal(), '--close': !modalService.getShowModal()}"
 >
 </app-modal-exibicao-planejamento>
+
+<app-loading
+[ngClass]="{'center':true,'--open': loadingService.getShowLoading(), '--close': !loadingService.getShowLoading()}"
+></app-loading>

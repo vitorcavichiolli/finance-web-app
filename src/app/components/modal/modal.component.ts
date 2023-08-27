@@ -66,6 +66,7 @@ export class ModalComponent implements OnInit{
     this.contas = contas;
     if (this.isEditMode) {
       const data = new Date(this.movimentacao.data);
+      const valorConvertido = this.formatarValor(this.movimentacao.valor); 
 
       // Ajustar o formulário com os dados da movimentação a ser editada
       this.form.patchValue({
@@ -73,7 +74,7 @@ export class ModalComponent implements OnInit{
         data: formatDate(data, 'yyyy-MM-dd', 'en'),
         descricao: this.movimentacao.descricao,
         pagamento: this.movimentacao.pagamento,
-        valor: this.movimentacao.valor,
+        valor: valorConvertido,
         categoria: this.movimentacao.categoria,
         conta: this.movimentacao.conta,
       });
@@ -133,5 +134,9 @@ export class ModalComponent implements OnInit{
       dialogRef.afterClosed().subscribe((result: boolean) => {
       });
     }
+  }
+
+  formatarValor(valor: number | string): string{
+    return this.commonService.formatarValor(valor);
   }
 }

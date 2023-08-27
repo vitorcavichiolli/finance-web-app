@@ -8,6 +8,7 @@ import { API_LISTAGEM_MOVIMENTACOES } from 'src/app/utils/api/api';
 import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, contas, pagamentos, tipos } from 'src/app/utils/data/data';
+import { LoadingService } from 'src/app/utils/loading-service/loading.service';
 import { Filters } from 'src/app/utils/models/checkboxFilter.model';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 
@@ -69,7 +70,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone, 
     public dialog: MatDialog,
-    private commonService: CommonService) {
+    private commonService: CommonService,
+    public loadingService: LoadingService
+    ) {
     this.form = this.fb.group({
       data_ini: [''],
       data_fim: [''],
@@ -114,6 +117,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
 
   async listarMovimentacoes(): Promise<void> {
+    this.loadingService.openLoading();
     const result = await this.commonService.getApi<Movimentacao[]>(API_LISTAGEM_MOVIMENTACOES).toPromise();
     if (result !== undefined) {
       this.movimentacoes = result;
@@ -121,7 +125,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     const copiaMovimentacoes = [...this.movimentacoes];
     copiaMovimentacoes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
     this.movimentacoes = copiaMovimentacoes;
-    
+    this.loadingService.closeLoading();
+
   }
 
   onFormChange(fm:any){    

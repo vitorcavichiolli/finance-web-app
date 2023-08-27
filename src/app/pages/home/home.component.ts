@@ -7,6 +7,7 @@ import { BackService } from 'src/app/utils/back-service/back.service';
 import { CommonService } from 'src/app/utils/common-service/common.service';
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { contas } from 'src/app/utils/data/data';
+import { LoadingService } from 'src/app/utils/loading-service/loading.service';
 import { ModalService } from 'src/app/utils/modal-service/modal.service';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 import { ItemPlanejamento, Planejamento } from 'src/app/utils/models/planejamentos.model';
@@ -44,7 +45,8 @@ export class HomeComponent implements OnInit {
     public dialog: MatDialog,
     private dataService:DataService,
     private commonService: CommonService,
-    private backService: BackService
+    private backService: BackService,
+    public loadingService: LoadingService
   ){}
 
     async ngOnInit() {
@@ -94,6 +96,7 @@ export class HomeComponent implements OnInit {
     }
 
     async listarMovimentacoes(): Promise<void> {
+      this.loadingService.openLoading();
       try {
         const result = await this.commonService.getApi<Movimentacao[]>(API_LISTAGEM_MOVIMENTACOES).toPromise();
         if (result !== undefined) {
@@ -117,9 +120,12 @@ export class HomeComponent implements OnInit {
         });
         this.movimentacoes = copiaMovimentacoes;
         this.ultimasMovimentacoes =  copiaMovimentacoes.slice(0, 50);
-        
+        this.loadingService.closeLoading();
+
       } catch (error) {
         console.error('Erro ao listar movimentações:', error);
+        this.loadingService.closeLoading();
+
       }
     }
     filterMovimentacoesAteMesAtual(movimentacoes: Movimentacao[]): Movimentacao[] {
@@ -168,6 +174,8 @@ export class HomeComponent implements OnInit {
 
 
     async calcGastos(movimentacoes: Movimentacao[], movimentacoes_mes: Movimentacao[]){
+      this.loadingService.openLoading();
+
       movimentacoes.forEach(element => {
         if (element.tipo === 'd') {
           this.gastos += parseFloat(element.valor.toString().replace(',', '.'));
@@ -186,9 +194,13 @@ export class HomeComponent implements OnInit {
           }
         }
       });
+      this.loadingService.closeLoading();
+
     }
 
     async calcPorConta(movimentacoes: Movimentacao[]){
+      this.loadingService.openLoading();
+
       this.contas.forEach((conta:any) =>{
         let gastos = 0;
         let renda = 0;
@@ -208,9 +220,13 @@ export class HomeComponent implements OnInit {
       this.gastos_contas.push(gastos);
       this.totais_contas.push(total);
     });
+    this.loadingService.closeLoading();
+
   }
 
     async calcRenda(movimentacoes: Movimentacao[], movimentacoes_mes: Movimentacao[]){
+      this.loadingService.openLoading();
+
       movimentacoes.forEach(element => {
         if(element.tipo === 'r'){
           this.renda += parseFloat(element.valor.toString().replace(',', '.'));
@@ -229,6 +245,8 @@ export class HomeComponent implements OnInit {
           }
         }
       });
+      this.loadingService.closeLoading();
+
     }
 
     calcSaldo(){

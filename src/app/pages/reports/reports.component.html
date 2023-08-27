@@ -166,3 +166,6 @@
         <mat-icon class="button-icon" aria-hidden="false"  fontIcon="trending_up"></mat-icon>
     </app-float-button>
 </div>
+<app-loading
+[ngClass]="{'center':true,'--open': loadingService.getShowLoading(), '--close': !loadingService.getShowLoading()}"
+></app-loading>

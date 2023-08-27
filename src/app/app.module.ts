@@ -34,6 +34,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 import { ModalExibicaoPlanejamentoComponent } from './components/modal-exibicao-planejamento/modal-exibicao-planejamento.component';
 import { NotificationComponent } from './components/notification/notification.component';
+import { LoadingComponent } from './components/loading/loading.component';
+import { LoadingService } from './utils/loading-service/loading.service';
 
 
 
@@ -53,7 +55,8 @@ import { NotificationComponent } from './components/notification/notification.co
     ModalPlanejamentoComponent,
     AlertDialogComponent,
     ModalExibicaoPlanejamentoComponent,
-    NotificationComponent
+    NotificationComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,
@@ -77,6 +80,7 @@ import { NotificationComponent } from './components/notification/notification.co
   providers: [
     ModalService,
     Location,
+    LoadingService
   ],
   schemas: [
     NO_ERRORS_SCHEMA

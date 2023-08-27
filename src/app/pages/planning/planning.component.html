@@ -24,3 +24,6 @@
         >
     </app-modal-exibicao-planejamento>
 </div>
+<app-loading
+[ngClass]="{'center':true,'--open': loadingService.getShowLoading(), '--close': !loadingService.getShowLoading()}"
+></app-loading>
