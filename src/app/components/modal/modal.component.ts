@@ -4,9 +4,10 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { DataService } from 'src/app/utils/data-service/data.service';
 import { categorias, contas, pagamentos, tipos } from 'src/app/utils/data/data';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
+import { Recorrencia } from 'src/app/utils/models/recorrencia.model';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { CommonService } from 'src/app/utils/common-service/common.service';
-import { API_INSERT_MOVIMENTACAO, API_UPDATE_MOVIMENTACAO } from 'src/app/utils/api/api';
+import { API_DELETE_RECORRENCIA, API_INSERT_MOVIMENTACAO, API_INSERT_RECORRENCIA, API_LISTAGEM_RECORRENCIA_BY_MOVIMENTACAO, API_UPDATE_MOVIMENTACAO, API_UPDATE_RECORRENCIA } from 'src/app/utils/api/api';
 import { formatDate } from '@angular/common';
 
 @Component({
@@ -22,6 +23,12 @@ export class ModalComponent implements OnInit{
   contas: any;
   isEditMode = false;
   movimentacao: Movimentacao;
+  recorrencia: Recorrencia = {
+    id_movimentacao: 0,
+    id:0,
+    tem_limite: false,
+    repeticao:0
+  };
 
   constructor(
       public dialogRef: MatDialogRef<ModalComponent>,
@@ -44,7 +51,7 @@ export class ModalComponent implements OnInit{
     return tipoControl?.errors?.['required'];
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     const currentDate = new Date();
     let localDateString = this.formatDate(currentDate.toLocaleDateString());
     this.form = this.fb.group({
@@ -55,6 +62,10 @@ export class ModalComponent implements OnInit{
       valor: new FormControl("", Validators.required),
       categoria: new FormControl(""),
       conta: new FormControl(""),
+      recorrencia: new FormControl(false),
+      limite: new FormControl(true),
+      repeticao: new FormControl(0),
+
     });
 
     this.form.valueChanges.subscribe(this.onFormChange);
@@ -67,8 +78,9 @@ export class ModalComponent implements OnInit{
     if (this.isEditMode) {
       const data = new Date(this.movimentacao.data);
       const valorConvertido = this.formatarValor(this.movimentacao.valor); 
-
-      // Ajustar o formulário com os dados da movimentação a ser editada
+      if(this.movimentacao.recorrencia == true){
+        await this.getRecorrencia(this.movimentacao.id!)
+      }
       this.form.patchValue({
         tipo: this.movimentacao.tipo,
         data: formatDate(data, 'yyyy-MM-dd', 'en'),
@@ -77,6 +89,9 @@ export class ModalComponent implements OnInit{
         valor: valorConvertido,
         categoria: this.movimentacao.categoria,
         conta: this.movimentacao.conta,
+        recorrencia:  Boolean(this.movimentacao.recorrencia),
+        limite: Boolean(this.recorrencia.tem_limite),
+        repeticao: this.recorrencia.repeticao
       });
     }
   }
@@ -96,7 +111,7 @@ export class ModalComponent implements OnInit{
     if(this.form.valid){
       const formValues = this.form.value;
 
-      const valorComVirgula = formValues.valor; // Valor com vírgula
+      const valorComVirgula = formValues.valor; 
       const valorConvertido = parseFloat(valorComVirgula.replace(',', '.')); 
 
       const movimentacao: Movimentacao = {
@@ -106,23 +121,34 @@ export class ModalComponent implements OnInit{
         pagamento: formValues.pagamento,
         descricao: formValues.descricao,
         valor: valorConvertido,
-        conta: formValues.conta
+        conta: formValues.conta,
+        recorrencia: formValues.recorrencia
       };
 
       if (this.isEditMode && this.movimentacao.id) {
-        movimentacao.id = this.movimentacao.id; // Definir o ID da movimentação no objeto atualizado
+        movimentacao.id = this.movimentacao.id; 
         const response = await this.commonService.putApi(API_UPDATE_MOVIMENTACAO, movimentacao).toPromise();
+        if(movimentacao.recorrencia){
+          this.salvarRecorrencia(movimentacao);
+        }
+        else{
+          window.location.reload();
+        }
       } 
       else {
         try {
           const response = await this.commonService.postApi(API_INSERT_MOVIMENTACAO, movimentacao).toPromise();
-          // Lógica de tratamento da resposta, se necessário
+          if(movimentacao.recorrencia){
+            this.salvarRecorrencia(movimentacao);
+          }
+          else{
+            window.location.reload();
+          }
         } catch (error) {
           console.error('Erro ao inserir movimentação:', error);
         }
       }
 
-      window.location.reload();
     }
     else{
       const dialogRef = this.dialog.open(AlertDialogComponent, {
@@ -133,6 +159,39 @@ export class ModalComponent implements OnInit{
 
       dialogRef.afterClosed().subscribe((result: boolean) => {
       });
+    }
+  }
+
+  async salvarRecorrencia(movimentacao: Movimentacao): Promise<void> {
+    
+      const formValues = this.form.value;
+
+      const recorrencia: Recorrencia = {
+        id_movimentacao: movimentacao.id!,
+        tem_limite: formValues.limite,
+        repeticao: formValues.repeticao
+      }
+
+      try {
+        const response = await this.commonService.postApi(API_INSERT_RECORRENCIA, recorrencia).toPromise();
+      } catch (error) {
+        console.error('Erro ao inserir recorrencia:', error);
+      }
+      
+      window.location.reload();
+    
+   
+  }
+
+  async getRecorrencia(movimentacao: number): Promise<void> {
+    try {
+      const params = {id: movimentacao}
+      const result = await this.commonService.getApi<Recorrencia>(API_LISTAGEM_RECORRENCIA_BY_MOVIMENTACAO,params).toPromise();
+      if (result !== undefined) {
+        this.recorrencia = result;
+      }
+    } catch (error) {
+      console.error('Error fetching recorrencia:', error);
     }
   }
 

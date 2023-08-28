@@ -6,7 +6,8 @@ import { CommonService } from '../common-service/common.service';
 import { Movimentacao } from '../models/movimentacao.model';
 import { ItemPlanejamento, Planejamento } from '../models/planejamentos.model';
 import { EventEmitter } from '@angular/core';
-import { API_LISTAGEM_MOVIMENTACOES, API_LISTAGEM_PLANEJAMENTOS_BY_DATAFINAL } from '../api/api';
+import { API_INSERT_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACOES, API_LISTAGEM_PLANEJAMENTOS_BY_DATAFINAL, API_LISTAGEM_RECORRENCIAS } from '../api/api';
+import { Recorrencia } from '../models/recorrencia.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ import { API_LISTAGEM_MOVIMENTACOES, API_LISTAGEM_PLANEJAMENTOS_BY_DATAFINAL } f
 export class BackService  {
   private taskSubscription: Subscription | undefined;
   private movimentacoes: Movimentacao[] = [];
+  private recorrencias: Recorrencia[] = [];
   private planejamentos: { planejamento: Planejamento, itens: ItemPlanejamento[] }[] = [];
   private planejamentosComprometidos: { planejamento: Planejamento, itens: ItemPlanejamento[] }[] = [];
   @Output() notificacoesAtualizadas: EventEmitter<void> = new EventEmitter<void>();
@@ -23,9 +25,10 @@ export class BackService  {
   ) { }
 
   async startBackgroundTask(): Promise<void> {
-    await this.listarMovimentacoes();
-    await this.listarPlanejamentos();
-    this.taskSubscription = interval(2000).subscribe(async () => {
+    this.taskSubscription = interval(5000).subscribe(async () => {
+      await this.listarMovimentacoes();
+      await this.listarPlanejamentos();
+      await this.listarRecorrencias();
       await this.performBackgroundTask();
     });
   }
@@ -40,6 +43,51 @@ export class BackService  {
   private async performBackgroundTask(): Promise<void> {
     this.planejamentosComprometidos = await this.verificarPlanejamentos();
     this.notificacoesAtualizadas.emit();
+    await this.verificarRecorrencias(this.recorrencias);
+  }
+
+  private async verificarRecorrencias(recorrencias: Recorrencia[]){
+    if(recorrencias.length > 0 ){
+      console.log(recorrencias)
+      const dataAtual = new Date();
+      recorrencias.forEach(async el => {
+        let movimentacao = await this.getMovimentacao(el.id_movimentacao);
+        const data_movimentacao = new Date(movimentacao.data);
+
+        if(dataAtual.getDay == data_movimentacao.getDay){
+          movimentacao.recorrencia = false;
+          movimentacao.descricao = movimentacao.descricao + " [RECORRENCIA ID: " + el.id +"]"; 
+          movimentacao.data = new Date(dataAtual.toDateString());
+          let teste = this.movimentacoes.find(x => x.descricao.includes("[RECORRENCIA ID: " + el.id +"]") && new Date(x.data).toDateString() == dataAtual.toDateString());
+          console.log(teste);
+          let existe = teste != null;
+          if(existe ==false){
+            await this.InserirMovimentacao(movimentacao);
+          }
+        }
+      });
+    }
+  }
+
+  private async InserirMovimentacao(movimentacao: Movimentacao){
+    try {
+      const response = await this.commonService.postApi(API_INSERT_MOVIMENTACAO, movimentacao).toPromise();
+    } catch (error) {
+      console.error('Erro ao inserir movimentação:', error);
+    }
+  }
+
+  private async listarRecorrencias(){
+    const result = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
+    if (result !== undefined) {
+      this.recorrencias = result;
+    }    
+  }
+
+  private async getMovimentacao(id: number): Promise<Movimentacao> {
+      const params = {id: id}
+      let result = await this.commonService.getApi<Movimentacao>(API_LISTAGEM_MOVIMENTACAO,params).toPromise();
+      return result!;
   }
   
   private async listarMovimentacoes(): Promise<void> {
@@ -49,6 +97,10 @@ export class BackService  {
     }    
     const copiaMovimentacoes = [...this.movimentacoes];
     this.movimentacoes = copiaMovimentacoes;
+  }
+
+  private compareDatesWithoutTime(date1: Date, date2: Date) {
+    return this.commonService.compareDatesWithoutTime(date1, date2);
   }
 
   private async listarPlanejamentos(): Promise<void> {
@@ -70,6 +122,7 @@ export class BackService  {
       console.error('Erro ao obter planejamentos:', error);
     }
   }
+
 
   private async verificarPlanejamentos(): Promise<{ planejamento: Planejamento, itens: ItemPlanejamento[] }[]> {
     const planejamentosComprometidos: { planejamento: Planejamento, itens: ItemPlanejamento[] }[] = [];

@@ -7,4 +7,5 @@ export interface Movimentacao {
     descricao: string;
     valor: number;
     conta: string;
+    recorrencia: boolean;
   }

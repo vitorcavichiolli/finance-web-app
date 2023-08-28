@@ -35,6 +35,34 @@
         </mat-select>
       </div>
       <div class="form-group">
+        <label class="form-label" for="recorrencia" class="form-label">Recorrencia:</label>
+
+        <mat-select #Recorrencia class="form-input" formControlName="recorrencia" name="recorrencia" id="recorrencia">
+          <mat-option  [value]="false">
+            Não
+          </mat-option>
+          <mat-option  [value]="true">
+            Sim
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="form-group" *ngIf="Recorrencia.value == true">
+        <label class="form-label" for="limite" class="form-label">Tem Limite:</label>
+
+        <mat-select #Limite class="form-input" formControlName="limite" name="limite" id="limite">
+          <mat-option  [value]="false">
+            Não
+          </mat-option>
+          <mat-option  [value]="true">
+            Sim
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="form-group" *ngIf="Recorrencia.value == true">
+        <label class="form-label" for="repeticao" class="form-label">Repetições:</label>
+        <input class="form-input" formControlName="repeticao" name="repeticao" id="repeticao" type="number"/>
+      </div>
+      <div class="form-group" >
         <label class="form-label" for="conta" class="form-label">Conta:</label>
 
         <mat-select class="form-input" formControlName="conta" name="conta" id="conta">
