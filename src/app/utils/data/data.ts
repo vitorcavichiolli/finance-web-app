@@ -28,6 +28,8 @@ export const categorias = [
     {id: 14, nome:'Necessidades básicas'},
     {id: 15, nome:'Fatura cartão de crédito'},
     {id: 16, nome:'Economia'},
+    {id: 17, nome:'Outros'},
+
 ].sort((a, b) => a.nome.localeCompare(b.nome));
 
 export const contas = [

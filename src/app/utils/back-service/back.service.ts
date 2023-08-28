@@ -6,7 +6,7 @@ import { CommonService } from '../common-service/common.service';
 import { Movimentacao } from '../models/movimentacao.model';
 import { ItemPlanejamento, Planejamento } from '../models/planejamentos.model';
 import { EventEmitter } from '@angular/core';
-import { API_INSERT_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACOES, API_LISTAGEM_PLANEJAMENTOS_BY_DATAFINAL, API_LISTAGEM_RECORRENCIAS } from '../api/api';
+import { API_DELETE_RECORRENCIA, API_INSERT_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACOES, API_LISTAGEM_PLANEJAMENTOS_BY_DATAFINAL, API_LISTAGEM_RECORRENCIAS, API_UPDATE_RECORRENCIA } from '../api/api';
 import { Recorrencia } from '../models/recorrencia.model';
 
 @Injectable({
@@ -48,21 +48,34 @@ export class BackService  {
 
   private async verificarRecorrencias(recorrencias: Recorrencia[]){
     if(recorrencias.length > 0 ){
-      console.log(recorrencias)
       const dataAtual = new Date();
       recorrencias.forEach(async el => {
         let movimentacao = await this.getMovimentacao(el.id_movimentacao);
         const data_movimentacao = new Date(movimentacao.data);
-
-        if(dataAtual.getDay == data_movimentacao.getDay){
+        if(dataAtual.getDate() == data_movimentacao.getDate() && this.compareDatesWithoutTime(dataAtual, data_movimentacao) == 1){
           movimentacao.recorrencia = false;
-          movimentacao.descricao = movimentacao.descricao + " [RECORRENCIA ID: " + el.id +"]"; 
+          movimentacao.descricao = movimentacao.descricao + " [RECORRÊNCIA ID: " + el.id +"]"; 
           movimentacao.data = new Date(dataAtual.toDateString());
-          let teste = this.movimentacoes.find(x => x.descricao.includes("[RECORRENCIA ID: " + el.id +"]") && new Date(x.data).toDateString() == dataAtual.toDateString());
-          console.log(teste);
+          let teste = this.movimentacoes.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + el.id +"]") && new Date(x.data).toDateString() == dataAtual.toDateString());
           let existe = teste != null;
-          if(existe ==false){
-            await this.InserirMovimentacao(movimentacao);
+          if(existe == false){
+            if(el.tem_limite == true){
+              if(el.repeticao>0){
+                await this.InserirMovimentacao(movimentacao);
+                el.repeticao = el.repeticao - 1;
+                console.log(el);
+                if(el.repeticao >0){
+                  await this.updateRecorrencia(el);
+                }
+                else{
+                  await this.deleteRecorrencia(el.id!);
+                }
+              }
+
+            }
+            else{
+              await this.InserirMovimentacao(movimentacao);
+            }
           }
         }
       });
@@ -76,7 +89,20 @@ export class BackService  {
       console.error('Erro ao inserir movimentação:', error);
     }
   }
-
+  private async updateRecorrencia(recorrencia: Recorrencia){
+    try {
+      const response = await this.commonService.postApi(API_UPDATE_RECORRENCIA, recorrencia).toPromise();
+    } catch (error) {
+      console.error('Erro ao atualizar recorrencia:', error);
+    }
+  }
+  private async deleteRecorrencia(id: number){
+    try {
+      const response = await this.commonService.postApi(API_DELETE_RECORRENCIA, id).toPromise();
+    } catch (error) {
+      console.error('Erro ao atualizar recorrencia:', error);
+    }
+  }
   private async listarRecorrencias(){
     const result = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
     if (result !== undefined) {

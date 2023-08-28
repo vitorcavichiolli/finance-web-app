@@ -186,7 +186,7 @@ export class ModalPlanejamentoComponent {
     else{
       if (this.form.valid) {
         const valorComVirgula = this.form.value.renda; // Valor com vírgula
-        const valorConvertido = parseFloat(valorComVirgula.replace(',', '.')); 
+        const valorConvertido = parseFloat(valorComVirgula.replace('.','').replace(',', '.')); 
         const planejamentoData: Planejamento = {
           data_inicial: this.form.value.data_inicial,
           data_final: this.form.value.data_final,

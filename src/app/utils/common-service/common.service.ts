@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { categorias, pagamentos, tipos } from '../data/data';
+import { categorias, contas, pagamentos, tipos } from '../data/data';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -45,6 +45,15 @@ export class CommonService {
   
   getPagamento(id:string):string{
     const retornoEncontrado = pagamentos.find((el) => el.id === id);
+    if (retornoEncontrado) {
+      return retornoEncontrado.nome;
+    } else {
+      return '-';
+    }
+  }
+
+  getConta(id:string):string{
+    const retornoEncontrado = contas.find((el) => el.id === id);
     if (retornoEncontrado) {
       return retornoEncontrado.nome;
     } else {

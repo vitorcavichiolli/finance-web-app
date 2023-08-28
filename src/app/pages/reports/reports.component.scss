@@ -1,3 +1,7 @@
+.content{
+    height: calc(100vh - 5vh);
+    overflow-y: auto;
+}
 .form-content{
     padding: 10px;
     display: flex;

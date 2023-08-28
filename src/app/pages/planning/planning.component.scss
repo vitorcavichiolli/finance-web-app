@@ -9,6 +9,8 @@
     background-color: var(--color-step-150);
     border-radius: 5px;
     border: 1px solid var(--color-primary);
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 .planning-list-item{

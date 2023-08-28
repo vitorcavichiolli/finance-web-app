@@ -78,8 +78,9 @@ export class ModalComponent implements OnInit{
     if (this.isEditMode) {
       const data = new Date(this.movimentacao.data);
       const valorConvertido = this.formatarValor(this.movimentacao.valor); 
+     
       if(this.movimentacao.recorrencia == true){
-        await this.getRecorrencia(this.movimentacao.id!)
+        this.recorrencia = await this.getRecorrencia(this.movimentacao.id!)
       }
       this.form.patchValue({
         tipo: this.movimentacao.tipo,
@@ -112,7 +113,7 @@ export class ModalComponent implements OnInit{
       const formValues = this.form.value;
 
       const valorComVirgula = formValues.valor; 
-      const valorConvertido = parseFloat(valorComVirgula.replace(',', '.')); 
+      const valorConvertido = parseFloat(valorComVirgula.replace('.','').replace(',', '.')); 
 
       const movimentacao: Movimentacao = {
         tipo: formValues.tipo,
@@ -129,17 +130,32 @@ export class ModalComponent implements OnInit{
         movimentacao.id = this.movimentacao.id; 
         const response = await this.commonService.putApi(API_UPDATE_MOVIMENTACAO, movimentacao).toPromise();
         if(movimentacao.recorrencia){
-          this.salvarRecorrencia(movimentacao);
+          const recorrencia: Recorrencia = {
+            id_movimentacao: movimentacao.id!,
+            tem_limite: formValues.limite,
+            repeticao: parseInt(formValues.repeticao) - 1, // menos um pela movimentação inicial ja cadastrada
+            id: this.recorrencia.id
+          }
+          this.salvarRecorrencia(recorrencia);
         }
         else{
+          if(this.recorrencia.id != 0 && this.recorrencia.id != null && this.recorrencia.id != undefined){
+            await this.deleteRecorrencia(this.recorrencia.id);
+          }
           window.location.reload();
         }
       } 
       else {
         try {
           const response = await this.commonService.postApi(API_INSERT_MOVIMENTACAO, movimentacao).toPromise();
+          const recorrencia: Recorrencia = {
+            id_movimentacao: movimentacao.id!,
+            tem_limite: formValues.limite,
+            repeticao: parseInt(formValues.repeticao) - 1 // menos um pela movimentação inicial ja cadastrada
+          }
+          console.log(recorrencia);
           if(movimentacao.recorrencia){
-            this.salvarRecorrencia(movimentacao);
+            this.salvarRecorrencia(recorrencia);
           }
           else{
             window.location.reload();
@@ -162,18 +178,14 @@ export class ModalComponent implements OnInit{
     }
   }
 
-  async salvarRecorrencia(movimentacao: Movimentacao): Promise<void> {
-    
-      const formValues = this.form.value;
-
-      const recorrencia: Recorrencia = {
-        id_movimentacao: movimentacao.id!,
-        tem_limite: formValues.limite,
-        repeticao: formValues.repeticao
-      }
-
+  async salvarRecorrencia(recorrencia: Recorrencia): Promise<void> {
       try {
-        const response = await this.commonService.postApi(API_INSERT_RECORRENCIA, recorrencia).toPromise();
+        if (this.isEditMode && this.movimentacao.id) {
+          const response = await this.commonService.putApi(API_UPDATE_RECORRENCIA, recorrencia).toPromise();
+        }
+        else{
+          const response = await this.commonService.postApi(API_INSERT_RECORRENCIA, recorrencia).toPromise();
+        }
       } catch (error) {
         console.error('Erro ao inserir recorrencia:', error);
       }
@@ -183,16 +195,21 @@ export class ModalComponent implements OnInit{
    
   }
 
-  async getRecorrencia(movimentacao: number): Promise<void> {
+  private async deleteRecorrencia(id: number){
     try {
+      const response = await this.commonService.postApi(API_DELETE_RECORRENCIA, id).toPromise();
+    } catch (error) {
+      console.error('Erro ao atualizar recorrencia:', error);
+    }
+  }
+
+  async getRecorrencia(movimentacao: number): Promise<Recorrencia> {
+    
       const params = {id: movimentacao}
       const result = await this.commonService.getApi<Recorrencia>(API_LISTAGEM_RECORRENCIA_BY_MOVIMENTACAO,params).toPromise();
-      if (result !== undefined) {
-        this.recorrencia = result;
-      }
-    } catch (error) {
-      console.error('Error fetching recorrencia:', error);
-    }
+      
+      return result!;
+    
   }
 
   formatarValor(valor: number | string): string{

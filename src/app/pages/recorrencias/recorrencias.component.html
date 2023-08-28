@@ -1,0 +1,29 @@
+<div class="content">
+    <h3 class="color-primary">Recorrências cadastradas</h3>
+    <ul class="recorrencias-list">
+        <li class="recorrencias-list-item" *ngFor="let p of recorrenciasComMovimentacao" >
+            <section class="list-item-group">
+                <h4 [ngClass]="{'color-green': p.movimentacao.tipo == 'r', 'color-red': p.movimentacao.tipo == 'd'}">Recorrência: {{p.id}}</h4>
+            </section>
+            <mat-divider></mat-divider>
+            <section class="list-item-group">
+                <p>{{p.movimentacao.descricao}}</p>
+            </section>
+            <section class="list-item-group">
+                <p>{{getTipo(p.movimentacao.tipo)}}
+                     feita no {{getPagamento(p.movimentacao.pagamento)}}
+                     na conta {{getConta(p.movimentacao.conta)}} 
+                     no valor de R$ {{formataValor(p.movimentacao.valor)}}
+                     todo dia {{getDay(p.movimentacao.data)}}
+                     pelo período {{p.tem_limite ? " de " + p.repeticao + " meses" : " indeterminado"}}
+                     a partir de {{p.movimentacao.data | date:'dd/MM/yyyy'}}
+                </p>
+
+            </section>
+        </li>
+    </ul>
+</div> 
+
+<app-loading
+[ngClass]="{'center':true,'--open': loadingService.getShowLoading(), '--close': !loadingService.getShowLoading()}"
+></app-loading>

@@ -36,6 +36,7 @@ import { ModalExibicaoPlanejamentoComponent } from './components/modal-exibicao-
 import { NotificationComponent } from './components/notification/notification.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { LoadingService } from './utils/loading-service/loading.service';
+import { RecorrenciasComponent } from './pages/recorrencias/recorrencias.component';
 
 
 
@@ -56,7 +57,8 @@ import { LoadingService } from './utils/loading-service/loading.service';
     AlertDialogComponent,
     ModalExibicaoPlanejamentoComponent,
     NotificationComponent,
-    LoadingComponent
+    LoadingComponent,
+    RecorrenciasComponent
   ],
   imports: [
     BrowserModule,

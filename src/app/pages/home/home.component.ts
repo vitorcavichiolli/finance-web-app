@@ -108,14 +108,21 @@ export class HomeComponent implements OnInit {
 
         }        
         const copiaMovimentacoes = [...this.movimentacoes];
+        // copiaMovimentacoes.sort((a, b) => {
+        //   const dateComparison = new Date(b.data).getTime() - new Date(a.data).getTime();
+        //   if (dateComparison === 0) {
+        //     if(b.id && a.id)
+        //     return b.id - a.id;
+        //     return dateComparison;
+        //   } else {
+        //     return dateComparison;
+        //   }
+        // });
         copiaMovimentacoes.sort((a, b) => {
-          const dateComparison = new Date(b.data).getTime() - new Date(a.data).getTime();
-          if (dateComparison === 0) {
-            if(b.id && a.id)
-            return b.id - a.id;
-            return dateComparison;
+          if (b.id && a.id) {
+            return b.id - a.id; // Ordenar em ordem decrescente
           } else {
-            return dateComparison;
+            return 0;
           }
         });
         this.movimentacoes = copiaMovimentacoes;
