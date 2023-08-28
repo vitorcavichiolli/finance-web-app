@@ -43,6 +43,7 @@ export class RecorrenciasComponent implements OnInit{
             id: element.id, 
             tem_limite: element.tem_limite, 
             repeticao: element.repeticao,
+            parcelas_exibicao: element.parcelas_exibicao,
             movimentacao: movimentacao,
 
           }

@@ -7,7 +7,7 @@
             </section>
             <mat-divider></mat-divider>
             <section class="list-item-group">
-                <p>{{p.movimentacao.descricao}}</p>
+                <p class="upper bold color-primary">{{p.movimentacao.descricao}}</p>
             </section>
             <section class="list-item-group">
                 <p>{{getTipo(p.movimentacao.tipo)}}
@@ -15,7 +15,7 @@
                      na conta {{getConta(p.movimentacao.conta)}} 
                      no valor de R$ {{formataValor(p.movimentacao.valor)}}
                      todo dia {{getDay(p.movimentacao.data)}}
-                     pelo período {{p.tem_limite ? " de " + p.repeticao + " meses" : " indeterminado"}}
+                     pelo período {{p.tem_limite ? " de " + p.parcelas_exibicao + " meses" : " indeterminado"}}
                      a partir de {{p.movimentacao.data | date:'dd/MM/yyyy'}}
                 </p>
 

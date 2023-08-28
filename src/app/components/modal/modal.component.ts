@@ -27,7 +27,8 @@ export class ModalComponent implements OnInit{
     id_movimentacao: 0,
     id:0,
     tem_limite: false,
-    repeticao:0
+    repeticao:0,
+    parcelas_exibicao:0
   };
 
   constructor(
@@ -134,6 +135,7 @@ export class ModalComponent implements OnInit{
             id_movimentacao: movimentacao.id!,
             tem_limite: formValues.limite,
             repeticao: parseInt(formValues.repeticao) - 1, // menos um pela movimentação inicial ja cadastrada
+            parcelas_exibicao: parseInt(formValues.repeticao),
             id: this.recorrencia.id
           }
           this.salvarRecorrencia(recorrencia);
@@ -151,7 +153,8 @@ export class ModalComponent implements OnInit{
           const recorrencia: Recorrencia = {
             id_movimentacao: movimentacao.id!,
             tem_limite: formValues.limite,
-            repeticao: parseInt(formValues.repeticao) - 1 // menos um pela movimentação inicial ja cadastrada
+            repeticao: parseInt(formValues.repeticao) - 1, // menos um pela movimentação inicial ja cadastrada
+            parcelas_exibicao: parseInt(formValues.repeticao)
           }
           console.log(recorrencia);
           if(movimentacao.recorrencia){
