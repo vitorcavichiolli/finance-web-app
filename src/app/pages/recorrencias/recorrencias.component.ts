@@ -34,8 +34,15 @@ export class RecorrenciasComponent implements OnInit{
     try {
       const result = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
       if (result !== undefined) {
+        result.sort((a, b) => {
+          if (b.id && a.id) {
+            return a.id - b.id; // Ordenar em ordem crescente
+          } else {
+            return 0;
+          }
+        });
         this.recorrencias = result;
-       
+
         result.forEach(async element => {
           let movimentacao = await this.getMovimentacao(element.id_movimentacao);
           let item: RecorrenciaComMovimentacao = {
@@ -51,7 +58,7 @@ export class RecorrenciasComponent implements OnInit{
         });
       }
       
-      await this.recorrenciasComMovimentacao.sort((a, b) => {
+      this.recorrenciasComMovimentacao.sort((a, b) => {
         if (b.id && a.id) {
           return a.id - b.id; // Ordenar em ordem crescente
         } else {

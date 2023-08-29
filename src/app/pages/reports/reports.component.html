@@ -150,8 +150,13 @@
 
               
             </mat-expansion-panel>
-          </mat-accordion>
-          <section class="component-section">
+        </mat-accordion>
+        <div class="form-content">
+            <div class="form-group">
+                <input class="form-input" formControlName="descricaoFilter" name="descricao" id="descricao" type="text" placeholder="Pesquise pela descrição" autocomplete="off"/>
+            </div>
+        </div>
+        <section class="component-section">
             <app-table [data]="filteredMovimentacoes"></app-table>
         </section>
           <section  class="component-section">

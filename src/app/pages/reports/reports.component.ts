@@ -76,6 +76,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.form = this.fb.group({
       data_ini: [''],
       data_fim: [''],
+      descricaoFilter: ''
     });
     this.onFormChange = this.onFormChange.bind(this);
     
@@ -193,10 +194,20 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     this.filteredMovimentacoes = this.applyFilterByPagamento(this.filteredMovimentacoes);
     this.filteredMovimentacoes = this.applyFilterByCategoria(this.filteredMovimentacoes);
     this.filteredMovimentacoes = this.applyFilterByConta(this.filteredMovimentacoes);
-
+    this.filteredMovimentacoes = this.applyfilterByDescricao(fm, this.filteredMovimentacoes);
   }
 
-
+  applyfilterByDescricao(fm: any, filteredMovimentacoes: Movimentacao[]): Movimentacao[] {
+    const filtro = fm.descricaoFilter.toLowerCase();
+    if(filtro != ''){
+      return filteredMovimentacoes.filter(movimentacao =>
+        movimentacao.descricao.toLowerCase().includes(filtro)
+      );
+    }
+    else{
+      return filteredMovimentacoes;
+    }
+  }
 
   applyFilterByTipo(filteredMovimentacoes: Movimentacao[]): Movimentacao[] {
     const selectedTipos = this.selectedFilters.find((filter: Filters) => filter.nome === 'Tipos:');
@@ -312,6 +323,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   private filtrosCategoria(){
     this.categorias = categorias;
+    const excecoes = ["18"];
     let subFiltros: any = [];
     this.categorias.forEach((element: { id: { toString: () => any; }; nome: any; }) => {
       let item: Filters = {
@@ -321,8 +333,10 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         cor: "",
         control: new FormControl(true)
       };
-      subFiltros.push(item);
-      this.selectedFilters.push(item);
+      if(!excecoes.some(x => x == item.id)){
+        subFiltros.push(item);
+        this.selectedFilters.push(item);
+      }
     });
     this.filtersCategoria = {
       id: "none",
