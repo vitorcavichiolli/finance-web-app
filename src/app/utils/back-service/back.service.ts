@@ -63,7 +63,6 @@ export class BackService  {
               if(el.repeticao>0){
                 await this.InserirMovimentacao(movimentacao);
                 el.repeticao = el.repeticao - 1;
-                console.log(el);
                 if(el.repeticao >0){
                   await this.updateRecorrencia(el);
                 }

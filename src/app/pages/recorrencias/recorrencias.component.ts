@@ -65,7 +65,6 @@ export class RecorrenciasComponent implements OnInit{
           return 0;
         }
       });
-      console.log( this.recorrenciasComMovimentacao);
       this.loadingService.closeLoading();
 
     } catch (error) {

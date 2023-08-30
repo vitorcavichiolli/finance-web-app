@@ -156,7 +156,6 @@ export class ModalComponent implements OnInit{
             repeticao: parseInt(formValues.repeticao) - 1, // menos um pela movimentação inicial ja cadastrada
             parcelas_exibicao: parseInt(formValues.repeticao)
           }
-          console.log(recorrencia);
           if(movimentacao.recorrencia){
             this.salvarRecorrencia(recorrencia);
           }
