@@ -28,6 +28,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   selectAllTipos: boolean = true;
   selectAllPagamentos: boolean = true;
   selectAllContas: boolean = true;
+  excecoesCategorias = ["18"];
 
   movimentacoes: Movimentacao[] = [];
   filteredMovimentacoes: Movimentacao[] = [];
@@ -84,10 +85,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     await this.listarMovimentacoes(); 
-    this.carregarFiltros();
     this.filteredMovimentacoes = this.movimentacoes;
+    this.carregarFiltros();
     this.form.valueChanges.subscribe(this.onFormChange);
-    localStorage.setItem("movimentacoes", JSON.stringify(this.movimentacoes));
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -142,10 +142,29 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     if(this.checkEmptyNullUndefined(fm.data_ini) && this.checkEmptyNullUndefined(fm.data_fim)) {
       const dataInicial: Date = new Date(fm.data_ini);
       const dataFinal: Date = new Date(fm.data_fim);
-      dataInicial.setUTCDate(dataInicial.getUTCDate() + 1);
-      dataFinal.setUTCDate(dataFinal.getUTCDate() + 1);
-      dataInicial.setHours(0, 0, 0, 0);
-      dataFinal.setHours(0, 0, 0, 0);
+      
+
+        dataInicial.setHours(0, 0, 0, 0); // Define as horas para 00:00:00
+        if (!isNaN(dataInicial.getTime())) { // Verifica se a data é válida        
+          dataInicial.setDate(dataInicial.getDate() + 1);
+        }
+        dataFinal.setHours(0, 0, 0, 0); // Define as horas para 00:00:00
+        if (!isNaN(dataFinal.getTime())) { // Verifica se a data é válida        
+          dataFinal.setDate(dataFinal.getDate() + 1);
+        }
+
+      if(dataFinal != null){
+        sessionStorage.setItem("dataFinalFilter", dataFinal.toDateString());
+      }
+      else{
+        sessionStorage.removeItem("dataFinalFilter");
+      }
+      if(dataInicial != null){
+        sessionStorage.setItem("dataIniFilter", dataInicial.toDateString());
+      }
+      else{
+        sessionStorage.removeItem("dataIniFilter");
+      }
       if(dataInicial>dataFinal){
         const dialogRef = this.dialog.open(AlertDialogComponent, {
           data: {
@@ -168,13 +187,23 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       }
     } 
     else if (!this.checkEmptyNullUndefined(fm.data_ini) && !this.checkEmptyNullUndefined(fm.data_fim)) {
+      sessionStorage.removeItem("dataFinalFilter");
+      sessionStorage.removeItem("dataIniFilter");
       this.filteredMovimentacoes = this.movimentacoes;
     } 
     else {
       if(this.checkEmptyNullUndefined(fm.data_ini)){
         const dataInicial: Date = new Date(fm.data_ini);
-        dataInicial.setUTCDate(dataInicial.getUTCDate() + 1);
-        dataInicial.setHours(0, 0, 0, 0);
+        dataInicial.setHours(0, 0, 0, 0); // Define as horas para 00:00:00
+        if (!isNaN(dataInicial.getTime())) { // Verifica se a data é válida        
+          dataInicial.setDate(dataInicial.getDate() + 1);
+        }
+        if(dataInicial != null){
+          sessionStorage.setItem("dataIniFilter", dataInicial.toDateString());
+        }
+        else{
+          sessionStorage.removeItem("dataIniFilter");
+        }
         this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
           const dataMovimentacao: Date = new Date(movimentacao.data);
           return dataMovimentacao >= dataInicial;
@@ -182,8 +211,17 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       }
       else{
         const dataFinal: Date = new Date(fm.data_fim);
-        dataFinal.setUTCDate(dataFinal.getUTCDate() + 1);
-        dataFinal.setHours(0, 0, 0, 0);
+        dataFinal.setHours(0, 0, 0, 0); // Define as horas para 00:00:00
+        if (!isNaN(dataFinal.getTime())) { // Verifica se a data é válida        
+          dataFinal.setDate(dataFinal.getDate() + 1);
+        }
+        if(dataFinal != null){
+          sessionStorage.setItem("dataFinalFilter", dataFinal.toDateString());
+        }
+        else{
+          sessionStorage.removeItem("dataFinalFilter");
+        }
+        sessionStorage.removeItem("dataIniFilter");
         this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
           const dataMovimentacao: Date = new Date(movimentacao.data);
           return dataMovimentacao <= dataFinal;
@@ -198,13 +236,16 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
   applyfilterByDescricao(fm: any, filteredMovimentacoes: Movimentacao[]): Movimentacao[] {
-    const filtro = fm.descricaoFilter.toLowerCase();
-    if(filtro != ''){
+    let filtro = fm.descricaoFilter;
+    if(filtro != '' && filtro != null && filtro != undefined){
+      filtro = fm.descricaoFilter.toLowerCase();
+      sessionStorage.setItem("descFilter", filtro);
       return filteredMovimentacoes.filter(movimentacao =>
         movimentacao.descricao.toLowerCase().includes(filtro)
       );
     }
     else{
+      sessionStorage.removeItem("descFilter");
       return filteredMovimentacoes;
     }
   }
@@ -223,8 +264,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       } else {
         filteredMovimentacoes = [];
       }
+      sessionStorage.setItem("tipoFilter", activeTipoIds);
     }
-  
     return filteredMovimentacoes;
   }
 
@@ -242,6 +283,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       } else {
         filteredMovimentacoes = [];
       }
+      sessionStorage.setItem("contaFilter", activeIds);
     }
   
     return filteredMovimentacoes;
@@ -261,6 +303,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       } else {
         filteredMovimentacoes = [];
       }
+      sessionStorage.setItem("pagamentoFilter", activeIds);
+
     }
   
     return filteredMovimentacoes;
@@ -275,11 +319,13 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   
       if (activeIds.length > 0) {
         filteredMovimentacoes = filteredMovimentacoes.filter((movimentacao: Movimentacao) => {
-          return activeIds.includes(movimentacao.categoria.toString()) || movimentacao.categoria.toString() === '';
+          return activeIds.includes(movimentacao.categoria.toString()) || movimentacao.categoria.toString() === '' || this.excecoesCategorias.includes(movimentacao.categoria.toString());
         });
       } else {
         filteredMovimentacoes = [];
       }
+      sessionStorage.setItem("categoriaFilter", activeIds);
+
     }
   
     return filteredMovimentacoes;
@@ -306,24 +352,88 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     }
     return -1; // Retorna -1 se não encontrar nenhum elemento com os valores especificados
   }
-
- 
- 
-
-
-
   
   private carregarFiltros(){
     this.filtrosCategoria();
     this.filtrosTipos();
     this.filtrosPagamentos();
     this.filtrosContas();
+    let tipoFilter = sessionStorage.getItem("tipoFilter")?.split(",") || [];
+    let contaFilter = sessionStorage.getItem("contaFilter")?.split(",") || [];
+    let pagamentoFilter = sessionStorage.getItem("pagamentoFilter")?.split(",") || [];
+    let categoriaFilter = sessionStorage.getItem("categoriaFilter")?.split(",") || [];
+    let descFilter = sessionStorage.getItem('descFilter');
+    let dataFinal = sessionStorage.getItem("dataFinalFilter");
+    let dataInicial = sessionStorage.getItem("dataIniFilter");
 
+    if(dataFinal){
+      let date = new Date(dataFinal).toISOString().substr(0, 10)
+      this.form.patchValue({
+        data_fim: date
+      })
+    }
+    if(dataInicial){
+      let date = new Date(dataInicial).toISOString().substr(0, 10)
+      this.form.patchValue({
+        data_ini: date
+      })
+    }
+    if(descFilter){
+      this.form.patchValue({
+        descricaoFilter: descFilter
+      })
+    }
+
+    if (tipoFilter && tipoFilter.length > 0 && tipoFilter[0] != '') {
+      const selected = this.selectedFilters.find((filter: Filters) => filter.nome === 'Tipos:');
+        if (selected.subFiltros) {
+          selected.subFiltros.forEach((subFilter: Filters) => {
+            if (!this.existsInsessionStorage(subFilter.id, tipoFilter)) {
+              subFilter.control.setValue(false);
+            }
+          });
+        }
+    }
+    if (contaFilter && contaFilter.length > 0 && contaFilter[0] != '') {
+      const selected = this.selectedFilters.find((filter: Filters) => filter.nome === 'Contas:');
+        if (selected.subFiltros) {
+          selected.subFiltros.forEach((subFilter: Filters) => {
+            if (!this.existsInsessionStorage(subFilter.id, contaFilter)) {
+              subFilter.control.setValue(false);
+            }
+          });
+        }
+    }
+    if (categoriaFilter && categoriaFilter.length > 0 && categoriaFilter[0] != '') {
+      const selected = this.selectedFilters.find((filter: Filters) => filter.nome === 'Categorias:');
+        if (selected.subFiltros) {
+          selected.subFiltros.forEach((subFilter: Filters) => {
+            if (!this.existsInsessionStorage(subFilter.id, categoriaFilter)) {
+              subFilter.control.setValue(false);
+            }
+          });
+        }
+    }
+    if (pagamentoFilter && pagamentoFilter.length > 0 && pagamentoFilter[0] != '') {
+      const selected = this.selectedFilters.find((filter: Filters) => filter.nome === 'Pagamentos:');
+        if (selected.subFiltros) {
+          selected.subFiltros.forEach((subFilter: Filters) => {
+            if (!this.existsInsessionStorage(subFilter.id, pagamentoFilter)) {
+              subFilter.control.setValue(false);
+            }
+          });
+        }
+    }
+    this.dateFilterOnChange(this.form.value);
+
+  }
+
+  private existsInsessionStorage(id: string, filter: any[]): boolean {
+      return filter.includes(id);
   }
 
   private filtrosCategoria(){
     this.categorias = categorias;
-    const excecoes = ["18"];
     let subFiltros: any = [];
     this.categorias.forEach((element: { id: { toString: () => any; }; nome: any; }) => {
       let item: Filters = {
@@ -333,9 +443,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         cor: "",
         control: new FormControl(true)
       };
-      if(!excecoes.some(x => x == item.id)){
+      if(!this.excecoesCategorias.some(x => x == item.id)){
         subFiltros.push(item);
-        this.selectedFilters.push(item);
+        //this.selectedFilters.push(item);
       }
     });
     this.filtersCategoria = {
@@ -346,6 +456,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       cor: "warn",
       control: new FormControl(true)
     }
+    this.selectedFilters.push(this.filtersCategoria);
   }
 
   private filtrosTipos(){
@@ -360,7 +471,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         control: new FormControl(true)
       };
       subFiltros.push(item);
-      this.selectedFilters.push(item);
+      //this.selectedFilters.push(item);
 
     });
     this.filtersTipo = {
@@ -371,6 +482,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       cor: "warn",
       control: new FormControl(true)
     }
+    this.selectedFilters.push(this.filtersTipo);
+
   }
 
   private filtrosContas(){
@@ -385,7 +498,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         control: new FormControl(true)
       };
       subFiltros.push(item);
-      this.selectedFilters.push(item);
+      //this.selectedFilters.push(item);
 
     });
     this.filtersConta = {
@@ -396,6 +509,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       cor: "warn",
       control: new FormControl(true)
     }
+    this.selectedFilters.push(this.filtersConta);
+
   }
 
   private filtrosPagamentos(){
@@ -410,7 +525,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         control: new FormControl(true)
       };
       subFiltros.push(item);
-      this.selectedFilters.push(item);
+      //this.selectedFilters.push(item);
 
     });
     this.filtersPagamento = {
@@ -421,6 +536,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       cor: "warn",
       control: new FormControl(true)
     }
+    this.selectedFilters.push(this.filtersPagamento);
 
     
   }
