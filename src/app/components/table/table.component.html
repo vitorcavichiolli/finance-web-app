@@ -76,6 +76,38 @@
         </p>
       </div>
       <div class="footer-group">
+        <p>Receitas Futuras: </p>
+        <p class="color-green">R$ {{formatarValor(totalReceitasLancamentosFuturos)}}</p>
+        &nbsp;
+        &nbsp;
+        <p>Gastos Futuros: </p>
+        <p class="color-red">R$ {{formatarValor(totalGastosLancamentosFuturos)}}</p>
+        &nbsp;
+        &nbsp;
+        <p>Total: </p>
+        <p
+          [ngClass]="{'color-green': (totalReceitasLancamentosFuturos - totalGastosLancamentosFuturos) > 0, 'color-red': (totalReceitasLancamentosFuturos - totalGastosLancamentosFuturos)<0, 'color-warning': (totalReceitasLancamentosFuturos - totalGastosLancamentosFuturos)==0}"
+        >
+          R$ {{formatarValor((totalReceitasLancamentosFuturos - totalGastosLancamentosFuturos))}}
+        </p>
+      </div>
+      <div class="footer-group">
+        <p class="value-sm">Receitas: </p>
+        <p class="value-sm color-green">R$ {{formatarValor(totalReceitasLancamentosFuturos + totalReceita)}}</p>
+        &nbsp;
+        &nbsp;
+        <p class="value-sm">Gastos: </p>
+        <p class="value-sm color-red">R$ {{formatarValor(totalGastosLancamentosFuturos + totalGastos)}}</p>
+        &nbsp;
+        &nbsp;
+        <p class="value-sm">Total: </p>
+        <p
+          [ngClass]="{'value-sm': true, 'color-green': (totalReceitasLancamentosFuturos - totalGastosLancamentosFuturos + total) > 0, 'color-red': (totalReceitasLancamentosFuturos - totalGastosLancamentosFuturos + total)<0, 'color-warning': (totalReceitasLancamentosFuturos - totalGastosLancamentosFuturos + total)==0}"
+        >
+          R$ {{formatarValor((totalReceitasLancamentosFuturos - totalGastosLancamentosFuturos) + total)}}
+        </p>
+      </div>
+      <div class="footer-group">
         <p class="value-sm">Valores referentes apenas a transações que envolvem dinheiro</p>
       </div>
     </div>

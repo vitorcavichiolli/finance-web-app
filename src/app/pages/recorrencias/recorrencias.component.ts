@@ -18,6 +18,8 @@ interface RecorrenciaComMovimentacao extends Recorrencia{
 export class RecorrenciasComponent implements OnInit{
   recorrencias: Recorrencia[] = [];
   recorrenciasComMovimentacao: RecorrenciaComMovimentacao[] = [];
+  totalGastosLancamentosFuturos: number =0;
+  totalReceitasLancamentosFuturos: number =0;
   constructor(
     private commonService: CommonService,
     public loadingService: LoadingService
@@ -30,6 +32,8 @@ export class RecorrenciasComponent implements OnInit{
 
   async listarRecorrencias(): Promise<void> {
     this.loadingService.openLoading();
+    this.totalGastosLancamentosFuturos = 0;
+    this.totalReceitasLancamentosFuturos = 0;
 
     try {
       const result = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
@@ -54,8 +58,15 @@ export class RecorrenciasComponent implements OnInit{
             movimentacao: movimentacao,
 
           }
+          if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "d"){
+            this.totalGastosLancamentosFuturos += movimentacao.valor;
+          }
+          else if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r"){
+            this.totalReceitasLancamentosFuturos += movimentacao.valor;
+          }
           this.recorrenciasComMovimentacao.push(item);
         });
+        
       }
       
       this.recorrenciasComMovimentacao.sort((a, b) => {
@@ -105,4 +116,7 @@ export class RecorrenciasComponent implements OnInit{
     return date.getDate();
   }
 
+  formatarValor(valor: number | string): string{
+    return this.commonService.formatarValor(valor);
+  }
 }

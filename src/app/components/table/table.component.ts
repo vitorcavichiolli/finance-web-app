@@ -1,5 +1,5 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,13 +10,18 @@ import { DataService } from 'src/app/utils/data-service/data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 import { ModalComponent } from '../modal/modal.component';
-
+import { API_LISTAGEM_MOVIMENTACAO, API_LISTAGEM_RECORRENCIAS } from 'src/app/utils/api/api';
+import { Recorrencia } from 'src/app/utils/models/recorrencia.model';
+import { LoadingService } from 'src/app/utils/loading-service/loading.service';
+interface RecorrenciaComMovimentacao extends Recorrencia{
+  movimentacao: Movimentacao,
+}
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnChanges {
+export class TableComponent implements OnChanges, OnInit {
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = ['data', 'categoria', 'pagamento', 'descricao', 'valor','actions'];
   @ViewChild(MatSort) sort!: MatSort;
@@ -25,6 +30,10 @@ export class TableComponent implements OnChanges {
   totalReceita: number = 0;
   total: number = 0;
   private _data: any[] = [];
+  recorrenciasComMovimentacao: RecorrenciaComMovimentacao[] = [];
+  recorrencias: Recorrencia[] = [];
+  totalGastosLancamentosFuturos: number =0;
+  totalReceitasLancamentosFuturos: number =0;
 
   @Input() set data(data: any[]) {
     this._data = data;
@@ -40,15 +49,22 @@ export class TableComponent implements OnChanges {
     private commonService: CommonService,
     public dialog: MatDialog,
     private dataService:DataService,
+    public loadingService: LoadingService
+
     ){}
   
-  ngOnChanges(changes: SimpleChanges): void {
+  async ngOnInit(){
+   
+  }
+
+  
+  async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes['data'] && !changes['data'].firstChange) {
       this.updateDataSource();
       this.dataSource.paginator = this.paginator;
+      await this.listarRecorrencias();
     }
     this.getValorTotal(this.data);
-
   }
 
   private updateDataSource(): void {
@@ -147,5 +163,67 @@ export class TableComponent implements OnChanges {
       }
     });
   }
-  
+
+  async listarRecorrencias(): Promise<void> {
+    this.loadingService.openLoading();
+    this.totalGastosLancamentosFuturos = 0;
+    this.totalReceitasLancamentosFuturos = 0;
+    try {
+      const result = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
+      if (result !== undefined) {
+        result.sort((a, b) => {
+          if (b.id && a.id) {
+            return a.id - b.id; // Ordenar em ordem crescente
+          } else {
+            return 0;
+          }
+        });
+        this.recorrencias = result;
+
+        result.forEach(async element => {
+          let movimentacao = await this.getMovimentacao(element.id_movimentacao);
+          if(new Date(movimentacao.data) > new Date()){
+            let item: RecorrenciaComMovimentacao = {
+              id_movimentacao: element.id_movimentacao,
+              id: element.id, 
+              tem_limite: element.tem_limite, 
+              repeticao: element.repeticao,
+              parcelas_exibicao: element.parcelas_exibicao,
+              movimentacao: movimentacao,
+             
+            }
+            if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "d"){
+                this.totalGastosLancamentosFuturos += movimentacao.valor;
+            }
+            else if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r"){
+              this.totalReceitasLancamentosFuturos += movimentacao.valor;
+            }
+            console.log(movimentacao)
+            this.recorrenciasComMovimentacao.push(item);
+          }  
+
+        });
+        
+      }
+      
+      this.recorrenciasComMovimentacao.sort((a, b) => {
+        if (b.id && a.id) {
+          return a.id - b.id; // Ordenar em ordem crescente
+        } else {
+          return 0;
+        }
+      });
+      this.loadingService.closeLoading();
+
+    } catch (error) {
+      this.loadingService.closeLoading();
+      console.error('Error fetching recorrencias:', error);
+    }
+  }
+
+  async getMovimentacao(id: number): Promise<Movimentacao> {
+    const params = {id: id}
+    const result = await this.commonService.getApi<Movimentacao>(API_LISTAGEM_MOVIMENTACAO,params).toPromise();
+    return result!;
+  } 
 }
