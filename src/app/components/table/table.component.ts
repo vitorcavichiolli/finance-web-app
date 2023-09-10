@@ -179,6 +179,7 @@ export class TableComponent implements OnChanges, OnInit {
           }
         });
         this.recorrencias = result;
+        console.log(result)
         result.forEach(async element => {
           let movimentacao = await this.getMovimentacao(element.id_movimentacao);
           if(new Date(movimentacao.data).getDate() > new Date().getDate()){
@@ -192,7 +193,14 @@ export class TableComponent implements OnChanges, OnInit {
              
             }
             if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "d"){
-                this.totalGastosLancamentosFuturos += movimentacao.valor;
+              if(!this._data.some(x => x.id == movimentacao.id)){
+                const dataAtual = new Date();
+                let rec = this._data.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + movimentacao.id +"]") && new Date(x.data).toDateString() == dataAtual.toDateString());
+                let existe = rec != null;
+                if(!existe){
+                  this.totalGastosLancamentosFuturos += movimentacao.valor;
+                }
+              }
             }
             else if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r"){
               this.totalReceitasLancamentosFuturos += movimentacao.valor;

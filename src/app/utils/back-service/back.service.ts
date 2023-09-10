@@ -56,8 +56,8 @@ export class BackService  {
           movimentacao.recorrencia = false;
           movimentacao.descricao = movimentacao.descricao + " [RECORRÊNCIA ID: " + el.id +"]"; 
           movimentacao.data = new Date(dataAtual.toDateString());
-          let teste = this.movimentacoes.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + el.id +"]") && new Date(x.data).toDateString() == dataAtual.toDateString());
-          let existe = teste != null;
+          let rec = this.movimentacoes.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + el.id +"]") && new Date(x.data).toDateString() == dataAtual.toDateString());
+          let existe = rec != null;
           if(existe == false){
             if(el.tem_limite == true){
               if(el.repeticao>0){
