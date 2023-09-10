@@ -179,10 +179,9 @@ export class TableComponent implements OnChanges, OnInit {
           }
         });
         this.recorrencias = result;
-
         result.forEach(async element => {
           let movimentacao = await this.getMovimentacao(element.id_movimentacao);
-          if(new Date(movimentacao.data) > new Date()){
+          if(new Date(movimentacao.data).getDate() > new Date().getDate()){
             let item: RecorrenciaComMovimentacao = {
               id_movimentacao: element.id_movimentacao,
               id: element.id, 
@@ -198,7 +197,6 @@ export class TableComponent implements OnChanges, OnInit {
             else if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r"){
               this.totalReceitasLancamentosFuturos += movimentacao.valor;
             }
-            console.log(movimentacao)
             this.recorrenciasComMovimentacao.push(item);
           }  
 

@@ -46,7 +46,6 @@ export class RecorrenciasComponent implements OnInit{
           }
         });
         this.recorrencias = result;
-
         result.forEach(async element => {
           let movimentacao = await this.getMovimentacao(element.id_movimentacao);
           let item: RecorrenciaComMovimentacao = {
