@@ -152,38 +152,66 @@ export class BackService  {
   private async verificarPlanejamentos(): Promise<{ planejamento: Planejamento, itens: ItemPlanejamento[] }[]> {
     const planejamentosComprometidos: { planejamento: Planejamento, itens: ItemPlanejamento[] }[] = [];
     const dataAtual = new Date();
-
-    this.planejamentos.forEach(plan => {
-      const itensComprometidos: ItemPlanejamento[] = [];
   
-      plan.itens.forEach(item => {
-        const total = this.somarValorItensPorCategoria(this.movimentacoes, plan.planejamento, item);
-        
-        if (total > this.getValorItem(plan.planejamento, item)) {
-          itensComprometidos.push(item);
-        }
-      });
+    await Promise.all(
+      this.planejamentos.map(async (plan) => {
+        let itensComprometidos: ItemPlanejamento[] = [];
   
-      if (itensComprometidos.length > 0) {
-        const planejamentoComprometido = {
-          planejamento: plan.planejamento,
-          itens:  plan.itens  
-        };
-
-        if(dataAtual <= new Date(planejamentoComprometido.planejamento.data_final)){
-          planejamentosComprometidos.push(planejamentoComprometido);
+        await Promise.all(
+          plan.itens.map(async (item) => {
+            const recorrencias = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
+            let movimentacoes = this.movimentacoes.filter((el) => el.categoria === item.categoria && el.data >= plan.planejamento.data_inicial && el.data <= plan.planejamento.data_final);
+  
+            if (recorrencias !== undefined) {
+              const promises = recorrencias.map(async (element) => {
+                let movimentacao = await this.getMovimentacao(element.id_movimentacao);
+                if (movimentacao.categoria == item.categoria) {
+                  if (new Date(movimentacao.data).getDate() > new Date().getDate()) {
+                    if ((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "d") {
+                      if (!movimentacoes.some((x) => x.id == movimentacao.id)) {
+                        const dataAtual = new Date();
+                        let rec = movimentacoes.find((x) => x.descricao.includes("[RECORRÊNCIA ID: " + movimentacao.id + "]") && new Date(x.data) <= dataAtual);
+                        let existe = rec != null;
+                        if (!existe) {
+                          movimentacoes.push(movimentacao);
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+  
+              await Promise.all(promises);
+            }
+            const totalGasto = this.somarValorItensPorCategoria(movimentacoes, plan.planejamento, item);
+            let valorPlanejado = this.getValorItem(plan.planejamento, item);
+            if (totalGasto > valorPlanejado) {
+              itensComprometidos.push(item);
+            }
+          })
+        );
+  
+        if (itensComprometidos.length > 0) {
+          const planejamentoComprometido = {
+            planejamento: plan.planejamento,
+            itens: plan.itens,
+          };
+  
+          if (new Date(planejamentoComprometido.planejamento.data_final) > dataAtual) {
+            planejamentosComprometidos.push(planejamentoComprometido);
+          }
         }
-
-      }
-    });
+      })
+    );
   
     return planejamentosComprometidos;
   }
   
+  
 
   private somarValorItensPorCategoria(movimentacoes: Movimentacao[], planejamento: Planejamento, item: ItemPlanejamento): number {
     let total = 0;
-    let filtered  = movimentacoes.filter(el => el.categoria === item.categoria && el.data >= planejamento.data_inicial && el.data <= planejamento.data_final);
+    let filtered  = movimentacoes.filter(el => el.categoria === item.categoria);
     filtered.forEach(mov => {
       if(mov.tipo === 'd'){
         total+= parseFloat(mov.valor.toString());
