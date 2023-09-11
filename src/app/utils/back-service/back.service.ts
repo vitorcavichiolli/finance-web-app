@@ -8,6 +8,8 @@ import { ItemPlanejamento, Planejamento } from '../models/planejamentos.model';
 import { EventEmitter } from '@angular/core';
 import { API_DELETE_RECORRENCIA, API_INSERT_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACOES, API_LISTAGEM_PLANEJAMENTOS_BY_DATAFINAL, API_LISTAGEM_RECORRENCIAS, API_UPDATE_RECORRENCIA } from '../api/api';
 import { Recorrencia } from '../models/recorrencia.model';
+import { LoginComponent } from 'src/app/components/login/login.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'
@@ -21,22 +23,39 @@ export class BackService  {
   @Output() notificacoesAtualizadas: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(
-    private commonService: CommonService
+    private commonService: CommonService,
+    public dialog: MatDialog
   ) { }
 
   async startBackgroundTask(): Promise<void> {
-    this.taskSubscription = interval(5000).subscribe(async () => {
-      await this.listarMovimentacoes();
-      await this.listarPlanejamentos();
-      await this.listarRecorrencias();
-      await this.performBackgroundTask();
-    });
+    this.verificaToken();
   }
 
   stopBackgroundTask(): void {
     if (this.taskSubscription) {
       this.taskSubscription.unsubscribe();
       this.taskSubscription = undefined;
+    }
+  }
+
+  verificaToken(){
+    if(!sessionStorage.getItem('token')){
+        // Open the Material Dialog
+        const dialogRef = this.dialog.open(LoginComponent, {
+        });
+    
+        // Handle dialog close event if needed
+        dialogRef.afterClosed().subscribe((result) => {
+        });
+      
+    }
+    else{
+      this.taskSubscription = interval(5000).subscribe(async () => {
+        await this.listarMovimentacoes();
+        await this.listarPlanejamentos();
+        await this.listarRecorrencias();
+        await this.performBackgroundTask();
+      });
     }
   }
 

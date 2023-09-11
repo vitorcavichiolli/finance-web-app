@@ -84,10 +84,16 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.listarMovimentacoes(); 
-    this.filteredMovimentacoes = this.movimentacoes;
-    this.carregarFiltros();
-    this.form.valueChanges.subscribe(this.onFormChange);
+    await this.verificaToken();
+  }
+
+  async verificaToken(){
+    if(sessionStorage.getItem('token')){
+      await this.listarMovimentacoes(); 
+      this.filteredMovimentacoes = this.movimentacoes;
+      this.carregarFiltros();
+      this.form.valueChanges.subscribe(this.onFormChange);
+    }
   }
 
   async ngAfterViewInit(): Promise<void> {

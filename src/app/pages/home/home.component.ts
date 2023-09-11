@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
+import { LoginComponent } from 'src/app/components/login/login.component';
 import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { API_DELETE_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACOES } from 'src/app/utils/api/api';
 import { BackService } from 'src/app/utils/back-service/back.service';
@@ -50,18 +51,22 @@ export class HomeComponent implements OnInit {
   ){}
 
     async ngOnInit() {
-      this.contas = contas;
-      await this.listarMovimentacoes();
-      await this.calcGastos(this.movimentacoes_ate_data_atual,this.movimentacoes_ate_mes_atual);
-      await this.calcRenda(this.movimentacoes_ate_data_atual,this.movimentacoes_ate_mes_atual);
-      await this.calcPorConta(this.movimentacoes_ate_data_atual);
-      this.calcSaldo();
-      this.backService.notificacoesAtualizadas.subscribe(() => {
-        this.notificacoes = this.backService.getPlanejamentosComprometidos();
-      });
+     await this.verificaToken();
     
     }
-
+    async verificaToken(){
+      if(sessionStorage.getItem('token')){
+        this.contas = contas;
+        await this.listarMovimentacoes();
+        await this.calcGastos(this.movimentacoes_ate_data_atual,this.movimentacoes_ate_mes_atual);
+        await this.calcRenda(this.movimentacoes_ate_data_atual,this.movimentacoes_ate_mes_atual);
+        await this.calcPorConta(this.movimentacoes_ate_data_atual);
+        this.calcSaldo();
+        this.backService.notificacoesAtualizadas.subscribe(() => {
+          this.notificacoes = this.backService.getPlanejamentosComprometidos();
+        });
+      }
+    }
    
   onNotificationSelect(notification: {
     planejamento: Planejamento;

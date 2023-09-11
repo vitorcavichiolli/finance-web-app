@@ -1,0 +1,20 @@
+<div class="modal-container">
+    <div class="modal-content">
+        <form [formGroup]="form" (keydown.enter)="$event.preventDefault()"> 
+            <div class="form-group">
+                <label class="form-label" for="usuario" class="form-label">Usuário:</label>
+                <input class="form-input" formControlName="usuario" name="usuario" id="usuario" type="text" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="senha" class="form-label">Senha:</label>
+                <input class="form-input" formControlName="senha" name="senha" id="senha" type="password" />
+            </div>
+            <div class="button-group">
+                <button class="form-button green" (click)="login()">
+                  <mat-icon  aria-hidden="false"  fontIcon="done"></mat-icon>
+        
+                </button>
+              </div>
+        </form>
+    </div>
+</div>

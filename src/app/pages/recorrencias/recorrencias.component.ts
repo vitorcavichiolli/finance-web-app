@@ -27,7 +27,14 @@ export class RecorrenciasComponent implements OnInit{
 
   async ngOnInit(): Promise<void> {
     // Chame o método getAllPlanejamentos() do serviço para obter todos os planejamentos
-    await this.listarRecorrencias();
+    await this.verificaToken();
+
+    
+  }
+  async verificaToken(){
+    if(sessionStorage.getItem('token')){
+      await this.listarRecorrencias();
+    }
   }
 
   async listarRecorrencias(): Promise<void> {

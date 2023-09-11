@@ -24,10 +24,16 @@ export class PlanningComponent implements OnInit{
     public loadingService: LoadingService
 
     ) {}
-  async ngOnInit(): Promise<void> {
-    // Chame o método getAllPlanejamentos() do serviço para obter todos os planejamentos
-    await this.getAllPlanejamentos();
-  }
+
+  async ngOnInit() {
+    await this.verificaToken();
+   
+   }
+   async verificaToken(){
+     if(sessionStorage.getItem('token')){
+      await this.getAllPlanejamentos();
+     }
+   }
 
   async getAllPlanejamentos(): Promise<void> {
     this.loadingService.openLoading();

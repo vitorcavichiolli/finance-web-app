@@ -62,8 +62,10 @@ export class CommonService {
   }
 
   public getApi<T>(url: string, queryParams?: any): Observable<T> {
+    const token = sessionStorage.getItem('token'); // Obtenha o token do Local Storage
     let headers = new HttpHeaders({
-      'accept': '*/*' // Defina os headers necessários aqui
+      'accept': '*/*', // Defina os headers necessários aqui
+      'Authorization': `Bearer ${token}`
     });
     let params = new HttpParams();
     if (queryParams) {
@@ -76,27 +78,33 @@ export class CommonService {
   }
 
   public postApi<T>(url: string, body: any): Observable<T> {
+    const token = sessionStorage.getItem('token'); // Obtenha o token do Local Storage
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'accept': 'text/plain' // Você pode ajustar o cabeçalho de aceitação conforme necessário
+      'accept': 'text/plain', // Você pode ajustar o cabeçalho de aceitação conforme necessário
+      'Authorization': `Bearer ${token}`
     });
 
     return this.http.post<T>(url, body, { headers });
   }
 
   public putApi<T>(url: string, body: any): Observable<T> {
+    const token = sessionStorage.getItem('token'); // Obtenha o token do Local Storage
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'accept': 'text/plain' ,
+      'Authorization': `Bearer ${token}`
     });
 
     return this.http.post<T>(url, body, { headers });
   }
 
   public deleteApi<T>(url: string, body: any): Observable<T> {
+    const token = sessionStorage.getItem('token'); // Obtenha o token do Local Storage
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'accept': 'text/plain',
+      'Authorization': `Bearer ${token}`
     });
   
     return this.http.post<T>(url, body, { headers });
