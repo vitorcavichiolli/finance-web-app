@@ -179,7 +179,6 @@ export class TableComponent implements OnChanges, OnInit {
           }
         });
         this.recorrencias = result;
-        console.log(result)
         result.forEach(async element => {
           let movimentacao = await this.getMovimentacao(element.id_movimentacao);
           if(new Date(movimentacao.data).getDate() > new Date().getDate()){

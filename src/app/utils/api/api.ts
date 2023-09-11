@@ -13,6 +13,8 @@ export const API_DELETE_PLANEJAMENTO = BASE_URL + 'Planejamento/deletePlanejamen
 //MOVIMENTACOES
 export const API_LISTAGEM_MOVIMENTACOES = BASE_URL + 'Movimentacao/getMovimentacoes';
 export const API_LISTAGEM_MOVIMENTACOES_BY_CATEGORA_DATA = BASE_URL + 'Movimentacao/getMovimentacoesByDataAndCategoria';
+export const API_LISTAGEM_MOVIMENTACOES_BY_CATEGORA_PERIODO = BASE_URL + 'Movimentacao/getMovimentacoesByPeriodoAndCategoria';
+export const API_LISTAGEM_MOVIMENTACOES_BY_PERIODO = BASE_URL + 'Movimentacao/getMovimentacoesByPeriodo';
 export const API_LISTAGEM_MOVIMENTACAO = BASE_URL + 'Movimentacao/getMovimentacao';
 export const API_INSERT_MOVIMENTACAO = BASE_URL + 'Movimentacao/addMovimentacao';
 export const API_UPDATE_MOVIMENTACAO = BASE_URL + 'Movimentacao/updtMovimentacao';

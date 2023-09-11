@@ -26,8 +26,9 @@
                 </div>
                 <div class="modal-group center flex ">
                     <p class="modal-label value-sm">Renda Não Planejada:</p>
-                    <p class="modal-value value-sm">R$ {{ formataValor(((data?.planejamento?.renda ?? 1) - valorTotalPlanejado)) }}</p>
+                    <p class="modal-value value-sm">R$ {{ formataValor(rendaNaoPlanejada) }}</p>
                 </div>
+               
                 <div class="modal-group center flex ">
                     <p class="modal-label color-primary value-sm">Gastos Planejados:</p>
                     <p class="modal-value value-sm">R$ {{ formataValor(valorTotalPlanejado) }}</p>
@@ -44,6 +45,40 @@
                     <p class="modal-value value-sm"
                         [ngClass]="{'color-red': valorTotalUtilizado > valorTotalPlanejado, 'color-green': valorTotalUtilizado<=valorTotalPlanejado}">
                         R$ {{ formataValor(valorTotalPlanejado - valorTotalUtilizado) }}
+                    </p>
+                </div>
+                <div class="modal-group center flex ">
+                    <p class="modal-label color-primary value-sm">Valor Não Planejado:</p>
+                    <p class="modal-value value-sm">R$ {{ formataValor(rendaNaoPlanejada) }}</p>
+                    &nbsp;
+                    &nbsp;
+                    <p class="modal-label color-primary value-sm">Valor Utilizado:</p>
+                    <p class="modal-value value-sm color-red">
+                        R$ {{ formataValor(gastosNaoPlanejados) }}
+                    </p>
+                    &nbsp;
+                    &nbsp;
+                    <p class="modal-label color-primary value-sm">Valor Restante:</p>
+                    <p class="modal-value value-sm"
+                        [ngClass]="{'color-red': gastosNaoPlanejados > rendaNaoPlanejada, 'color-green': valorTotalUtilizado<=valorTotalPlanejado}">
+                        R$ {{ formataValor(totalNaoPlanejado) }}
+                    </p>
+                </div>
+                <div class="modal-group center flex ">
+                    <p class="modal-label color-primary value-sm">Renda:</p>
+                    <p class="modal-value value-sm">R$ {{ formataValor(data?.planejamento?.renda ?? '') }}</p>
+                    &nbsp;
+                    &nbsp;
+                    <p class="modal-label color-primary value-sm">Valor Utilizado:</p>
+                    <p class="modal-value value-sm color-red">
+                        R$ {{ formataValor((gastosNaoPlanejados + valorTotalUtilizado)) }}
+                    </p>
+                    &nbsp;
+                    &nbsp;
+                    <p class="modal-label color-primary value-sm">Valor Restante:</p>
+                    <p class="modal-value value-sm"
+                        [ngClass]="{'color-red': ((data?.planejamento?.renda ?? 1) -(gastosNaoPlanejados + valorTotalUtilizado)) > (data?.planejamento?.renda ?? 1), 'color-green': ((data?.planejamento?.renda ?? 1) -(gastosNaoPlanejados + valorTotalUtilizado)) <= (data?.planejamento?.renda ?? 1)}">
+                        R$ {{ formataValor(((data?.planejamento?.renda ?? 1) -(gastosNaoPlanejados + valorTotalUtilizado))) }}
                     </p>
                 </div>
             </section>
