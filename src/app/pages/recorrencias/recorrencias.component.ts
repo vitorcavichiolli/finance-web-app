@@ -34,7 +34,7 @@ export class RecorrenciasComponent implements OnInit{
     this.loadingService.openLoading();
     this.totalGastosLancamentosFuturos = 0;
     this.totalReceitasLancamentosFuturos = 0;
-
+  
     try {
       const result = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
       if (result !== undefined) {
@@ -46,7 +46,8 @@ export class RecorrenciasComponent implements OnInit{
           }
         });
         this.recorrencias = result;
-        result.forEach(async element => {
+  
+        for (const element of result) {
           let movimentacao = await this.getMovimentacao(element.id_movimentacao);
           let item: RecorrenciaComMovimentacao = {
             id_movimentacao: element.id_movimentacao,
@@ -55,16 +56,16 @@ export class RecorrenciasComponent implements OnInit{
             repeticao: element.repeticao,
             parcelas_exibicao: element.parcelas_exibicao,
             movimentacao: movimentacao,
-
           }
-          if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "d"){
+  
+          if ((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "d") {
             this.totalGastosLancamentosFuturos += movimentacao.valor;
-          }
-          else if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r"){
+          } else if ((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r") {
             this.totalReceitasLancamentosFuturos += movimentacao.valor;
           }
+  
           this.recorrenciasComMovimentacao.push(item);
-        });
+        }
         
       }
       
@@ -76,12 +77,13 @@ export class RecorrenciasComponent implements OnInit{
         }
       });
       this.loadingService.closeLoading();
-
+  
     } catch (error) {
       this.loadingService.closeLoading();
-      console.error('Error fetching planejamentos:', error);
+      console.error('Error fetching recorrencias:', error);
     }
   }
+  
 
   async getMovimentacao(id: number): Promise<Movimentacao> {
       const params = {id: id}

@@ -100,7 +100,7 @@
                     <div class="modal-group flex center">
                         <p class="modal-label value-sm">Utilizado:</p>
                         <p class="modal-value bold value-sm" >
-                            <span [ngClass]="{'color-red': valoresUtilizadosPorCategoria[item.categoria] >= getValorItem(item.porcentagem),'color-green': valoresUtilizadosPorCategoria[item.categoria] < getValorItem(item.porcentagem) }">
+                            <span class="color-red">
                                 R$ {{ formataValor(valoresUtilizadosPorCategoria[item.categoria]) }}
                             </span> | <span class="color-warning">{{porcentagemUtilizadosPorCategoria[item.categoria]}}%</span> 
                         </p>
