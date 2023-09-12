@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { LoginComponent } from 'src/app/components/login/login.component';
@@ -47,26 +47,30 @@ export class HomeComponent implements OnInit {
     private dataService:DataService,
     private commonService: CommonService,
     private backService: BackService,
-    public loadingService: LoadingService
+    public loadingService: LoadingService,
+    private cdr: ChangeDetectorRef
   ){}
 
     async ngOnInit() {
-     await this.verificaToken();
-    
+      await this.verificaToken();
     }
-    async verificaToken(){
-      if(sessionStorage.getItem('token')){
+    async verificaToken() {
+      if (sessionStorage.getItem('token')) {
         this.contas = contas;
-        await this.listarMovimentacoes();
-        await this.calcGastos(this.movimentacoes_ate_data_atual,this.movimentacoes_ate_mes_atual);
-        await this.calcRenda(this.movimentacoes_ate_data_atual,this.movimentacoes_ate_mes_atual);
-        await this.calcPorConta(this.movimentacoes_ate_data_atual);
-        this.calcSaldo();
-        this.backService.notificacoesAtualizadas.subscribe(() => {
-          this.notificacoes = this.backService.getPlanejamentosComprometidos();
-        });
+        this.cdr.detectChanges();
+        this.loadingService.openLoading();
+          await this.listarMovimentacoes();
+          await this.calcGastos(this.movimentacoes_ate_data_atual, this.movimentacoes_ate_mes_atual);
+          await this.calcRenda(this.movimentacoes_ate_data_atual, this.movimentacoes_ate_mes_atual);
+          await this.calcPorConta(this.movimentacoes_ate_data_atual);
+          this.calcSaldo();
+          this.backService.notificacoesAtualizadas.subscribe(() => {
+            this.notificacoes = this.backService.getPlanejamentosComprometidos();
+          });
+          this.loadingService.closeLoading();
       }
     }
+    
    
   onNotificationSelect(notification: {
     planejamento: Planejamento;
@@ -101,7 +105,6 @@ export class HomeComponent implements OnInit {
     }
 
     async listarMovimentacoes(): Promise<void> {
-      this.loadingService.openLoading();
       try {
         const result = await this.commonService.getApi<Movimentacao[]>(API_LISTAGEM_MOVIMENTACOES).toPromise();
         if (result !== undefined) {
@@ -132,12 +135,9 @@ export class HomeComponent implements OnInit {
         });
         this.movimentacoes = copiaMovimentacoes;
         this.ultimasMovimentacoes =  copiaMovimentacoes.slice(0, 50);
-        this.loadingService.closeLoading();
 
       } catch (error) {
         console.error('Erro ao listar movimentações:', error);
-        this.loadingService.closeLoading();
-
       }
     }
     filterMovimentacoesAteMesAtual(movimentacoes: Movimentacao[]): Movimentacao[] {
@@ -186,7 +186,6 @@ export class HomeComponent implements OnInit {
 
 
     async calcGastos(movimentacoes: Movimentacao[], movimentacoes_mes: Movimentacao[]){
-      this.loadingService.openLoading();
 
       movimentacoes.forEach(element => {
         if (element.tipo === 'd') {
@@ -206,12 +205,10 @@ export class HomeComponent implements OnInit {
           }
         }
       });
-      this.loadingService.closeLoading();
 
     }
 
     async calcPorConta(movimentacoes: Movimentacao[]){
-      this.loadingService.openLoading();
 
       this.contas.forEach((conta:any) =>{
         let gastos = 0;
@@ -232,12 +229,10 @@ export class HomeComponent implements OnInit {
       this.gastos_contas.push(gastos);
       this.totais_contas.push(total);
     });
-    this.loadingService.closeLoading();
 
   }
 
     async calcRenda(movimentacoes: Movimentacao[], movimentacoes_mes: Movimentacao[]){
-      this.loadingService.openLoading();
 
       movimentacoes.forEach(element => {
         if(element.tipo === 'r'){
@@ -257,7 +252,6 @@ export class HomeComponent implements OnInit {
           }
         }
       });
-      this.loadingService.closeLoading();
 
     }
 

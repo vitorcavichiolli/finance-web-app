@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { ModalPlanejamentoComponent } from 'src/app/components/modal-planejamento/modal-planejamento.component';
@@ -21,7 +21,8 @@ export class PlanningComponent implements OnInit{
     public dialog: MatDialog,
     public modalService: ModalService,
     private commonService: CommonService,
-    public loadingService: LoadingService
+    public loadingService: LoadingService,
+    private cdr: ChangeDetectorRef
 
     ) {}
 
@@ -31,6 +32,7 @@ export class PlanningComponent implements OnInit{
    }
    async verificaToken(){
      if(sessionStorage.getItem('token')){
+      this.cdr.detectChanges();
       await this.getAllPlanejamentos();
      }
    }
