@@ -2,13 +2,17 @@ import { Injectable } from '@angular/core';
 import { categorias, contas, pagamentos, tipos } from '../data/data';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertDialogComponent } from 'src/app/components/alert-dialog/alert-dialog.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommonService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    public dialog: MatDialog,
+    ) { }
 
   formatarValor(valor: number | string): string {
     if(this.checkEmptyNullUndefined(valor)){
@@ -85,7 +89,20 @@ export class CommonService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.post<T>(url, body, { headers });
+    if(this.isLocalHost()){
+      return this.http.post<T>(url, body, { headers });
+    }
+    else{
+      const dialogRef = this.dialog.open(AlertDialogComponent, {
+        data: {
+          message: 'Só é possível inserir ou alterar dados localmente',
+        }
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+      });
+      return new Observable<T>();
+    }
   }
 
   public putApi<T>(url: string, body: any): Observable<T> {
@@ -96,7 +113,20 @@ export class CommonService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.post<T>(url, body, { headers });
+    if(this.isLocalHost()){
+      return this.http.post<T>(url, body, { headers });
+    }
+    else{
+      const dialogRef = this.dialog.open(AlertDialogComponent, {
+        data: {
+          message: 'Só é possível inserir ou alterar dados localmente',
+        }
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+      });
+      return new Observable<T>();
+    }
   }
 
   public deleteApi<T>(url: string, body: any): Observable<T> {
@@ -107,7 +137,20 @@ export class CommonService {
       'Authorization': `Bearer ${token}`
     });
   
-    return this.http.post<T>(url, body, { headers });
+    if(this.isLocalHost()){
+      return this.http.post<T>(url, body, { headers });
+    }
+    else{
+      const dialogRef = this.dialog.open(AlertDialogComponent, {
+        data: {
+          message: 'Só é possível inserir ou alterar dados localmente',
+        }
+      });
+
+      dialogRef.afterClosed().subscribe((result: boolean) => {
+      });
+      return new Observable<T>();
+    }
   }
 
   formatarData(data: string | undefined | Date): string {
@@ -139,5 +182,9 @@ export class CommonService {
     } else {
       return 1; // date1 é posterior a date2
     }
+  }
+
+  private isLocalHost():boolean{
+    return (window.location.hostname === 'localhost' || window.location.hostname === '192.168.1.25');
   }
 }

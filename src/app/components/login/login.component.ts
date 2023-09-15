@@ -42,10 +42,12 @@ export class LoginComponent implements OnInit {
     }; 
     try {
       if (this.form.valid) {
+        this.loadingService.openLoading();
         const response = await this.commonService.postApi(API_LOGIN, requestBody).toPromise();
     
         const authResponse = response as LoginResponse;
-    
+        this.loadingService.closeLoading();
+
         if (authResponse && authResponse.token) {
           const token = authResponse.token;
           sessionStorage.setItem("token", token);
