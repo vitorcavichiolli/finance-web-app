@@ -81,6 +81,16 @@ export class CommonService {
     return this.http.get<T>(url, { headers, params });
   }
 
+  public loginRequest<T>(url: string, body: any): Observable<T> {
+    //const token = sessionStorage.getItem('token'); // Obtenha o token do Local Storage
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'accept': 'text/plain', // Você pode ajustar o cabeçalho de aceitação conforme necessário
+      //'Authorization': `Bearer ${token}`
+    });
+    return this.http.post<T>(url, body, { headers });
+  }
+
   public postApi<T>(url: string, body: any): Observable<T> {
     const token = sessionStorage.getItem('token'); // Obtenha o token do Local Storage
     const headers = new HttpHeaders({
