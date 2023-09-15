@@ -10,6 +10,8 @@ import { API_DELETE_RECORRENCIA, API_INSERT_MOVIMENTACAO, API_LISTAGEM_MOVIMENTA
 import { Recorrencia } from '../models/recorrencia.model';
 import { LoginComponent } from 'src/app/components/login/login.component';
 import { MatDialog } from '@angular/material/dialog';
+import { isSameDay  } from 'date-fns';
+import { CdiService } from '../cdi-service/cdi.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +26,8 @@ export class BackService  {
 
   constructor(
     private commonService: CommonService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private cdiService: CdiService
   ) { }
 
   async startBackgroundTask(): Promise<void> {
@@ -252,4 +255,6 @@ export class BackService  {
   getPlanejamentosComprometidos():{ planejamento: Planejamento, itens: ItemPlanejamento[] }[]{
     return this.planejamentosComprometidos;
   }
+
+  
 }
