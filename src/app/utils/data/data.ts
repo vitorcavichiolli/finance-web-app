@@ -30,6 +30,7 @@ export const categorias = [
     {id: 16, nome:'Economia'},
     {id: 17, nome:'Outros'},
     {id: 18, nome:'Movimentação entre contas'},
+    {id: 19, nome:'Rendimentos'},
 ].sort((a, b) => a.nome.localeCompare(b.nome));
 
 export const contas = [
