@@ -189,9 +189,18 @@ export class HomeComponent implements OnInit {
 
       movimentacoes.forEach(element => {
         if (element.tipo === 'd') {
-          this.gastos += parseFloat(element.valor.toString().replace(',', '.'));
           if(element.pagamento === 'c' || element.pagamento === 'd' || element.pagamento === 'p'){
-            this.gastos_dinheiro += parseFloat(element.valor.toString().replace(',', '.'));
+            
+            if(element.categoria == 18){
+              this.renda_dinheiro -= parseFloat(element.valor.toString().replace(',', '.'));
+              this.renda -= parseFloat(element.valor.toString().replace(',', '.'));
+
+            }
+            else{
+              this.gastos_dinheiro += parseFloat(element.valor.toString().replace(',', '.'));
+              this.gastos += parseFloat(element.valor.toString().replace(',', '.'));
+
+            }
           }
           else if(element.pagamento === 'r'){
             this.gastos_refeicao += parseFloat(element.valor.toString().replace(',', '.'));
@@ -201,7 +210,12 @@ export class HomeComponent implements OnInit {
       movimentacoes_mes.forEach(element => {
         if (element.tipo === 'd') {
           if(element.pagamento === 'c' || element.pagamento === 'd' || element.pagamento === 'p'){
-            this.gastos_dinheiro_mes += parseFloat(element.valor.toString().replace(',', '.'));
+            if(element.categoria == 18){
+              this.renda_dinheiro_mes -= parseFloat(element.valor.toString().replace(',', '.'));
+            }
+            else{
+              this.gastos_dinheiro_mes += parseFloat(element.valor.toString().replace(',', '.'));
+            }
           }
         }
       });
@@ -241,10 +255,12 @@ export class HomeComponent implements OnInit {
 
       movimentacoes.forEach(element => {
         if(element.tipo === 'r'){
-          this.renda += parseFloat(element.valor.toString().replace(',', '.'));
           if(element.pagamento === 'c' || element.pagamento === 'd' || element.pagamento === 'p'){
             this.renda_dinheiro += parseFloat(element.valor.toString().replace(',', '.'));
+            this.renda += parseFloat(element.valor.toString().replace(',', '.'));
+
           }
+
           else if(element.pagamento === 'r'){
             this.renda_refeicao += parseFloat(element.valor.toString().replace(',', '.'));
           }
