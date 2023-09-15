@@ -195,6 +195,7 @@ export class CommonService {
   }
 
   private isLocalHost():boolean{
-    return (window.location.hostname === 'localhost' || window.location.hostname === '192.168.1.25');
+    console.log(window.location.hostname);
+    return (window.location.hostname === 'localhost' || window.location.hostname === '192.168.1.25' || window.location.hostname === 'finance.com');
   }
 }

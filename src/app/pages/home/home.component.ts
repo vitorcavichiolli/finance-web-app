@@ -220,7 +220,12 @@ export class HomeComponent implements OnInit {
               renda += parseFloat(mov.valor.toString().replace(',', '.'));
             }
             else if((mov.tipo === 'd') && (mov.pagamento === 'c' || mov.pagamento === 'd' || mov.pagamento === 'p')){
-              gastos += parseFloat(mov.valor.toString().replace(',', '.'));
+              if(mov.categoria == 18){
+                renda -= parseFloat(mov.valor.toString().replace(',', '.'));
+              }
+              else{
+                gastos += parseFloat(mov.valor.toString().replace(',', '.'));
+              }
             }
           }
       });
