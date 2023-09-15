@@ -1,10 +1,10 @@
-export const BASE_URL = 'http://192.168.1.25:88/api/';
+//export const BASE_URL = 'http://192.168.1.25:88/api/';
 //export const BASE_URL = 'https://localhost:44365/api/';
 //export const BASE_URL = 'http://finance-api.somee.com/api/';
 import { environment } from '../../../environments/environment';
 
 
-//export const BASE_URL = environment.apiUrl;
+export const BASE_URL = environment.apiUrl;
 
 //planejamentos
 export const API_LISTAGEM_PLANEJAMENTOS = BASE_URL + 'Planejamento/getPlanejamentos';
