@@ -132,7 +132,8 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     let copiaMovimentacoes = [...this.movimentacoes];
     copiaMovimentacoes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
     for (let i = 0; i < this.excecoesCategorias.length; i++) {
-      copiaMovimentacoes = copiaMovimentacoes.filter(objeto => objeto.categoria.toString() != this.excecoesCategorias[i]);
+      // let movimentacoesaremover = copiaMovimentacoes.filter(objeto => objeto.categoria.toString() == this.excecoesCategorias[i] && objeto.tipo == 'd');
+      // copiaMovimentacoes = copiaMovimentacoes.filter(objeto => !movimentacoesaremover.includes(objeto));
     }
     this.movimentacoes = copiaMovimentacoes;
     this.loadingService.closeLoading();
