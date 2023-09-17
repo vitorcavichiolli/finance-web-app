@@ -55,7 +55,7 @@ export class PieChartComponent implements AfterViewInit, OnChanges  {
     this.movimentacoes.forEach(el => {
       let label:string = "";
      
-      if(el.tipo == 'd' && el.categoria != null){
+      if((el.tipo == 'd' && el.categoria != null) && (el.pagamento == 'd' || el.pagamento == 'p' || el.pagamento == 'c')){
         let categoria = this.categorias.find((cat:any) => cat.id == el.categoria);
         label = categoria.nome;
         if(labels.includes(label)){
