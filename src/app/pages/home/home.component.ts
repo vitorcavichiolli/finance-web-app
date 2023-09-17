@@ -255,7 +255,7 @@ export class HomeComponent implements OnInit {
 
       movimentacoes.forEach(element => {
         if(element.tipo === 'r'){
-          if(element.pagamento === 'c' || element.pagamento === 'd' || element.pagamento === 'p'){
+          if((element.pagamento === 'c' || element.pagamento === 'd' || element.pagamento === 'p') && element.conta != 'p'){
             this.renda_dinheiro += parseFloat(element.valor.toString().replace(',', '.'));
             this.renda += parseFloat(element.valor.toString().replace(',', '.'));
 
@@ -268,7 +268,7 @@ export class HomeComponent implements OnInit {
       });
       movimentacoes_mes.forEach(element => {
         if(element.tipo === 'r'){
-          if(element.pagamento === 'c' || element.pagamento === 'd' || element.pagamento === 'p'){
+          if(element.pagamento === 'c' || element.pagamento === 'd' || element.pagamento === 'p' && element.conta != 'p'){
             this.renda_dinheiro_mes += parseFloat(element.valor.toString().replace(',', '.'));
           }
         }

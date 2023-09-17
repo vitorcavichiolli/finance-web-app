@@ -36,6 +36,9 @@
           &nbsp; = &nbsp;
           <p [ngClass]="{'card-value': true, 'card-value-sm': true, 'color-red': total_dinheiro_mes<0, 'color-green': total_dinheiro_mes>0}"> R$ {{formatarValor(total_dinheiro_mes)}}</p>
         </div>
+        <div class="card-group" >
+          <p class="value-sm">Valores referentes apenas a transações que envolvem dinheiro (não inclui conta PicPay)</p>
+        </div>
         <div class="card-group" *ngFor="let conta of contas;let i = index">
           <p class="card-label card-label-sm ">{{conta.nome}}:</p>
           <p class="card-value card-value-sm color-green"> R$ {{formatarValor(rendas_contas[i])}}</p>

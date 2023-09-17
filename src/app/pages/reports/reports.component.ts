@@ -199,9 +199,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         });
 
         this.saldoAnterior = movimentacoesAnteriores.reduce((total, movimentacao) => {
-          if (movimentacao.tipo === 'r' && ['p', 'd', 'c'].includes(movimentacao.pagamento)) {
+          if (movimentacao.tipo === 'r' && ['p', 'd', 'c'].includes(movimentacao.pagamento) && movimentacao.conta != 'p') {
             return total + movimentacao.valor;
-          } else if (movimentacao.tipo === 'd' && ['p', 'd', 'c'].includes(movimentacao.pagamento)) {
+          } else if (movimentacao.tipo === 'd' && ['p', 'd', 'c'].includes(movimentacao.pagamento) && movimentacao.conta != 'p') {
             return total - movimentacao.valor;
           } else {
             return total;
@@ -238,9 +238,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         });
 
         this.saldoAnterior = movimentacoesAnteriores.reduce((total, movimentacao) => {
-          if (movimentacao.tipo === 'r' && ['p', 'd', 'c'].includes(movimentacao.pagamento)) {
+          if (movimentacao.tipo === 'r' && ['p', 'd', 'c'].includes(movimentacao.pagamento) && movimentacao.conta != 'p') {
             return total + movimentacao.valor;
-          } else if (movimentacao.tipo === 'd' && ['p', 'd', 'c'].includes(movimentacao.pagamento)) {
+          } else if (movimentacao.tipo === 'd' && ['p', 'd', 'c'].includes(movimentacao.pagamento) && movimentacao.conta != 'p') {
             return total - movimentacao.valor;
           } else {
             return total;

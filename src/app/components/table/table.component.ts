@@ -113,7 +113,7 @@ export class TableComponent implements OnChanges, OnInit {
       if((element.tipo === 'd') && (element.pagamento === 'p' || element.pagamento === 'c' || element.pagamento === 'd')){
         totalGastos += parseFloat(element.valor);
       }
-      else if((element.tipo === 'r') && (element.pagamento === 'p' || element.pagamento === 'c' || element.pagamento === 'd')){
+      else if((element.tipo === 'r') && (element.pagamento === 'p' || element.pagamento === 'c' || element.pagamento === 'd') && (element.conta != 'p')){
         totalReceita += parseFloat(element.valor);
       }
     });
