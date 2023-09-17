@@ -174,7 +174,6 @@ export class TableComponent implements OnChanges, OnInit {
 
   async listarRecorrencias(): Promise<void> {
     this.loadingService.openLoading();
-    console.log("abriu")
     this.totalGastosLancamentosFuturos = 0;
     this.totalReceitasLancamentosFuturos = 0;
     try {
@@ -227,8 +226,6 @@ export class TableComponent implements OnChanges, OnInit {
                 return 0;
             }
         });
-
-        console.log("fechou")
     } catch (error) {
         console.error('Error fetching recorrencias:', error);
     } finally {
