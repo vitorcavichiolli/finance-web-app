@@ -174,68 +174,68 @@ export class TableComponent implements OnChanges, OnInit {
 
   async listarRecorrencias(): Promise<void> {
     this.loadingService.openLoading();
+    console.log("abriu")
     this.totalGastosLancamentosFuturos = 0;
     this.totalReceitasLancamentosFuturos = 0;
     try {
-      const result = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
-      if (result !== undefined) {
-        result.sort((a, b) => {
-          if (b.id && a.id) {
-            return a.id - b.id; // Ordenar em ordem crescente
-          } else {
-            return 0;
-          }
-        });
-        this.recorrencias = result;
-        result.forEach(async element => {
-          let movimentacao = await this.getMovimentacao(element.id_movimentacao);
-          var dataMovimentacao = new Date(movimentacao.data);
-          dataMovimentacao.setMonth(dataMovimentacao.getMonth() + 1);
-          if(dataMovimentacao > new Date()){
-            
-            let item: RecorrenciaComMovimentacao = {
-              id_movimentacao: element.id_movimentacao,
-              id: element.id, 
-              tem_limite: element.tem_limite, 
-              repeticao: element.repeticao,
-              parcelas_exibicao: element.parcelas_exibicao,
-              movimentacao: movimentacao,
-             
-            }
-            if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "d"){
-              if(!this._data.some(x => x.id == movimentacao.id)){
-                const dataAtual = new Date();
-                let rec = this._data.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + movimentacao.id +"]") && new Date(x.data) <= dataAtual);
-                let existe = rec != null;
-                if(!existe){
-                  this.totalGastosLancamentosFuturos += movimentacao.valor;
+        const result = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
+        if (result !== undefined) {
+            result.sort((a, b) => {
+                if (b.id && a.id) {
+                    return a.id - b.id; // Ordenar em ordem crescente
+                } else {
+                    return 0;
                 }
-              }
-            }
-            else if((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r"){
-              this.totalReceitasLancamentosFuturos += movimentacao.valor;
-            }
-            this.recorrenciasComMovimentacao.push(item);
-          }  
+            });
+            this.recorrencias = result;
 
-        });
-        
-      }
-      
-      this.recorrenciasComMovimentacao.sort((a, b) => {
-        if (b.id && a.id) {
-          return a.id - b.id; // Ordenar em ordem crescente
-        } else {
-          return 0;
+            // Use Promise.all para aguardar todas as operações assíncronas
+            await Promise.all(result.map(async (element) => {
+                let movimentacao = await this.getMovimentacao(element.id_movimentacao);
+                var dataMovimentacao = new Date(movimentacao.data);
+                dataMovimentacao.setMonth(dataMovimentacao.getMonth() + 1);
+                if (dataMovimentacao > new Date()) {
+                    let item: RecorrenciaComMovimentacao = {
+                        id_movimentacao: element.id_movimentacao,
+                        id: element.id,
+                        tem_limite: element.tem_limite,
+                        repeticao: element.repeticao,
+                        parcelas_exibicao: element.parcelas_exibicao,
+                        movimentacao: movimentacao,
+                    }
+                    if ((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "d") {
+                        if (!this._data.some(x => x.id == movimentacao.id)) {
+                            const dataAtual = new Date();
+                            let rec = this._data.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + movimentacao.id + "]") && new Date(x.data) <= dataAtual);
+                            let existe = rec != null;
+                            if (!existe) {
+                                this.totalGastosLancamentosFuturos += movimentacao.valor;
+                            }
+                        }
+                    } else if ((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r") {
+                        this.totalReceitasLancamentosFuturos += movimentacao.valor;
+                    }
+                    this.recorrenciasComMovimentacao.push(item);
+                }
+            }));
         }
-      });
-      this.loadingService.closeLoading();
 
+        this.recorrenciasComMovimentacao.sort((a, b) => {
+            if (b.id && a.id) {
+                return a.id - b.id; // Ordenar em ordem crescente
+            } else {
+                return 0;
+            }
+        });
+
+        console.log("fechou")
     } catch (error) {
-      this.loadingService.closeLoading();
-      console.error('Error fetching recorrencias:', error);
+        console.error('Error fetching recorrencias:', error);
+    } finally {
+        this.loadingService.closeLoading(); // Feche o loading aqui, após todas as operações assíncronas.
     }
   }
+
 
   async getMovimentacao(id: number): Promise<Movimentacao> {
     const params = {id: id}

@@ -53,7 +53,7 @@ export class BackService  {
       
     }
     else{
-      this.taskSubscription = interval(5000).subscribe(async () => {
+      this.taskSubscription = interval(10000).subscribe(async () => {
         await this.listarMovimentacoes();
         await this.listarPlanejamentos();
         await this.listarRecorrencias();
