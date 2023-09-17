@@ -29,6 +29,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   selectAllPagamentos: boolean = true;
   selectAllContas: boolean = true;
   excecoesCategorias = ["18"];
+  saldoAnterior: number = 0;
 
   movimentacoes: Movimentacao[] = [];
   filteredMovimentacoes: Movimentacao[] = [];
@@ -125,6 +126,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
 
   async listarMovimentacoes(): Promise<void> {
     this.loadingService.openLoading();
+    this.saldoAnterior = 0;
     const result = await this.commonService.getApi<Movimentacao[]>(API_LISTAGEM_MOVIMENTACOES).toPromise();
     if (result !== undefined) {
       this.movimentacoes = result;
@@ -149,6 +151,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
   dateFilterOnChange(fm:any){
+    this.saldoAnterior = 0;
     if(this.checkEmptyNullUndefined(fm.data_ini) && this.checkEmptyNullUndefined(fm.data_fim)) {
       const dataInicial: Date = new Date(fm.data_ini);
       const dataFinal: Date = new Date(fm.data_fim);
@@ -190,6 +193,21 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         });
       }
       else{
+        const movimentacoesAnteriores = this.movimentacoes.filter((movimentacao: Movimentacao) => {
+          const dataMovimentacao: Date = new Date(movimentacao.data);
+          return dataMovimentacao < dataInicial;
+        });
+
+        this.saldoAnterior = movimentacoesAnteriores.reduce((total, movimentacao) => {
+          if (movimentacao.tipo === 'r' && ['p', 'd', 'c'].includes(movimentacao.pagamento)) {
+            return total + movimentacao.valor;
+          } else if (movimentacao.tipo === 'd' && ['p', 'd', 'c'].includes(movimentacao.pagamento)) {
+            return total - movimentacao.valor;
+          } else {
+            return total;
+          }
+        }, 0);
+        
         this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
           const dataMovimentacao: Date = new Date(movimentacao.data);
           return dataMovimentacao >= dataInicial && dataMovimentacao <= dataFinal;
@@ -214,6 +232,21 @@ export class ReportsComponent implements OnInit, AfterViewInit {
         else{
           sessionStorage.removeItem("dataIniFilter");
         }
+        const movimentacoesAnteriores = this.movimentacoes.filter((movimentacao: Movimentacao) => {
+          const dataMovimentacao: Date = new Date(movimentacao.data);
+          return dataMovimentacao < dataInicial;
+        });
+
+        this.saldoAnterior = movimentacoesAnteriores.reduce((total, movimentacao) => {
+          if (movimentacao.tipo === 'r' && ['p', 'd', 'c'].includes(movimentacao.pagamento)) {
+            return total + movimentacao.valor;
+          } else if (movimentacao.tipo === 'd' && ['p', 'd', 'c'].includes(movimentacao.pagamento)) {
+            return total - movimentacao.valor;
+          } else {
+            return total;
+          }
+        }, 0);
+
         this.filteredMovimentacoes=this.movimentacoes.filter((movimentacao: Movimentacao) => {
           const dataMovimentacao: Date = new Date(movimentacao.data);
           return dataMovimentacao >= dataInicial;

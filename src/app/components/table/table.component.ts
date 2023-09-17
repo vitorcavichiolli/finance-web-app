@@ -34,14 +34,22 @@ export class TableComponent implements OnChanges, OnInit {
   recorrencias: Recorrencia[] = [];
   totalGastosLancamentosFuturos: number =0;
   totalReceitasLancamentosFuturos: number =0;
-
-  @Input() set data(data: any[]) {
+  private _saldoAnterior:number = 0;
+  @Input() set data(data: Movimentacao[]) {
     this._data = data;
     this.updateDataSource();
   }
 
+  @Input() set saldoAnterior(saldoAnterior: number) {
+    this._saldoAnterior = saldoAnterior;
+  }
+
   get data(): any[] {
     return this._data;
+  }
+
+  get saldoAnterior(): number {
+    return this._saldoAnterior;
   }
 
   constructor(
@@ -100,7 +108,7 @@ export class TableComponent implements OnChanges, OnInit {
   getValorTotal(data:any){
     let total:number = 0;
     let totalGastos: number=0;
-    let totalReceita:number = 0;
+    let totalReceita:number = this.saldoAnterior;
     data.forEach((element:any )=> {
       if((element.tipo === 'd') && (element.pagamento === 'p' || element.pagamento === 'c' || element.pagamento === 'd')){
         totalGastos += parseFloat(element.valor);

@@ -157,7 +157,7 @@
             </div>
         </div>
         <section class="component-section">
-            <app-table [data]="filteredMovimentacoes"></app-table>
+            <app-table [saldoAnterior]="saldoAnterior" [data]="filteredMovimentacoes"></app-table>
         </section>
           <section  class="component-section">
             <app-pie-chart [data]="filteredMovimentacoes"></app-pie-chart>
