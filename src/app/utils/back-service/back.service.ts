@@ -182,7 +182,11 @@ export class BackService  {
         await Promise.all(
           plan.itens.map(async (item) => {
             const recorrencias = await this.commonService.getApi<Recorrencia[]>(API_LISTAGEM_RECORRENCIAS).toPromise();
-            let movimentacoes = this.movimentacoes.filter((el) => el.categoria === item.categoria && el.data >= plan.planejamento.data_inicial && el.data <= plan.planejamento.data_final);
+            let movimentacoes = this.movimentacoes.filter((el) => 
+            el.categoria === item.categoria 
+            && el.data >= plan.planejamento.data_inicial 
+            && el.data <= plan.planejamento.data_final
+            && ['p', 'd', 'c'].includes(el.pagamento));
   
             if (recorrencias !== undefined) {
               const promises = recorrencias.map(async (element) => {
