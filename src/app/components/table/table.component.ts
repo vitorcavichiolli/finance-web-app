@@ -10,7 +10,7 @@ import { DataService } from 'src/app/utils/data-service/data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Movimentacao } from 'src/app/utils/models/movimentacao.model';
 import { ModalComponent } from '../modal/modal.component';
-import { API_LISTAGEM_MOVIMENTACAO, API_LISTAGEM_RECORRENCIAS } from 'src/app/utils/api/api';
+import { API_DELETE_MOVIMENTACAO, API_LISTAGEM_MOVIMENTACAO, API_LISTAGEM_RECORRENCIAS } from 'src/app/utils/api/api';
 import { Recorrencia } from 'src/app/utils/models/recorrencia.model';
 import { LoadingService } from 'src/app/utils/loading-service/loading.service';
 interface RecorrenciaComMovimentacao extends Recorrencia{
@@ -56,7 +56,6 @@ export class TableComponent implements OnChanges, OnInit {
     private _liveAnnouncer: LiveAnnouncer,
     private commonService: CommonService,
     public dialog: MatDialog,
-    private dataService:DataService,
     public loadingService: LoadingService
 
     ){}
@@ -147,10 +146,15 @@ export class TableComponent implements OnChanges, OnInit {
   
       dialogRef.afterClosed().subscribe((result: boolean) => {
         if (result === true) {
-          // Usuário confirmou a exclusão, chama a função deleteMovimentacao
-          this.dataService.deleteMovimentacao(id).then(() => {
-            window.location.reload();
-          });
+          const body = parseInt(id.toString());
+            this.commonService.deleteApi<any>(API_DELETE_MOVIMENTACAO, body).subscribe(
+              response => {
+                window.location.reload();
+              },
+              error => {
+                console.error('Error deleting item', error);
+              }
+            );
         } else {
           // Usuário cancelou a exclusão
         }
@@ -212,6 +216,7 @@ export class TableComponent implements OnChanges, OnInit {
                             }
                         }
                     } else if ((movimentacao.pagamento == "d" || movimentacao.pagamento == "c" || movimentacao.pagamento == "p") && movimentacao.tipo == "r") {
+                        console.log(movimentacao)
                         this.totalReceitasLancamentosFuturos += movimentacao.valor;
                     }
                     this.recorrenciasComMovimentacao.push(item);
