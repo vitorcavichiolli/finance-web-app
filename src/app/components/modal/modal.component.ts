@@ -91,9 +91,9 @@ export class ModalComponent implements OnInit{
         valor: valorConvertido,
         categoria: this.movimentacao.categoria,
         conta: this.movimentacao.conta,
-        recorrencia:  Boolean(this.movimentacao.recorrencia),
-        limite: Boolean(this.recorrencia.tem_limite),
-        repeticao: this.recorrencia.repeticao
+        recorrencia: this.recorrencia != null ? Boolean(this.movimentacao.recorrencia) : false,
+        limite: this.recorrencia != null ? Boolean(this.recorrencia.tem_limite) : false,
+        repeticao: this.recorrencia != null ? this.recorrencia.repeticao : 0
       });
     }
   }
@@ -136,13 +136,15 @@ export class ModalComponent implements OnInit{
             tem_limite: formValues.limite,
             repeticao: parseInt(formValues.repeticao) - 1, // menos um pela movimentação inicial ja cadastrada
             parcelas_exibicao: parseInt(formValues.repeticao),
-            id: this.recorrencia.id
+            id: 0
           }
           this.salvarRecorrencia(recorrencia);
         }
         else{
-          if(this.recorrencia.id != 0 && this.recorrencia.id != null && this.recorrencia.id != undefined){
-            await this.deleteRecorrencia(this.recorrencia.id);
+          if(this.recorrencia != null){
+            if(this.recorrencia.id != 0 && this.recorrencia.id != null && this.recorrencia.id != undefined){
+              await this.deleteRecorrencia(this.recorrencia.id);
+            }
           }
           window.location.reload();
         }
@@ -182,7 +184,9 @@ export class ModalComponent implements OnInit{
 
   async salvarRecorrencia(recorrencia: Recorrencia): Promise<void> {
       try {
-        if (this.isEditMode && this.movimentacao.id) {
+        var existe = this.recorrencia = await this.getRecorrencia(this.movimentacao.id!);
+
+        if (this.isEditMode && this.movimentacao.id && existe != null) {
           const response = await this.commonService.putApi(API_UPDATE_RECORRENCIA, recorrencia).toPromise();
         }
         else{

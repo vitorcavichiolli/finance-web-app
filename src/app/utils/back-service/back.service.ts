@@ -74,12 +74,23 @@ export class BackService  {
       recorrencias.forEach(async el => {
         let movimentacao = await this.getMovimentacao(el.id_movimentacao);
         const data_movimentacao = new Date(movimentacao.data);
-        if(dataAtual.getDate() == data_movimentacao.getDate() && this.compareDatesWithoutTime(dataAtual, data_movimentacao) == 1){
+        if(dataAtual.getDate() >= data_movimentacao.getDate() && this.compareDatesWithoutTime(dataAtual, data_movimentacao) == 1){
           movimentacao.recorrencia = false;
           movimentacao.descricao = movimentacao.descricao + " [RECORRÊNCIA ID: " + el.id +"]"; 
-          movimentacao.data = new Date(dataAtual.toDateString());
-          let rec = this.movimentacoes.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + el.id +"]") && new Date(x.data).toDateString() == dataAtual.toDateString());
-          let existe = rec != null;
+          const day = data_movimentacao.getDate();
+          movimentacao.data = new Date(dataAtual.getFullYear(),(dataAtual.getMonth() +1),day ,0, 0, 0);
+          let rec = this.movimentacoes.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + el.id +"]") && new Date(x.data).getMonth() == dataAtual.getMonth() && new Date(x.data).getFullYear() == dataAtual.getFullYear());
+          let movi_do_mes = this.movimentacoes.find(x => x.id == el.id_movimentacao && new Date(x.data).getMonth() == dataAtual.getMonth() && new Date(x.data).getFullYear() == dataAtual.getFullYear());
+          let existe = false;
+          if(rec != null  ){
+            existe = true;
+          }
+          else if( rec == null && movi_do_mes != null){
+            existe = true;
+          }
+          else{
+            existe = false;
+          }
           if(existe == false){
             if(el.tem_limite == true){
               if(el.repeticao>0){
