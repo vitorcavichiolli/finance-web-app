@@ -78,7 +78,7 @@ export class BackService  {
           movimentacao.recorrencia = false;
           movimentacao.descricao = movimentacao.descricao + " [RECORRÊNCIA ID: " + el.id +"]"; 
           const day = data_movimentacao.getDate();
-          movimentacao.data = new Date(dataAtual.getFullYear(),(dataAtual.getMonth() +1),day ,0, 0, 0);
+          movimentacao.data = new Date(dataAtual.getFullYear(),(dataAtual.getMonth()),day ,0, 0, 0);
           let rec = this.movimentacoes.find(x => x.descricao.includes("[RECORRÊNCIA ID: " + el.id +"]") && new Date(x.data).getMonth() == dataAtual.getMonth() && new Date(x.data).getFullYear() == dataAtual.getFullYear());
           let movi_do_mes = this.movimentacoes.find(x => x.id == el.id_movimentacao && new Date(x.data).getMonth() == dataAtual.getMonth() && new Date(x.data).getFullYear() == dataAtual.getFullYear());
           let existe = false;
