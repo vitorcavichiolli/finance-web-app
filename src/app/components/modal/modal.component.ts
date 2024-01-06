@@ -152,8 +152,13 @@ export class ModalComponent implements OnInit{
       else {
         try {
           const response = await this.commonService.postApi(API_INSERT_MOVIMENTACAO, movimentacao).toPromise();
+          let id = null;
+          if (response && typeof response === "object" && "message" in response) {
+            id = response["message"];
+          }
+          
           const recorrencia: Recorrencia = {
-            id_movimentacao: movimentacao.id!,
+            id_movimentacao: parseInt(id + ""),
             tem_limite: formValues.limite,
             repeticao: parseInt(formValues.repeticao) - 1, // menos um pela movimentação inicial ja cadastrada
             parcelas_exibicao: parseInt(formValues.repeticao)
@@ -184,7 +189,7 @@ export class ModalComponent implements OnInit{
 
   async salvarRecorrencia(recorrencia: Recorrencia): Promise<void> {
       try {
-        var existe = this.recorrencia = await this.getRecorrencia(this.movimentacao.id!);
+        var existe = this.recorrencia = await this.getRecorrencia(recorrencia.id_movimentacao);
 
         if (this.isEditMode && this.movimentacao.id && existe != null) {
           const response = await this.commonService.putApi(API_UPDATE_RECORRENCIA, recorrencia).toPromise();
